@@ -1,5 +1,5 @@
 
-import { GameController } from "./controllers/GameController";
+import { GameController } from "./controls/GameControl";
 import { AppModel } from "./models/AppModel";
 
 var theApp = new AppModel();
