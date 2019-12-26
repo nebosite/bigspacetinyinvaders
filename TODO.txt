@@ -1,9 +1,17 @@
 
 TODO
+    [ ] Break into classes 
+    [ ] Add sound system using sound buffers
+    [ ] Read keyboard
+    [ ] Read Controller
+    
 
 NEW
+
+
     [ ] Watchable build/debugging
     [ ] Add sounds
-    [ ] Break into classes 
     [ ] Setup tests with JEST  https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c
     [ ] Webpack it
+    [ ] Optimization: use raw byte buffer for sprites
+    [ ] Alert when using IE
