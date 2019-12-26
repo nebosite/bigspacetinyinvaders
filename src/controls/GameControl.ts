@@ -1,5 +1,15 @@
 import { IAppModel } from "../models/AppModel";
 import { Sprite } from "../ui/Sprite";
+import { KeycodeTranslator, KeyboardManager } from "../ui/KeyboardInput";
+
+export enum PlayerAction {
+    None,
+    Up,
+    Left,
+    Right,
+    Down,
+    
+}
 
 export class GameController 
 {
@@ -17,6 +27,22 @@ export class GameController
     _arrowOn = false;
     _keyThingX = 0;
     _gamepadThingX = 0;
+    keyboardManager = new KeyboardManager();
+
+    CommonDirectionKeyLayouts = new Map([
+        ["IJKL", [73,74,75,76]],
+        ["WASD", [87,65,83,68]],
+        ["Arrows", [38,37,40,39]],
+        ["Numpad 8456", [104,100,101,102]]
+    ]);
+
+    
+    // CommonActionKeyLayouts = {
+    //     "ShiftZX": [16,90,88],
+    //     "SpcNM": [32,78,77],
+    //     "0.Enter": [96,110,13],
+    //     "DelEndPgdwn": [46,35,24],
+    // };
 
     //-------------------------------------------------------------------------
     // ctor
@@ -34,8 +60,6 @@ export class GameController
         window.addEventListener("resize", this.resize_handler);
         this._myCanvas.addEventListener("click", this.handleCanvasClick);
         this._myCanvas.addEventListener("mousemove", this.handleCanvasMouseMove);
-        document.addEventListener('keydown', this.handleKeyDown);
-        document.addEventListener('keyup', this.handleKeyUp);
         window.addEventListener('gamepadconnected', e => this.handleGamepadConnect(e, true));
         window.addEventListener('gamepaddisconnected',  e => this.handleGamepadConnect(e, false));
     } 
@@ -67,17 +91,23 @@ export class GameController
     //-------------------------------------------------------------------------
     // handle keyboard
     //-------------------------------------------------------------------------
-    handleKeyDown = (e: KeyboardEvent) => {
-        if(e.keyCode == 39) this._arrowOn = true; // right arrow
+    handleUnhandledKey = (keyCode: number) => {
+        this.CommonDirectionKeyLayouts.forEach((value, key) =>
+        {
+            for(let i = 0; i < value.length; i++)
+            {
+                if(value[i] == keyCode)
+                {
+                    var newTranslator = new KeycodeTranslator<PlayerAction>();
+                    newTranslator.mapKey(value[0], PlayerAction.Up);
+                    newTranslator.mapKey(value[1], PlayerAction.Left);
+                    newTranslator.mapKey(value[2], PlayerAction.Down);
+                    newTranslator.mapKey(value[3], PlayerAction.Right);
+                    this.keyboardManager.addTranslator(newTranslator);
+                }
+            }
+        });
     }
-
-    //-------------------------------------------------------------------------
-    // handle keyboard
-    //-------------------------------------------------------------------------
-    handleKeyUp = (e: KeyboardEvent) => {
-        if(e.keyCode == 39) this._arrowOn = false; // right arrow
-    }
-
 
     //-------------------------------------------------------------------------
     // handle mouse clicks
