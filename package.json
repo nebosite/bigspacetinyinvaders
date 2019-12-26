@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && xcopy /Y .\\public\\* lib",
+    "build": "webpack &&  xcopy /VERIFYK .\\public\\* lib",
     "start": "node devserver.js"
   },
   "repository": {
@@ -21,6 +21,9 @@
   "homepage": "https://github.com/nebosite/bigspacetinyinvaders#readme",
   "devDependencies": {
     "express": "^4.17.1",
-    "typescript": "^3.7.4"
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.4",
+    "webpack": "^4.41.4",
+    "webpack-cli": "^3.3.10"
   }
 }

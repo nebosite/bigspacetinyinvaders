@@ -7,8 +7,8 @@ TODO
     
 
 NEW
-
-
+    [ ] Break up logic and graphics frames
+    [ ] Pack resources too: https://webpack.js.org/guides/typescript/
     [ ] Watchable build/debugging
     [ ] Add sounds
     [ ] Setup tests with JEST  https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c

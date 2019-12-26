@@ -1,12 +1,12 @@
 {
     "compilerOptions": {
       "target": "es6",
-      "module": "commonjs",
+      "module": "ESNext",
       "declaration": true,
       "outDir": "./lib",
       "strict": true,
       "sourceMap": true
     },
-    "include": ["src"],
+    "include": ["src/**/*"],
     "exclude": ["node_modules", "**/__tests__/*"]
   }
