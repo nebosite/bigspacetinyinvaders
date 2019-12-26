@@ -14,7 +14,8 @@ export class GameController
     _myCanvas: HTMLCanvasElement;
     _mouseX = 0;
     _mouseY = 0;
-    _sound_ding = document.getElementById("audio_ding"); 
+    _arrowOn = false;
+    _keyThingX = 0;
 
     //-------------------------------------------------------------------------
     // ctor
@@ -27,13 +28,28 @@ export class GameController
         this._width =  this._myCanvas.width;
         this._height = this._myCanvas.height;
         this._drawContext = this._myCanvas.getContext("2d") || (() => { throw new Error('No 2D support'); })();
-        this._gameSprites = new Sprite(this._drawContext, "sprites.png", 50, 50);
+        this._gameSprites = new Sprite(this._drawContext, "sprites.png", 16,16);
         requestAnimationFrame(this.animation_loop);
         window.addEventListener("resize", this.resize_handler);
         this._myCanvas.addEventListener("click", this.handleCanvasClick);
         this._myCanvas.addEventListener("mousemove", this.handleCanvasMouseMove);
-        
+        document.addEventListener('keydown', this.handleKeyDown);
+        document.addEventListener('keyup', this.handleKeyUp);
     } 
+
+    //-------------------------------------------------------------------------
+    // handle keyboard
+    //-------------------------------------------------------------------------
+    handleKeyDown = (e: KeyboardEvent) => {
+        if(e.keyCode == 39) this._arrowOn = true; // right arrow
+    }
+
+    //-------------------------------------------------------------------------
+    // handle keyboard
+    //-------------------------------------------------------------------------
+    handleKeyUp = (e: KeyboardEvent) => {
+        if(e.keyCode == 39) this._arrowOn = false; // right arrow
+    }
 
 
     //-------------------------------------------------------------------------
@@ -83,11 +99,11 @@ export class GameController
         // Fill the screen with gray
         this._drawContext.fillStyle = "#999999"
         this._drawContext.fillRect(0, 0, this._width, this._height);
-        this._drawContext.fillStyle = "#ffffff"
-        this._drawContext.strokeStyle = "#000000";
         
         // Show some info about the current frame and screen size
         // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillText
+        this._drawContext.fillStyle = "#ffffff"
+        this._drawContext.strokeStyle = "#000000";
         this._drawContext.font = '50px serif';
         this._drawContext.fillText("Current Size: " + this._width + "," + this._height, 10, 400);
         this._drawContext.strokeText("Frame: " + this._frame, 10, 590);
@@ -109,8 +125,14 @@ export class GameController
         this._drawContext.lineTo(100, 25);
         this._drawContext.fill();
 
+        //Keyboard controlled object
+        if(this._arrowOn) this._keyThingX++;
+        this._drawContext.fillStyle = "#000000"
+        this._drawContext.font = '20px sans-serif';
+        this._drawContext.fillText("Press right arrow", this._keyThingX + 20, 300);
+      
+
         this._frame++;
         requestAnimationFrame(this.animation_loop);
     }
-
 }
