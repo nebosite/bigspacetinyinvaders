@@ -16,6 +16,7 @@ export class GameController
     _mouseY = 0;
     _arrowOn = false;
     _keyThingX = 0;
+    _gamepadThingX = 0;
 
     //-------------------------------------------------------------------------
     // ctor
@@ -35,7 +36,33 @@ export class GameController
         this._myCanvas.addEventListener("mousemove", this.handleCanvasMouseMove);
         document.addEventListener('keydown', this.handleKeyDown);
         document.addEventListener('keyup', this.handleKeyUp);
+        window.addEventListener('gamepadconnected', e => this.handleGamepadConnect(e, true));
+        window.addEventListener('gamepaddisconnected',  e => this.handleGamepadConnect(e, false));
     } 
+
+    //-------------------------------------------------------------------------
+    // handle gamepad connection
+    //-------------------------------------------------------------------------
+    handleGamepadConnect = (e: Event, connecting: boolean) => {
+        const gamepadEvent = e as GamepadEvent;
+        if(connecting) {
+            // access like this: gam
+            const gp = gamepadEvent.gamepad;    
+            console.log(`Connect detected: Axes:${gp.axes.length} Buttons:${gp.buttons.length} Id:${gp.id}`);
+            
+            for(var i = 0; i < gp.buttons.length; i++)
+            {
+                console.log(`Button ${i}: ${gp.buttons[i].value} `);
+            }
+        }
+
+        // XBox layout
+        // buttons: [
+        //     'DPad-Up','DPad-Down','DPad-Left','DPad-Right',
+        //     'Start','Back','Axis-Left','Axis-Right',
+        //     'LB','RB','Power','A','B','X','Y',
+        //   ],
+    }
 
     //-------------------------------------------------------------------------
     // handle keyboard
@@ -131,6 +158,20 @@ export class GameController
         this._drawContext.font = '20px sans-serif';
         this._drawContext.fillText("Press right arrow", this._keyThingX + 20, 300);
       
+        //Gamepad controlled object
+        const gamePads = navigator.getGamepads();
+        if(gamePads)
+        {
+            for (var i = 0, len = gamePads.length; i < len; i++) {
+                const gp =  gamePads[i] as Gamepad;
+                if(!gp) continue;
+                if(gp.buttons[0].pressed)
+                {
+                    this._gamepadThingX++;
+                }
+            }
+        }
+        this._drawContext.fillText("Press button on gamepad", this._gamepadThingX + 20, 330);
 
         this._frame++;
         requestAnimationFrame(this.animation_loop);
