@@ -1,0 +1,26 @@
+{
+  "name": "bigspacetinyinvaders",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc && xcopy /Y .\\public\\* lib",
+    "start": "node devserver.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nebosite/bigspacetinyinvaders.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nebosite/bigspacetinyinvaders/issues"
+  },
+  "homepage": "https://github.com/nebosite/bigspacetinyinvaders#readme",
+  "devDependencies": {
+    "express": "^4.17.1",
+    "typescript": "^3.7.4"
+  }
+}
