@@ -32,6 +32,7 @@ export class GameController
         window.addEventListener("resize", this.resize_handler);
         this._myCanvas.addEventListener("click", this.handleCanvasClick);
         this._myCanvas.addEventListener("mousemove", this.handleCanvasMouseMove);
+        
     } 
 
 
@@ -72,12 +73,12 @@ export class GameController
             // resized_recently = false;
         }
 
-        // if(play_ding)
-        // {
-        //     // https://webaudioapi.com/samples/
-        //     play_ding = false;
-        //     sound_ding.play();
-        // }
+        if(this._play_ding)
+        {
+            this._play_ding = false;
+            const sound = new Audio("ding.wav");
+            sound.play();
+        }
 
         // Fill the screen with gray
         this._drawContext.fillStyle = "#999999"

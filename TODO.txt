@@ -1,12 +1,16 @@
 
 TODO
-    [ ] Break into classes 
-    [ ] Add sound system using sound buffers
+    [x] Break into classes 
+    [x] Layered sound
+        // https://blog.cotten.io/playing-audio-resources-simultaneously-in-javascript-546ec4d6216a
+        // https://webaudioapi.com/samples/
+
     [ ] Read keyboard
     [ ] Read Controller
     
 
 NEW
+    [ ] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/
     [ ] Break up logic and graphics frames
     [ ] Pack resources too: https://webpack.js.org/guides/typescript/
     [ ] Watchable build/debugging
