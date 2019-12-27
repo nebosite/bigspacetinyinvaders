@@ -1,9 +1,14 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.ts',
-  devtool: 'inline-source-map',
+  entry: './index.ts',
+  context: path.resolve(__dirname, 'src'),
+  devtool: 'source-map',
   mode: 'development',
+  devServer: {  
+      port: 8080,
+      contentBase: path.join(__dirname, 'dist')
+  },
   module: {
     rules: [
       {
@@ -18,6 +23,6 @@ module.exports = {
   },
   output: {
     filename: 'bigspacetinyinvaders.js',
-    path: path.resolve(__dirname, 'lib'),
+    path: path.resolve(__dirname, 'dist'),
   },
 };
