@@ -1,33 +1,33 @@
 
 
 export class Sprite {
-    _spriteWidth: number;
-    _spriteHeight: number;
-    _context: CanvasRenderingContext2D;
-    _imageName: string;
-    _spritesPerRow: number;
-    _spriteBuffer: HTMLImageElement;
+    spriteWidth: number;
+    spriteHeight: number;
+    context: CanvasRenderingContext2D;
+    imageName: string;
+    spritesPerRow: number;
+    spriteBuffer: HTMLImageElement;
 
     constructor(context: CanvasRenderingContext2D, 
         imageName: string, 
         spriteWidth: number, 
         spriteHeight: number) {
-        this._spriteWidth = spriteWidth;
-        this._spriteHeight = spriteHeight;
-        this._context = context;
-        this._imageName = imageName;
-        this._spriteBuffer = new Image();
-        this._spritesPerRow = -1;
-        this._spriteBuffer.src = imageName;
+        this.spriteWidth = spriteWidth;
+        this.spriteHeight = spriteHeight;
+        this.context = context;
+        this.imageName = imageName;
+        this.spriteBuffer = new Image();
+        this.spritesPerRow = -1;
+        this.spriteBuffer.src = imageName;
     }
 
     draw(spriteNumber: number, x: number, y: number) {
-        if(this._spritesPerRow == -1)
+        if(this.spritesPerRow == -1)
         {
-            this._spritesPerRow = Math.floor(this._spriteBuffer.width / this._spriteWidth);
+            this.spritesPerRow = Math.floor(this.spriteBuffer.width / this.spriteWidth);
         }
-        var spriteX = (spriteNumber % this._spritesPerRow) * this._spriteWidth;
-        var spriteY = Math.floor(spriteNumber / this._spritesPerRow) * this._spriteHeight;
-        this._context.drawImage(this._spriteBuffer, spriteX, spriteY, this._spriteWidth, this._spriteHeight, x, y, this._spriteWidth, this._spriteHeight);
+        var spriteX = (spriteNumber % this.spritesPerRow) * this.spriteWidth;
+        var spriteY = Math.floor(spriteNumber / this.spritesPerRow) * this.spriteHeight;
+        this.context.drawImage(this.spriteBuffer, spriteX, spriteY, this.spriteWidth, this.spriteHeight, x, y, this.spriteWidth, this.spriteHeight);
     } 
 }
