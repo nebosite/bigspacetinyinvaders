@@ -1,3 +1,5 @@
+import { IInputReceiver } from "./InputReceiver";
+
 // Javascript keycodes: https://keycode.info/
 
 
@@ -9,6 +11,7 @@ export interface IKeycodeTranslator {
 
 export class KeycodeTranslator<T> implements IKeycodeTranslator {
     keyActions: Map<number, T> = new Map();
+    private subscribers = new Array<IInputReceiver<T>>();
 
     // ------------------------------------------------------------------------
     // getHandledCodes
@@ -24,7 +27,10 @@ export class KeycodeTranslator<T> implements IKeycodeTranslator {
     handleKeyDown = (keyCode: number): boolean => {
         if(this.keyActions.has(keyCode))
         {
-            return true;
+            this.subscribers.forEach(subscriber => {
+                subscriber.startAction(this.keyActions.get(keyCode) as T);
+            });
+       return true;
         }   
         return false;
     }
@@ -35,6 +41,9 @@ export class KeycodeTranslator<T> implements IKeycodeTranslator {
     handleKeyUp = (keyCode: number): boolean => {
         if(this.keyActions.has(keyCode))
         {
+            this.subscribers.forEach(subscriber => {
+                    subscriber.stopAction(this.keyActions.get(keyCode) as T);
+                });
             return true;
         }   
         return false;
@@ -46,10 +55,21 @@ export class KeycodeTranslator<T> implements IKeycodeTranslator {
     mapKey(keyCode: number, action: T) {
         this.keyActions.set(keyCode, action);
     }
+
+    // ------------------------------------------------------------------------
+    // Add a subscriber to the key events from this translator
+    // ------------------------------------------------------------------------
+    addSubscriber = (subscriber: IInputReceiver<T>) => {
+        this.subscribers.push(subscriber);
+    }
 }
 
 // ------------------------------------------------------------------------
+// ------------------------------------------------------------------------
+//
 // KeyboardManager - A class to manage all the key translations
+//
+// ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 export class KeyboardManager {
     keyHandlerLookup = new Map<number, IKeycodeTranslator>();
@@ -84,7 +104,7 @@ export class KeyboardManager {
     handleKeyUp = (e: KeyboardEvent) => {
         if(this.keyHandlerLookup.has(e.keyCode))
         {
-            this.keyHandlerLookup.get(e.keyCode)?.handleKeyDown(e.keyCode);
+            this.keyHandlerLookup.get(e.keyCode)?.handleKeyUp(e.keyCode);
         }   
     }
 

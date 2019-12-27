@@ -28,7 +28,7 @@ export class GameController
     _arrowOn = false;
     _keyThingX = 0;
     _gamepadThingX = 0;
-    keyboardManager = new KeyboardManager();
+    keyboardManager: KeyboardManager;
     newPlayerControl: NewPlayerControl | null = null;
 
     CommonDirectionKeyLayouts = new Map([
@@ -52,6 +52,8 @@ export class GameController
     constructor(appModel: IAppModel)
     {
         this._appModel = appModel;  
+        this.keyboardManager = new KeyboardManager();
+        this.keyboardManager.onUnhandledKeyCode = this.handleUnhandledKey;
 
         this._myCanvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
         this._width =  this._myCanvas.width;
@@ -108,6 +110,7 @@ export class GameController
                     newTranslator.mapKey(value[2], PlayerAction.Down);
                     newTranslator.mapKey(value[3], PlayerAction.Right);
                     this.keyboardManager.addTranslator(newTranslator);
+                    newTranslator.addSubscriber(this.newPlayerControl);
                 }
             }
         });
