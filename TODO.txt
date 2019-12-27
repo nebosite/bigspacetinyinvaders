@@ -1,10 +1,12 @@
 
 TODO
-    [ ] Add a controlled player when a known control surface enganges
+    [x] Add a controlled player when a known control surface enganges
         [x] player presses arrow set, WASD, IJKL, NUMPAD
         [x] Little translucent window opens up, asks player to press fire button (suggestions provided)
-        [ ] Window disappears automatically after inactivity
-        [ ] Player can press fire button and window goes away, adding player to game
+        [x] Window disappears automatically after inactivity
+        [x] Player can press fire button and window goes away, adding player to game
+    [ ] Fix underscores
+    [ ] Refactor drawing stuff into a helper
 
 NEW
     [ ] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/

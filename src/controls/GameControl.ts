@@ -1,7 +1,10 @@
-import { IAppModel } from "../models/AppModel";
+import { IAppModel, AppModel } from "../models/AppModel";
 import { Sprite } from "../ui/Sprite";
 import { KeycodeTranslator, KeyboardManager } from "../ui/KeyboardInput";
 import { NewPlayerControl } from "./NewPlayerControl";
+import { Player } from "../models/Player";
+
+const PLAYER_SIZE = 16;
 
 export enum PlayerAction {
     None,
@@ -9,7 +12,7 @@ export enum PlayerAction {
     Left,
     Right,
     Down,
-    
+    Fire
 }
 
 export class GameController 
@@ -30,6 +33,7 @@ export class GameController
     _gamepadThingX = 0;
     keyboardManager: KeyboardManager;
     newPlayerControl: NewPlayerControl | null = null;
+    lastFrameTime = Date.now();
 
     CommonDirectionKeyLayouts = new Map([
         ["IJKL", [73,74,75,76]],
@@ -38,13 +42,12 @@ export class GameController
         ["Numpad 8456", [104,100,101,102]]
     ]);
 
-    
-    // CommonActionKeyLayouts = {
-    //     "ShiftZX": [16,90,88],
-    //     "SpcNM": [32,78,77],
-    //     "0.Enter": [96,110,13],
-    //     "DelEndPgdwn": [46,35,24],
-    // };
+    CommonActionKeyLayouts = new Map([
+        ["ShiftZX", [16,90,88]],
+        ["SpcNM", [32,78,77]],
+        ["0.Enter", [96,110,13]],
+        ["DelEndPgdwn", [46,35,24]]
+    ]);
 
     //-------------------------------------------------------------------------
     // ctor
@@ -96,28 +99,62 @@ export class GameController
     // handle keyboard
     //-------------------------------------------------------------------------
     handleUnhandledKey = (keyCode: number) => {
-        if(this.newPlayerControl) return;
-        this.CommonDirectionKeyLayouts.forEach((value, key) =>
+        if(this.newPlayerControl) 
         {
-            for(let i = 0; i < value.length; i++)
+            // Let's see if the staged player has pressed a fire key
+            this.CommonActionKeyLayouts.forEach((value, key) =>
             {
-                if(value[i] == keyCode)
+                for(let i = 0; i < value.length; i++)
                 {
-                    var newTranslator = new KeycodeTranslator<PlayerAction>();
-                    this.newPlayerControl = new NewPlayerControl(this._drawContext, () =>
+                    if(value[i] == keyCode)
                     {
-                        this.keyboardManager.removeTranslator(newTranslator);
+                        const translator = this.newPlayerControl?.translator;
+                        if(translator)
+                        {
+                            translator.mapKey(value[0], PlayerAction.Fire);
+                            translator.mapKey(value[1], PlayerAction.Fire);
+                            translator.mapKey(value[2], PlayerAction.Fire);
+                            if(this.newPlayerControl)
+                            {
+                                translator.removeSubscriber(this.newPlayerControl);
+                            }
+                            let newPlayer = new Player();
+                            translator.addSubscriber(newPlayer);
+                            this._appModel.addPlayer(newPlayer);
+                        }
+
                         this.newPlayerControl = null;
-                    });
-                    newTranslator.mapKey(value[0], PlayerAction.Up);
-                    newTranslator.mapKey(value[1], PlayerAction.Left);
-                    newTranslator.mapKey(value[2], PlayerAction.Down);
-                    newTranslator.mapKey(value[3], PlayerAction.Right);
-                    this.keyboardManager.addTranslator(newTranslator);
-                    newTranslator.addSubscriber(this.newPlayerControl);
+                        return;
+                    }
                 }
-            }
-        });
+            });
+        }
+        else
+        {      
+            // Look for direction keys that are not bound yet
+            this.CommonDirectionKeyLayouts.forEach((value, key) =>
+            {
+                for(let i = 0; i < value.length; i++)
+                {
+                    if(value[i] == keyCode)
+                    {
+                        var newTranslator = new KeycodeTranslator<PlayerAction>();
+                        this.newPlayerControl = new NewPlayerControl(this._drawContext, () =>
+                        {
+                            this.keyboardManager.removeTranslator(newTranslator);
+                            this.newPlayerControl = null;
+                        });
+                        newTranslator.mapKey(value[0], PlayerAction.Up);
+                        newTranslator.mapKey(value[1], PlayerAction.Left);
+                        newTranslator.mapKey(value[2], PlayerAction.Down);
+                        newTranslator.mapKey(value[3], PlayerAction.Right);
+                        this.keyboardManager.addTranslator(newTranslator);
+                        newTranslator.addSubscriber(this.newPlayerControl);
+                        this.newPlayerControl.translator = newTranslator;
+                    }
+                }
+            });
+        }
     }
 
     //-------------------------------------------------------------------------
@@ -148,6 +185,10 @@ export class GameController
     // Animation Loop
     //-------------------------------------------------------------------------
     animation_loop = (event: unknown) => {
+        let gameTime = Date.now();
+        let elapsed = gameTime - this.lastFrameTime;
+        let lastFrameTime = gameTime;
+
         if (this._resized_recently) {
             // Uncomment this to resize the canvas with the window
             // width = window.innerWidth;
@@ -180,8 +221,8 @@ export class GameController
         this._gameSprites.draw(1, 150, 100);
         this._gameSprites.draw(10, 100, 150);
         this._gameSprites.draw(0, 
-            this._mouseX - this._myCanvas.offsetLeft - 25, 
-            this._mouseY - this._myCanvas.offsetTop - 25);
+        this._mouseX - this._myCanvas.offsetLeft - 25, 
+        this._mouseY - this._myCanvas.offsetTop - 25);
 
 
         // Some vector art 
@@ -213,6 +254,13 @@ export class GameController
             }
         }
         this._drawContext.fillText("Press button on gamepad", this._gamepadThingX + 20, 330);
+
+        this._appModel.getPlayers().forEach( player => {
+            player.think(gameTime, elapsed);
+            if(player.x < 0) player.x = 0;
+            if(player.x > this._width - PLAYER_SIZE) player.x = this._width - PLAYER_SIZE;
+            this._gameSprites.draw(90, player.x, this._height - 40);
+        });
 
         if(this.newPlayerControl)
         {

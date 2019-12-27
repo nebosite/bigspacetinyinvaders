@@ -62,6 +62,13 @@ export class KeycodeTranslator<T> implements IKeycodeTranslator {
     addSubscriber = (subscriber: IInputReceiver<T>) => {
         this.subscribers.push(subscriber);
     }
+
+    // ------------------------------------------------------------------------
+    // Add a subscriber to the key events from this translator
+    // ------------------------------------------------------------------------
+    removeSubscriber = (subscriber: IInputReceiver<T>) => {
+        this.subscribers.splice(this.subscribers.indexOf(subscriber),1);
+    }
 }
 
 // ------------------------------------------------------------------------

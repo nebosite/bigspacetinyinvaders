@@ -1,5 +1,6 @@
 import { IInputReceiver } from "../ui/InputReceiver";
 import { PlayerAction } from "./GameControl";
+import { IKeycodeTranslator, KeycodeTranslator } from "../ui/KeyboardInput";
 
 export class NewPlayerControl implements IInputReceiver<PlayerAction>
 {
@@ -14,12 +15,13 @@ export class NewPlayerControl implements IInputReceiver<PlayerAction>
     onCancel: () => void;
     lastActionTime: number = Date.now();
     cancelled = false;
+    translator: KeycodeTranslator<PlayerAction> | null = null;
     
     constructor(drawContext: CanvasRenderingContext2D, onCancel: () => void)
     {
         this.drawContext = drawContext;
-        this.width = drawContext.canvas.clientWidth * .2;
-        this.height = this.width * .7;
+        this.width = drawContext.canvas.clientWidth * .25;
+        this.height = this.width * .6;
         this.top = this.height * .5;
         this.left = this.width * .05;
         this.onCancel = onCancel;
@@ -49,6 +51,16 @@ export class NewPlayerControl implements IInputReceiver<PlayerAction>
         if(this.isMovingRight) this.playerX += 0.03;
         if(this.playerX < 0) this.playerX = 0;
         if(this.playerX > 1.0) this.playerX = 1.0;
+
+        this.drawContext.fillStyle = "#ffff00"
+        let fontSize = this.height * .15;
+        this.drawContext.font = `${fontSize}px sans-serif`;
+        this.drawContext.fillText("New Player", this.left + size/2, this.top + size);
+
+        this.drawContext.fillStyle = "#aaaa00"
+        fontSize = this.height * .1;
+        this.drawContext.font = `${fontSize}px sans-serif`;
+        this.drawContext.fillText("press an action button to start", this.left + size/2, this.top + size * 2);
 
         if (this.millisecondsAgo(this.lastActionTime) > 3000)
         {
