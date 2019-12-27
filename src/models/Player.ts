@@ -11,22 +11,14 @@ export class Player implements IInputReceiver<PlayerAction>, IGameObject
     xRight = 0;
     maxSpeed = 6;
 
-    startAction = (action: PlayerAction) => {
-        console.log("+A: " + action);
+    actionChanged = (action: PlayerAction, value: number) => {
         switch(action)
         {
-            case PlayerAction.Left: this.xLeft += 1; break;
-            case PlayerAction.Right: this.xRight += 1; break;
+            case PlayerAction.Left: this.xLeft = value == 0 ? 0 : this.xLeft + 1 * value; break;
+            case PlayerAction.Right: this.xRight = value == 0 ? 0 : this.xRight + 1 * value; break;
         }   
-    };
+        console.log(`M: ${action.toString()}:${value}- ${this.xLeft},${this.xRight}`)
 
-    stopAction = (action: PlayerAction) =>{
-        console.log("-A: " + action);
-        switch(action)
-        {
-            case PlayerAction.Left: this.xLeft = 0; break;
-            case PlayerAction.Right: this.xRight = 0; break;
-        }   
     };
 
     think = (gameTime: number, elapsedMilliseconds: number) =>

@@ -1,10 +1,10 @@
 
 TODO
-    [ ] Use a controller to add a player
-    [ ] Use a mouse to add a player
+    [x] Use a controller to add a player
     [ ] Resize to the web page 
         [ ] make sure it works full screen
         https://zinoui.com/blog/javascript-fullscreen-api
+    [ ] Move thinging and player regulation into the app model
 
 NEW
     [ ] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/

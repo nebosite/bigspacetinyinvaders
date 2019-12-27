@@ -28,9 +28,9 @@ export class KeycodeTranslator<T> implements IKeycodeTranslator {
         if(this.keyActions.has(keyCode))
         {
             this.subscribers.forEach(subscriber => {
-                subscriber.startAction(this.keyActions.get(keyCode) as T);
+                subscriber.actionChanged(this.keyActions.get(keyCode) as T, 1);
             });
-       return true;
+            return true;
         }   
         return false;
     }
@@ -42,8 +42,8 @@ export class KeycodeTranslator<T> implements IKeycodeTranslator {
         if(this.keyActions.has(keyCode))
         {
             this.subscribers.forEach(subscriber => {
-                    subscriber.stopAction(this.keyActions.get(keyCode) as T);
-                });
+                subscriber.actionChanged(this.keyActions.get(keyCode) as T, 0 );
+            });
             return true;
         }   
         return false;
@@ -135,7 +135,6 @@ export class KeyboardManager {
             if(this.keyHandlerLookup.get(key) === translator)
             {
                 this.keyHandlerLookup.delete(key);
-                console.log("D:" + key);
             }
          }            
     }

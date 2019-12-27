@@ -4,6 +4,7 @@ import { KeycodeTranslator, KeyboardManager } from "../ui/KeyboardInput";
 import { NewPlayerControl } from "./NewPlayerControl";
 import { Player } from "../models/Player";
 import { DrawHelper } from "../ui/DrawHelper";
+import { GamepadManager, GamepadInputCode, GamepadTranslator } from "../ui/GamepadInput";
 
 const PLAYER_SIZE = 16;
 
@@ -27,8 +28,10 @@ export class GameController
     mouseY = 0;
     gamepadThingX = 0;
     keyboardManager: KeyboardManager;
+    gamepadManager: GamepadManager;
     newPlayerControl: NewPlayerControl | null = null;
     lastFrameTime = Date.now();
+    inputState = new Array<number>();
 
     CommonDirectionKeyLayouts = new Map([
         ["IJKL", [73,74,75,76]],
@@ -44,6 +47,18 @@ export class GameController
         ["DelEndPgdwn", [46,35,24]]
     ]);
 
+    CommonGamepadDirectionLayouts  = new Map([
+        ["Left Stick", [GamepadInputCode.Axis_Stick0X, GamepadInputCode.Axis_Stick0Y]],
+        ["Right Stick", [GamepadInputCode.Axis_Stick1X, GamepadInputCode.Axis_Stick1Y]],
+    ]); 
+
+    CommonGamepadActionButtonLayouts  = new Map([
+        ["DPad", [GamepadInputCode.Button_DPadDown,GamepadInputCode.Button_DPadLeft,GamepadInputCode.Button_DPadRight,GamepadInputCode.Button_DPadUp]],
+        ["Diamond", [GamepadInputCode.Button_DiamondDown,GamepadInputCode.Button_DiamondLeft,GamepadInputCode.Button_DiamondRight,GamepadInputCode.Button_DiamondUp]],
+        ["Right Trigger", [GamepadInputCode.Axis_RightTrigger,GamepadInputCode.Axis_RightShoulder]],
+        ["Left Trigger", [GamepadInputCode.Axis_LeftTrigger,GamepadInputCode.Axis_LeftShoulder]],
+    ]); 
+
     //-------------------------------------------------------------------------
     // ctor
     //-------------------------------------------------------------------------
@@ -54,37 +69,79 @@ export class GameController
         this.drawing = new DrawHelper(drawContext);
         this.keyboardManager = new KeyboardManager();
         this.keyboardManager.onUnhandledKeyCode = this.handleUnhandledKey;
-
+        this.gamepadManager = new GamepadManager();
+        this.gamepadManager.onUnhandledInputCode = this.handleUnhandledGamepadCode;
+    
         requestAnimationFrame(this.animation_loop);
         window.addEventListener("resize", this.resize_handler);
         canvas.addEventListener("click", this.handleCanvasClick);
         canvas.addEventListener("mousemove", this.handleCanvasMouseMove);
-        window.addEventListener('gamepadconnected', e => this.handleGamepadConnect(e, true));
-        window.addEventListener('gamepaddisconnected',  e => this.handleGamepadConnect(e, false));
+
+        for(var i = 0; i < 50; i++) this.inputState.push(0);
     } 
 
     //-------------------------------------------------------------------------
-    // handle gamepad connection
+    // handle gamepads
     //-------------------------------------------------------------------------
-    handleGamepadConnect = (e: Event, connecting: boolean) => {
-        const gamepadEvent = e as GamepadEvent;
-        if(connecting) {
-            // access like this: gam
-            const gp = gamepadEvent.gamepad;    
-            console.log(`Connect detected: Axes:${gp.axes.length} Buttons:${gp.buttons.length} Id:${gp.id}`);
-            
-            for(var i = 0; i < gp.buttons.length; i++)
+    handleUnhandledGamepadCode = (controllerIndex: number, code: GamepadInputCode, value: number) => {
+        this.inputState[code] = value;
+        if(this.newPlayerControl) 
+        {
+            // Let's see if the staged player has pressed a fire key
+            this.CommonGamepadActionButtonLayouts.forEach((value, key) =>
             {
-                console.log(`Button ${i}: ${gp.buttons[i].value} `);
-            }
-        }
+                for(let i = 0; i < value.length; i++)
+                {
+                    if(value[i] == code)
+                    {
+                        const translator = this.newPlayerControl?.translator as GamepadTranslator<PlayerAction>;
+                        if(translator)
+                        {
+                            translator.mapButton(value[0], PlayerAction.Fire);
+                            translator.mapButton(value[1], PlayerAction.Fire);
+                            translator.mapButton(value[2], PlayerAction.Fire);
+                            translator.mapButton(value[3], PlayerAction.Fire);
+                            if(this.newPlayerControl)
+                            {
+                                translator.removeSubscriber(this.newPlayerControl);
+                            }
+                            let newPlayer = new Player();
+                            translator.addSubscriber(newPlayer);
+                            this.appModel.addPlayer(newPlayer);
+                        }
 
-        // XBox layout
-        // buttons: [
-        //     'DPad-Up','DPad-Down','DPad-Left','DPad-Right',
-        //     'Start','Back','Axis-Left','Axis-Right',
-        //     'LB','RB','Power','A','B','X','Y',
-        //   ],
+                        this.newPlayerControl = null;
+                        return;
+                    }
+                }
+            });
+        }
+        else
+        {      
+            // Look for direction keys that are not bound yet
+            this.CommonGamepadDirectionLayouts.forEach((value, key) =>
+            {
+                for(let i = 0; i < value.length; i++)
+                {
+                    if(value[i] == code)
+                    {
+                        var newTranslator = new GamepadTranslator<PlayerAction>();
+                        this.newPlayerControl = new NewPlayerControl(this.drawing, () =>
+                        {
+                            this.gamepadManager.removeTranslator(newTranslator);
+                            this.newPlayerControl = null;
+                        });
+
+                        newTranslator.mapAxis(value[0], PlayerAction.Left, PlayerAction.Right);
+                        newTranslator.mapAxis(value[1], PlayerAction.Up, PlayerAction.Down);
+
+                        this.gamepadManager.addTranslator(newTranslator, controllerIndex);
+                        newTranslator.addSubscriber(this.newPlayerControl);
+                        this.newPlayerControl.translator = newTranslator;
+                    }
+                }
+            });
+        }
     }
 
     //-------------------------------------------------------------------------
@@ -205,21 +262,7 @@ export class GameController
             "Frame: " + this.frame, 
             10, this.drawing.height - 20, 10,"#0000FF");
 
-        //Gamepad controlled object
-        const gamePads = navigator.getGamepads();
-        if(gamePads)
-        {
-            for (var i = 0, len = gamePads.length; i < len; i++) {
-                const gp =  gamePads[i] as Gamepad;
-                if(!gp) continue;
-                if(gp.buttons[0].pressed)
-                {
-                    this.gamepadThingX++;
-                }
-            }
-        }
-        //this.drawing.print("Press button on gamepad", this.gamepadThingX + 20, 330)
-
+        // Render the players
         this.appModel.getPlayers().forEach( player => {
             player.think(gameTime, elapsed);
             if(player.x < 0) player.x = 0;
@@ -239,7 +282,21 @@ export class GameController
             this.newPlayerControl.render();
         }
 
+        this.showGamepadStates();
+
         this.frame++;
         requestAnimationFrame(this.animation_loop);
+    }
+
+    showGamepadStates()
+    {
+        for(var i = 0; i < 10; i++)
+        {
+            this.drawing.print(`A${i}: ${this.inputState[GamepadInputCode.Axis0 + i]}`, 30, 50 + i *15);
+        }
+        for(var i = 0; i < 20; i++)
+        {
+            this.drawing.print(`B${i}: ${this.inputState[GamepadInputCode.Button00 + i]}`, 330, 50 + i *15);
+        }
     }
 }
