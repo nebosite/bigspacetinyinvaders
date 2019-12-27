@@ -1,27 +1,32 @@
 
 TODO
+    [ ] Use a controller to add a player
+    [ ] Use a mouse to add a player
+    [ ] Resize to the web page 
+        [ ] make sure it works full screen
+        https://zinoui.com/blog/javascript-fullscreen-api
+
+NEW
+    [ ] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/
+    [ ] Break up logic and graphics frames
+    [ ] Pack resources too: https://webpack.js.org/guides/typescript/
+    [ ] Setup tests with JEST  https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c
+    [ ] Optimization: use raw byte buffer for sprites
+    [ ] Alert when using IE
+
+
+DONE
     [x] Add a controlled player when a known control surface enganges
         [x] player presses arrow set, WASD, IJKL, NUMPAD
         [x] Little translucent window opens up, asks player to press fire button (suggestions provided)
         [x] Window disappears automatically after inactivity
         [x] Player can press fire button and window goes away, adding player to game
     [x] Fix underscores
-    [ ] Refactor drawing stuff into a helper
-    [ ] Black game screen with instructions for adding players
-
-NEW
-    [ ] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/
-    [ ] Break up logic and graphics frames
-    [ ] Pack resources too: https://webpack.js.org/guides/typescript/
-    [ ] Watchable build/debugging
-    [ ] Add sounds
-    [ ] Setup tests with JEST  https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c
-    [ ] Webpack it
-    [ ] Optimization: use raw byte buffer for sprites
-    [ ] Alert when using IE
-
-
-DONE
+    [x] Refactor drawing stuff into a helper
+    [x] Black game screen with instructions for adding players
+    [x] Watchable build/debugging
+    [x] Add sounds
+    [x] Webpack it
 
     [x] Break into classes 
     [x] Layered sound

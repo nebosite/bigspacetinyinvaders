@@ -47,6 +47,8 @@ export class DrawHelper {
         strokeStyle: string = "", 
         lineWidth: number = 1, alpha: number = 1.0)
     {
+        // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes    
+
         this.drawContext.fillStyle = fillStyle
         this.drawContext.strokeStyle = strokeStyle;
         this.drawContext.globalAlpha = alpha;

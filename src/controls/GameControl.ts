@@ -25,8 +25,6 @@ export class GameController
     drawing: DrawHelper;
     mouseX = 0;
     mouseY = 0;
-    arrowOn = false;
-    keyThingX = 0;
     gamepadThingX = 0;
     keyboardManager: KeyboardManager;
     newPlayerControl: NewPlayerControl | null = null;
@@ -199,32 +197,14 @@ export class GameController
             sound.play();
         }
 
-        // Fill the screen with gray
+        // Clear the screen
         this.drawing.clear("#000000");
 
-        
         // Show some info about the current frame and screen size
         this.drawing.print(
-            "Current Size: " + this.drawing.width + "," + this.drawing.height, 
-            10, 400, 50, "#FFFF00");
-        this.drawing.print(
             "Frame: " + this.frame, 
-            10, 590, 50,"#0000FF", "#660000");
+            10, this.drawing.height - 20, 10,"#0000FF");
 
-        //Draw some sprites
-        this.drawing.drawSprite(1, 150, 100);
-        this.drawing.drawSprite(10, 100, 150);
-        this.drawing.drawSprite(0, this.mouseX - 25, this.mouseY - 25);
-
-
-        // Some vector art 
-        // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes    
-        this.drawing.drawTriangle(10, 100, 40, 80, "#ff0000", "#FFFFF", 10);
-
-        //Keyboard controlled object
-        if(this.arrowOn) this.keyThingX++;
-        this.drawing.print("Press right arrow", this.keyThingX + 20, 300);
-      
         //Gamepad controlled object
         const gamePads = navigator.getGamepads();
         if(gamePads)
@@ -238,7 +218,7 @@ export class GameController
                 }
             }
         }
-        this.drawing.print("Press button on gamepad", this.gamepadThingX + 20, 330)
+        //this.drawing.print("Press button on gamepad", this.gamepadThingX + 20, 330)
 
         this.appModel.getPlayers().forEach( player => {
             player.think(gameTime, elapsed);
@@ -246,6 +226,13 @@ export class GameController
             if(player.x > this.drawing.width - PLAYER_SIZE) player.x = this.drawing.width - PLAYER_SIZE;
             this.drawing.drawSprite(90, player.x, this.drawing.height - 40);
         });
+
+        if(this.appModel.getPlayers().length == 0)
+        {
+            this.drawing.print(
+                "Use movement controls to add a new player...", 
+                this.drawing.width/2 - 200, this.drawing.height - 100, 20,"#FFFFFF");
+        }
 
         if(this.newPlayerControl)
         {
