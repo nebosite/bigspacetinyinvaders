@@ -11,18 +11,23 @@ export class NewPlayerControl implements IInputReceiver<PlayerAction>
     playerX = .5;
     isMovingLeft = false;
     isMovingRight = false;
+    onCancel: () => void;
+    lastActionTime: number = Date.now();
+    cancelled = false;
     
-    constructor(drawContext: CanvasRenderingContext2D)
+    constructor(drawContext: CanvasRenderingContext2D, onCancel: () => void)
     {
         this.drawContext = drawContext;
         this.width = drawContext.canvas.clientWidth * .2;
         this.height = this.width * .7;
         this.top = this.height * .5;
         this.left = this.width * .05;
+        this.onCancel = onCancel;
     }
 
     render = () =>
     {
+        if(this.cancelled) return;
         this.drawContext.fillStyle = "#000000"
         this.drawContext.globalAlpha = .5;
         this.drawContext.fillRect(this.left, this.top, this.width, this.height);  
@@ -45,7 +50,17 @@ export class NewPlayerControl implements IInputReceiver<PlayerAction>
         if(this.playerX < 0) this.playerX = 0;
         if(this.playerX > 1.0) this.playerX = 1.0;
 
+        if (this.millisecondsAgo(this.lastActionTime) > 3000)
+        {
+            this.cancelled = true;
+            this.onCancel();
+        }
     };
+
+    millisecondsAgo(date: number)
+    {
+        return Date.now() - date;
+    }
 
     startAction = (action: PlayerAction) => {
         switch(action)
@@ -57,6 +72,7 @@ export class NewPlayerControl implements IInputReceiver<PlayerAction>
                 this.isMovingRight = true;
                 break;                
         }  
+        this.lastActionTime = Date.now();
     };
 
     stopAction = (action: PlayerAction) => {

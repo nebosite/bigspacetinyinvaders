@@ -103,8 +103,12 @@ export class GameController
             {
                 if(value[i] == keyCode)
                 {
-                    this.newPlayerControl = new NewPlayerControl(this._drawContext);
                     var newTranslator = new KeycodeTranslator<PlayerAction>();
+                    this.newPlayerControl = new NewPlayerControl(this._drawContext, () =>
+                    {
+                        this.keyboardManager.removeTranslator(newTranslator);
+                        this.newPlayerControl = null;
+                    });
                     newTranslator.mapKey(value[0], PlayerAction.Up);
                     newTranslator.mapKey(value[1], PlayerAction.Left);
                     newTranslator.mapKey(value[2], PlayerAction.Down);

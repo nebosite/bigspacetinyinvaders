@@ -118,5 +118,20 @@ export class KeyboardManager {
             this.keyHandlerLookup.set(code, translator);
         }
     }
+
+    // ------------------------------------------------------------------------
+    // removeTranslator
+    // ------------------------------------------------------------------------
+    removeTranslator = (translator: IKeycodeTranslator) =>
+    {
+        for(let key of Array.from( this.keyHandlerLookup.keys()) ) {
+            if(this.keyHandlerLookup.get(key) === translator)
+            {
+                this.keyHandlerLookup.delete(key);
+                console.log("D:" + key);
+            }
+         }            
+    }
+
 }
 
