@@ -3,6 +3,7 @@ import { Sprite } from "../ui/Sprite";
 import { KeycodeTranslator, KeyboardManager } from "../ui/KeyboardInput";
 import { NewPlayerControl } from "./NewPlayerControl";
 import { Player } from "../models/Player";
+import { DrawHelper } from "../ui/DrawHelper";
 
 const PLAYER_SIZE = 16;
 
@@ -20,12 +21,8 @@ export class GameController
     appModel: IAppModel;
     resized_recently = true;
     play_ding = false;
-    width = 200;
-    height = 200;
     frame = 0;
-    gameSprites: Sprite;
-    drawContext: CanvasRenderingContext2D;
-    myCanvas: HTMLCanvasElement;
+    drawing: DrawHelper;
     mouseX = 0;
     mouseY = 0;
     arrowOn = false;
@@ -52,21 +49,18 @@ export class GameController
     //-------------------------------------------------------------------------
     // ctor
     //-------------------------------------------------------------------------
-    constructor(appModel: IAppModel)
+    constructor(appModel: IAppModel, canvas: HTMLCanvasElement)
     {
         this.appModel = appModel;  
+        const drawContext = canvas.getContext("2d") || (() => { throw new Error('No 2D support'); })();
+        this.drawing = new DrawHelper(drawContext);
         this.keyboardManager = new KeyboardManager();
         this.keyboardManager.onUnhandledKeyCode = this.handleUnhandledKey;
 
-        this.myCanvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
-        this.width =  this.myCanvas.width;
-        this.height = this.myCanvas.height;
-        this.drawContext = this.myCanvas.getContext("2d") || (() => { throw new Error('No 2D support'); })();
-        this.gameSprites = new Sprite(this.drawContext, "sprites.png", 16,16);
         requestAnimationFrame(this.animation_loop);
         window.addEventListener("resize", this.resize_handler);
-        this.myCanvas.addEventListener("click", this.handleCanvasClick);
-        this.myCanvas.addEventListener("mousemove", this.handleCanvasMouseMove);
+        canvas.addEventListener("click", this.handleCanvasClick);
+        canvas.addEventListener("mousemove", this.handleCanvasMouseMove);
         window.addEventListener('gamepadconnected', e => this.handleGamepadConnect(e, true));
         window.addEventListener('gamepaddisconnected',  e => this.handleGamepadConnect(e, false));
     } 
@@ -139,7 +133,7 @@ export class GameController
                     if(value[i] == keyCode)
                     {
                         var newTranslator = new KeycodeTranslator<PlayerAction>();
-                        this.newPlayerControl = new NewPlayerControl(this.drawContext, () =>
+                        this.newPlayerControl = new NewPlayerControl(this.drawing, () =>
                         {
                             this.keyboardManager.removeTranslator(newTranslator);
                             this.newPlayerControl = null;
@@ -206,39 +200,30 @@ export class GameController
         }
 
         // Fill the screen with gray
-        this.drawContext.fillStyle = "#999999"
-        this.drawContext.fillRect(0, 0, this.width, this.height);
+        this.drawing.clear("#000000");
+
         
         // Show some info about the current frame and screen size
-        // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillText
-        this.drawContext.fillStyle = "#ffffff"
-        this.drawContext.strokeStyle = "#000000";
-        this.drawContext.font = '50px serif';
-        this.drawContext.fillText("Current Size: " + this.width + "," + this.height, 10, 400);
-        this.drawContext.strokeText("Frame: " + this.frame, 10, 590);
+        this.drawing.print(
+            "Current Size: " + this.drawing.width + "," + this.drawing.height, 
+            10, 400, 50, "#FFFF00");
+        this.drawing.print(
+            "Frame: " + this.frame, 
+            10, 590, 50,"#0000FF", "#660000");
 
         //Draw some sprites
-        this.gameSprites.draw(1, 150, 100);
-        this.gameSprites.draw(10, 100, 150);
-        this.gameSprites.draw(0, 
-        this.mouseX - this.myCanvas.offsetLeft - 25, 
-        this.mouseY - this.myCanvas.offsetTop - 25);
+        this.drawing.drawSprite(1, 150, 100);
+        this.drawing.drawSprite(10, 100, 150);
+        this.drawing.drawSprite(0, this.mouseX - 25, this.mouseY - 25);
 
 
         // Some vector art 
-        // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes
-        this.drawContext.fillStyle = "#ff0000"
-        this.drawContext.beginPath();
-        this.drawContext.moveTo(75, 50);
-        this.drawContext.lineTo(100, 75);
-        this.drawContext.lineTo(100, 25);
-        this.drawContext.fill();
+        // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes    
+        this.drawing.drawTriangle(10, 100, 40, 80, "#ff0000", "#FFFFF", 10);
 
         //Keyboard controlled object
         if(this.arrowOn) this.keyThingX++;
-        this.drawContext.fillStyle = "#000000"
-        this.drawContext.font = '20px sans-serif';
-        this.drawContext.fillText("Press right arrow", this.keyThingX + 20, 300);
+        this.drawing.print("Press right arrow", this.keyThingX + 20, 300);
       
         //Gamepad controlled object
         const gamePads = navigator.getGamepads();
@@ -253,13 +238,13 @@ export class GameController
                 }
             }
         }
-        this.drawContext.fillText("Press button on gamepad", this.gamepadThingX + 20, 330);
+        this.drawing.print("Press button on gamepad", this.gamepadThingX + 20, 330)
 
         this.appModel.getPlayers().forEach( player => {
             player.think(gameTime, elapsed);
             if(player.x < 0) player.x = 0;
-            if(player.x > this.width - PLAYER_SIZE) player.x = this.width - PLAYER_SIZE;
-            this.gameSprites.draw(90, player.x, this.height - 40);
+            if(player.x > this.drawing.width - PLAYER_SIZE) player.x = this.drawing.width - PLAYER_SIZE;
+            this.drawing.drawSprite(90, player.x, this.drawing.height - 40);
         });
 
         if(this.newPlayerControl)
