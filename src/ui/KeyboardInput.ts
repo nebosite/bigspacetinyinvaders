@@ -72,6 +72,10 @@ export class KeyboardManager {
         {
             this.keyHandlerLookup.get(e.keyCode)?.handleKeyDown(e.keyCode);
         }   
+        else
+        {
+            this.onUnhandledKeyCode(e.keyCode);
+        }
     }
 
     // ------------------------------------------------------------------------

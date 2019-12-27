@@ -1,6 +1,7 @@
 import { IAppModel } from "../models/AppModel";
 import { Sprite } from "../ui/Sprite";
 import { KeycodeTranslator, KeyboardManager } from "../ui/KeyboardInput";
+import { NewPlayerControl } from "./NewPlayerControl";
 
 export enum PlayerAction {
     None,
@@ -28,6 +29,7 @@ export class GameController
     _keyThingX = 0;
     _gamepadThingX = 0;
     keyboardManager = new KeyboardManager();
+    newPlayerControl: NewPlayerControl | null = null;
 
     CommonDirectionKeyLayouts = new Map([
         ["IJKL", [73,74,75,76]],
@@ -92,12 +94,14 @@ export class GameController
     // handle keyboard
     //-------------------------------------------------------------------------
     handleUnhandledKey = (keyCode: number) => {
+        if(this.newPlayerControl) return;
         this.CommonDirectionKeyLayouts.forEach((value, key) =>
         {
             for(let i = 0; i < value.length; i++)
             {
                 if(value[i] == keyCode)
                 {
+                    this.newPlayerControl = new NewPlayerControl(this._drawContext);
                     var newTranslator = new KeycodeTranslator<PlayerAction>();
                     newTranslator.mapKey(value[0], PlayerAction.Up);
                     newTranslator.mapKey(value[1], PlayerAction.Left);
@@ -202,6 +206,11 @@ export class GameController
             }
         }
         this._drawContext.fillText("Press button on gamepad", this._gamepadThingX + 20, 330);
+
+        if(this.newPlayerControl)
+        {
+            this.newPlayerControl.render();
+        }
 
         this._frame++;
         requestAnimationFrame(this.animation_loop);
