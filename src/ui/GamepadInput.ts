@@ -9,7 +9,7 @@ class GamepadState
 }
 
 export interface IGamepadInputCodeTranslator {
-    handleInputChange: (code: GamepadInputCode, controllerIndex: number, value: number) => boolean;
+    handleInputChange: (code: GamepadInputCode, controllerIndex: number, value: number, lastValue: number) => boolean;
     getHandledCodes: () => IterableIterator<GamepadInputCode>;
 }
 
@@ -106,7 +106,7 @@ export class GamepadTranslator<T> implements IGamepadInputCodeTranslator {
     // ------------------------------------------------------------------------
     // handleKeyDown
     // ------------------------------------------------------------------------
-    handleInputChange = (code: GamepadInputCode, controllerIndex: number, value: number): boolean => {
+    handleInputChange = (code: GamepadInputCode, controllerIndex: number, value: number, lastValue: number): boolean => {
         if(this.inputActions.has(code))
         {
             var outputs = this.inputActions.get(code) as T[];
@@ -117,14 +117,25 @@ export class GamepadTranslator<T> implements IGamepadInputCodeTranslator {
                 if(value < 0)
                 {
                     outValue = -value;
+                    if(lastValue > 0)
+                    {
+                        this.subscribers.forEach(subscriber => {
+                            subscriber.actionChanged(outputs[1] as T, 0);
+                        });
+                    }
                 }
                 else if(value > 0)
                 {
                     outTranslation = outputs[1];
+                    if(lastValue < 0)
+                    {
+                        this.subscribers.forEach(subscriber => {
+                            subscriber.actionChanged(outputs[0] as T, 0);
+                        });
+                    }
                 }
                 else
                 {
-                    console.log(`Z: ${code}`)
                     this.subscribers.forEach(subscriber => {
                         subscriber.actionChanged(outputs[0] as T, value);
                         subscriber.actionChanged(outputs[1] as T, value);
@@ -215,7 +226,7 @@ export class GamepadManager {
                     let key = gp.index * 1000 + code;
                     if(state.axes[i] != gp.axes[i]) {
                         if(this.handlerLookup.has(key)) {
-                            this.handlerLookup.get(code)?.handleInputChange(code, gp.index, gp.axes[i]);
+                            this.handlerLookup.get(code)?.handleInputChange(code, gp.index, gp.axes[i], state.axes[i]);
                         }
                         else {
                             this.onUnhandledInputCode(gp.index, code, gp.axes[i]);
@@ -233,7 +244,7 @@ export class GamepadManager {
                     if(newValue == 1 && !gp.buttons[i].pressed) newValue = 0;
                     if(state.buttons[i] != newValue) {
                         if(this.handlerLookup.has(key)) {
-                            this.handlerLookup.get(code)?.handleInputChange(code, gp.index, newValue);
+                            this.handlerLookup.get(code)?.handleInputChange(code, gp.index, newValue, state.buttons[i]);
                         }
                         else {
                             this.onUnhandledInputCode(gp.index, code, newValue);
