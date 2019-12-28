@@ -5,7 +5,8 @@ import { NewPlayerControl } from "./NewPlayerControl";
 import { Player } from "../models/Player";
 import { DrawHelper } from "../ui/DrawHelper";
 import { GamepadManager, GamepadInputCode, GamepadTranslator } from "../ui/GamepadInput";
-import { GameObjectType } from "../models/GameObject";
+import { GameObjectType, GameObject } from "../models/GameObject";
+import { Alien } from "../models/Alien";
 
 const PLAYER_SIZE = 16;
 
@@ -280,17 +281,7 @@ export class GameController
         // Render the players
         this.appModel.think(gameTime, elapsed);
         for(let gameObject of this.appModel.getGameObjects()) {
-            switch(gameObject.type){
-                case GameObjectType.Player: 
-                    let player = gameObject as Player;
-                    let colorIndex = player.number % 10;
-                    this.drawing.drawSprite(90 + colorIndex, gameObject.x - gameObject.width/2, gameObject.y - gameObject.height);
-                    this.drawing.print(player.name, player.x - 10, player.y + 10, 10);
-                    break;
-                case GameObjectType.Bullet: 
-                    this.drawing.drawSprite(84, gameObject.x,  gameObject.y - gameObject.height);
-                    break;
-            };
+            this.drawGameObject(gameObject);
         };
 
         if(this.appModel.getPlayers().length == 0)
@@ -309,6 +300,31 @@ export class GameController
 
         this.frame++;
         requestAnimationFrame(this.animation_loop);
+    }
+
+    //-------------------------------------------------------------------------
+    // drawGameObject
+    //-------------------------------------------------------------------------
+    drawGameObject(drawMe: GameObject)
+    {
+        let x = drawMe.x - drawMe.width/2;
+        let y = drawMe.y - drawMe.height/2;
+
+        switch(drawMe.type){
+            case GameObjectType.Player: 
+                let player = drawMe as Player;
+                let colorIndex = player.number % 10;
+                this.drawing.drawSprite(90 + colorIndex, x, y);
+                this.drawing.print(player.name, x, y + 10 + drawMe.height, 10);
+                break;
+            case GameObjectType.Bullet: 
+                this.drawing.drawSprite(84, x,  y);
+                break;
+            case GameObjectType.Alien:
+                let alien = drawMe as Alien;
+                this.drawing.drawSprite(alien.alienType * 10 + alien.localFrame % 2, x, y);
+                break;
+        };
     }
 
     //-------------------------------------------------------------------------

@@ -31,7 +31,6 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
             case PlayerAction.Right: this.xRight = value == 0 ? 0 : this.xRight + 1 * value; break;
             case PlayerAction.Fire: this.shooting = value == 1;
         }   
-        console.log(`M: ${action.toString()}:${value}- ${this.xLeft},${this.xRight}`)
         this.lastActivityTime = Date.now();
     };
 

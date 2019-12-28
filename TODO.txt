@@ -12,17 +12,19 @@ TODO
     [x] Show player ID under ship
     [x] Different color Ships
     [x] Remember player identity when they re-enter with same controls
-    [ ] Aliens
-    [ ] Bullets and destruction
-    [ ] Animation on entry
-    [ ] Aliens shoot Back 
+    [x] Aliens
+    [ ] Alien Bullets
+    [ ] Can kill aliens
+    [ ] Aliens can kill player
+    [ ] Aliens can win
     [ ] Shields
-    [ ] Sounds when new player window comes up
-    [ ] Sound when player enters
 
     
 
 NEW
+    [ ] Sounds when new player window comes up
+    [ ] Sound when player enters
+    [ ] Animation on entry
     [ ] Show players on slightly differet levels
     [ ] Powerup: Homing shots
     [ ] Individual score + coop score

@@ -28,6 +28,9 @@ export class Sprite {
         }
         var spriteX = (spriteNumber % this.spritesPerRow) * this.spriteWidth;
         var spriteY = Math.floor(spriteNumber / this.spritesPerRow) * this.spriteHeight;
-        this.context.drawImage(this.spriteBuffer, spriteX, spriteY, this.spriteWidth, this.spriteHeight, x, y, this.spriteWidth, this.spriteHeight);
+        this.context.drawImage(
+            this.spriteBuffer, 
+            spriteX, spriteY, this.spriteWidth, this.spriteHeight, 
+            x, y, this.spriteWidth, this.spriteHeight);
     } 
 }

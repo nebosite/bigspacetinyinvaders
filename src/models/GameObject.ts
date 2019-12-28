@@ -3,7 +3,9 @@ export enum GameObjectType
 {
     Unknown,
     Player,
-    Bullet
+    Bullet,
+    Hive,
+    Alien
 };
 
 let GameObjectCount = 0;
