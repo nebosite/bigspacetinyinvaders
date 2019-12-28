@@ -1,27 +1,37 @@
 import { IInputReceiver } from "../ui/InputReceiver";
 import { PlayerAction } from "../controls/GameControl";
-import { IGameObject, GameObjectTypes } from "./IGameObject";
+import { GameObject, GameObjectType } from "./GameObject";
+import { IAppModel } from "./AppModel";
+import { Bullet } from "./Bullet";
 
-export class Player implements IInputReceiver<PlayerAction>, IGameObject
+export class Player extends GameObject implements IInputReceiver<PlayerAction>
 {
-    x = 0;
-    y = 0;
-    type = GameObjectTypes.Player as number;
     xLeft = 0;
     xRight = 0;
     maxSpeed = 6;
+    onShoot = (player: Player) => {};
+    appModel: IAppModel;
+    shooting = false;
+    lastShotTime = 0;
+
+    constructor(appModel: IAppModel){
+        super();
+        this.appModel = appModel;
+        this.type = GameObjectType.Player;
+    }
 
     actionChanged = (action: PlayerAction, value: number) => {
         switch(action)
         {
             case PlayerAction.Left: this.xLeft = value == 0 ? 0 : this.xLeft + 1 * value; break;
             case PlayerAction.Right: this.xRight = value == 0 ? 0 : this.xRight + 1 * value; break;
+            case PlayerAction.Fire: this.shooting = value == 1;
         }   
         console.log(`M: ${action.toString()}:${value}- ${this.xLeft},${this.xRight}`)
 
     };
 
-    think = (gameTime: number, elapsedMilliseconds: number) =>
+    think(gameTime: number, elapsedMilliseconds: number) 
     {
         if(this.xLeft > 0) 
         {
@@ -37,5 +47,21 @@ export class Player implements IInputReceiver<PlayerAction>, IGameObject
         
         this.x -= this.xLeft;
         this.x += this.xRight;
+        if(this.x < this.width/2) this.x = this.width/2;
+        if(this.x > this.appModel.worldSize.width - this.width/2) {
+            this.x = this.appModel.worldSize.width - this.width/2;
+        }
+
+        if(this.shooting) this.maybeShoot();
+    }
+
+    maybeShoot(){
+        let millisecondsSinceLastShot = Date.now() - this.lastShotTime;
+        if(millisecondsSinceLastShot < 1000) return;
+        this.lastShotTime= Date.now();
+        var bullet = new Bullet(this.appModel);
+        bullet.x = this.x - this.width/2;
+        bullet.y = this.y - this.height;
+        this.appModel.addGameObject(bullet);
     }
 }

@@ -5,6 +5,7 @@ import { NewPlayerControl } from "./NewPlayerControl";
 import { Player } from "../models/Player";
 import { DrawHelper } from "../ui/DrawHelper";
 import { GamepadManager, GamepadInputCode, GamepadTranslator } from "../ui/GamepadInput";
+import { GameObjectType } from "../models/GameObject";
 
 const PLAYER_SIZE = 16;
 
@@ -105,9 +106,10 @@ export class GameController
                             {
                                 translator.removeSubscriber(this.newPlayerControl);
                             }
-                            let newPlayer = new Player();
+                            let newPlayer = new Player(this.appModel);
                             translator.addSubscriber(newPlayer);
                             this.appModel.addPlayer(newPlayer);
+                            this.gamepadManager.addTranslator(translator, controllerIndex);
                         }
 
                         this.newPlayerControl = null;
@@ -167,9 +169,10 @@ export class GameController
                             {
                                 translator.removeSubscriber(this.newPlayerControl);
                             }
-                            let newPlayer = new Player();
+                            let newPlayer = new Player(this.appModel);
                             translator.addSubscriber(newPlayer);
                             this.appModel.addPlayer(newPlayer);
+                            this.keyboardManager.addTranslator(translator);
                         }
 
                         this.newPlayerControl = null;
@@ -261,9 +264,16 @@ export class GameController
 
         // Render the players
         this.appModel.think(gameTime, elapsed);
-        this.appModel.getPlayers().forEach( player => {
-            this.drawing.drawSprite(90, player.x, this.drawing.height - 40);
-        });
+        for(let gameObject of this.appModel.getGameObjects()) {
+            switch(gameObject.type){
+                case GameObjectType.Player: 
+                    this.drawing.drawSprite(90, gameObject.x - gameObject.width, gameObject.y - gameObject.height);
+                    break;
+                case GameObjectType.Bullet: 
+                    this.drawing.drawSprite(91, gameObject.x,  gameObject.y - gameObject.height);
+                    break;
+            };
+        };
 
         if(this.appModel.getPlayers().length == 0)
         {

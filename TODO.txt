@@ -4,11 +4,12 @@ TODO
     [x] Resize to the web page 
         [x] make sure it works full screen
         https://zinoui.com/blog/javascript-fullscreen-api
-    [ ] Move thinking and player regulation into the app model
-    [ ] Shooting
-        [ ] Track the shooting keys when you map them
+    [x] Move thinking and player regulation into the app model
+    [x] Shooting
+        [x] Track the shooting keys when you map them
 
 NEW
+    [ ] Resizing should reset game object positions
     [ ] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/
     [ ] Break up logic and graphics frames
     [ ] Pack resources too: https://webpack.js.org/guides/typescript/
