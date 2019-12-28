@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack &&  xcopy /VERIFYK .\\public\\* dist",
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server --host 0.0.0.0"
   },
   "repository": {
     "type": "git",

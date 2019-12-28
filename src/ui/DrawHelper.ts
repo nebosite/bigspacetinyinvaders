@@ -112,4 +112,11 @@ export class DrawHelper {
         this.drawContext.globalAlpha = alpha;
         this.gameSprites.draw(index, x, y);
     }
+    
+    resizeToWindow(){
+        this.width = window.innerWidth - 5;
+        this.height = window.innerHeight - 5;
+        this.drawContext.canvas.width = this.width;
+        this.drawContext.canvas.height = this.height;
+    }
 }

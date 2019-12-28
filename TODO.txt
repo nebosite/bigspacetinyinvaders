@@ -1,10 +1,12 @@
 
 TODO
     [x] Use a controller to add a player
-    [ ] Resize to the web page 
-        [ ] make sure it works full screen
+    [x] Resize to the web page 
+        [x] make sure it works full screen
         https://zinoui.com/blog/javascript-fullscreen-api
-    [ ] Move thinging and player regulation into the app model
+    [ ] Move thinking and player regulation into the app model
+    [ ] Shooting
+        [ ] Track the shooting keys when you map them
 
 NEW
     [ ] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/

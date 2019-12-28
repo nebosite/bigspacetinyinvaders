@@ -239,12 +239,8 @@ export class GameController
         let lastFrameTime = gameTime;
 
         if (this.resized_recently) {
-            // Uncomment this to resize the canvas with the window
-            // width = window.innerWidth;
-            // height = window.innerHeight;
-            // myCanvas.width = width;
-            // myCanvas.height = height;
-            // resized_recently = false;
+            this.drawing.resizeToWindow();
+            this.resized_recently = false;
         }
 
         if(this.play_ding)
@@ -282,7 +278,7 @@ export class GameController
             this.newPlayerControl.render();
         }
 
-        this.showGamepadStates();
+        //this.showGamepadStates();
 
         this.frame++;
         requestAnimationFrame(this.animation_loop);
