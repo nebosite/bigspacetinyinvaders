@@ -275,7 +275,9 @@ export class GameController
         for(let gameObject of this.appModel.getGameObjects()) {
             switch(gameObject.type){
                 case GameObjectType.Player: 
-                    this.drawing.drawSprite(90, gameObject.x - gameObject.width, gameObject.y - gameObject.height);
+                    let player = gameObject as Player;
+                    this.drawing.drawSprite(90, gameObject.x - gameObject.width/2, gameObject.y - gameObject.height);
+                    this.drawing.print(player.name, player.x - 10, player.y + 10, 10);
                     break;
                 case GameObjectType.Bullet: 
                     this.drawing.drawSprite(91, gameObject.x,  gameObject.y - gameObject.height);

@@ -9,7 +9,7 @@ TODO
         [x] Track the shooting keys when you map them
     [x] Align sprite draws to that they don't have the little lines
     [x] Players should go away after 20 seconds of intactivity
-    [ ] Show player ID under ship
+    [x] Show player ID under ship
     [ ] Sounds when new player window comes up
     [ ] Sound when player enters
     [ ] Different color Ships
@@ -22,6 +22,7 @@ TODO
     
 
 NEW
+    [ ] Show players on slightly differet levels
     [ ] Powerup: Homing shots
     [ ] Individual score + coop score
     [ ] More powerups with coop score is high
