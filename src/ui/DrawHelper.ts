@@ -110,7 +110,7 @@ export class DrawHelper {
     drawSprite(index: number, x: number, y: number, alpha: number = 1)
     {
         this.drawContext.globalAlpha = alpha;
-        this.gameSprites.draw(index, x, y);
+        this.gameSprites.draw(index, Math.floor(x), Math.floor(y));
     }
     
     resizeToWindow(){

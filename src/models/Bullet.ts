@@ -14,10 +14,13 @@ export class Bullet extends GameObject{
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
-        this.y -= 2;
-        if(this.y < 0)
+        for(let i = 0; i < 3; i++)
         {
-            this.appModel.removeGameObject(this);
+            this.y -= 2;
+            if(this.y < 0)
+            {
+                this.appModel.removeGameObject(this);
+            }
         }
     }
 }

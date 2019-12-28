@@ -7,7 +7,7 @@ TODO
     [x] Move thinking and player regulation into the app model
     [x] Shooting
         [x] Track the shooting keys when you map them
-    [ ] Align sprite draws to that they don't have the little lines
+    [x] Align sprite draws to that they don't have the little lines
     [ ] Players should go away after 20 seconds of intactivity
     [ ] Show player ID under ship
     [ ] Sounds when new player window comes up
@@ -17,12 +17,18 @@ TODO
     [ ] Bullets and destruction
     [ ] Animation on entry
     [ ] Aliens shoot Back 
+    [ ] Shields
 
     
 
 NEW
+    [ ] Powerup: Homing shots
     [ ] Individual score + coop score
     [ ] More powerups with coop score is high
+        - playing "zone"
+        - powerups distributed
+        - kills distributed
+        - sharing energy with others
     [ ] Resizing should reset game object positions
     [ ] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/
     [ ] Break up logic and graphics frames
