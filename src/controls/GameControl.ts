@@ -66,6 +66,7 @@ export class GameController
     constructor(appModel: IAppModel, canvas: HTMLCanvasElement)
     {
         this.appModel = appModel;  
+        appModel.onPlayerRemoved = player => {};
         const drawContext = canvas.getContext("2d") || (() => { throw new Error('No 2D support'); })();
         this.drawing = new DrawHelper(drawContext);
         this.keyboardManager = new KeyboardManager();
@@ -110,6 +111,9 @@ export class GameController
                             translator.addSubscriber(newPlayer);
                             this.appModel.addPlayer(newPlayer);
                             this.gamepadManager.addTranslator(translator, controllerIndex);
+                            newPlayer.onCleanup = () =>{
+                                this.gamepadManager.removeTranslator(translator);
+                            }
                         }
 
                         this.newPlayerControl = null;
@@ -173,6 +177,10 @@ export class GameController
                             translator.addSubscriber(newPlayer);
                             this.appModel.addPlayer(newPlayer);
                             this.keyboardManager.addTranslator(translator);
+                            newPlayer.onCleanup = () =>{
+                                this.keyboardManager.removeTranslator(translator);
+                            }
+
                         }
 
                         this.newPlayerControl = null;

@@ -8,7 +8,7 @@ TODO
     [x] Shooting
         [x] Track the shooting keys when you map them
     [x] Align sprite draws to that they don't have the little lines
-    [ ] Players should go away after 20 seconds of intactivity
+    [x] Players should go away after 20 seconds of intactivity
     [ ] Show player ID under ship
     [ ] Sounds when new player window comes up
     [ ] Sound when player enters

@@ -1,6 +1,6 @@
 import { Player } from "./Player";
 import { IGamepadInputCodeTranslator } from "../ui/GamepadInput";
-import { GameObject } from "./GameObject";
+import { GameObject, GameObjectType } from "./GameObject";
 import { Bullet } from "./Bullet";
 
 export interface IAppModel
@@ -11,6 +11,7 @@ export interface IAppModel
     think: (gameTime: number, elapsedMilliseconds: number) => void;
     removeGameObject: (gameObject: GameObject) => void; 
     addGameObject: (gameObject: GameObject) => void; 
+    onPlayerRemoved: (player: Player) => void;
 
     worldSize: { width:number, height: number} ;
     playerSize: number;
@@ -21,6 +22,7 @@ export class AppModel implements IAppModel
     players = new Array<Player>();
     gameObjects = new Map<number,GameObject>();
     playerSize = 16;
+    onPlayerRemoved = (player: Player) => {};
 
     private _worldSize = {width: 10, height: 10};
     get worldSize(): { width:number, height: number} {return this._worldSize;}
@@ -50,6 +52,11 @@ export class AppModel implements IAppModel
 
     removeGameObject(gameObject: GameObject){
         this.gameObjects.delete(gameObject.id);  
+        if(gameObject.type == GameObjectType.Player)
+        {
+            this.players.splice(this.players.indexOf(gameObject as Player), 1);
+            this.onPlayerRemoved(gameObject as Player);
+        }
     }
 
     addGameObject(gameObject: GameObject){
