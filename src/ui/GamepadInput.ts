@@ -91,11 +91,25 @@ const buttonTranslations = new Map<string, Array<GamepadInputCode>>(
     ]]]);
 
     
+// ------------------------------------------------------------------------
+//
+// GamepadTranslator
+//
+// ------------------------------------------------------------------------
 export class GamepadTranslator<T> implements IGamepadInputCodeTranslator {
     private subscribers = new Array<IInputReceiver<T>>();
     private inputActions = new Map<GamepadInputCode, T[]>();
+    name: string;
+    
+    // ------------------------------------------------------------------------
+    // ctor
+    // ------------------------------------------------------------------------
+    constructor(name: string)
+    {
+        this.name = name;
+    }
 
-        // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // getHandledCodes
     // ------------------------------------------------------------------------
     getHandledCodes = () =>

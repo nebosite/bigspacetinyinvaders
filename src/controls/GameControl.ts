@@ -18,6 +18,11 @@ export enum PlayerAction {
     Fire
 }
 
+class PlayerIdentity{
+    id = 0;
+    name = "";
+}
+
 export class GameController 
 {
     appModel: IAppModel;
@@ -33,6 +38,8 @@ export class GameController
     newPlayerControl: NewPlayerControl | null = null;
     lastFrameTime = Date.now();
     inputState = new Array<number>();
+    playerIdentities = new Map<string, PlayerIdentity>();
+    seenPlayersCount = 0;
 
     CommonDirectionKeyLayouts = new Map([
         ["IJKL", [73,74,75,76]],
@@ -107,7 +114,7 @@ export class GameController
                             {
                                 translator.removeSubscriber(this.newPlayerControl);
                             }
-                            let newPlayer = new Player(this.appModel);
+                            let newPlayer = this.generatePlayer(translator.name);
                             translator.addSubscriber(newPlayer);
                             this.appModel.addPlayer(newPlayer);
                             this.gamepadManager.addTranslator(translator, controllerIndex);
@@ -131,7 +138,7 @@ export class GameController
                 {
                     if(value[i] == code)
                     {
-                        var newTranslator = new GamepadTranslator<PlayerAction>();
+                        var newTranslator = new GamepadTranslator<PlayerAction>(`${key}:${controllerIndex}`);
                         this.newPlayerControl = new NewPlayerControl(this.drawing, () =>
                         {
                             this.gamepadManager.removeTranslator(newTranslator);
@@ -173,7 +180,7 @@ export class GameController
                             {
                                 translator.removeSubscriber(this.newPlayerControl);
                             }
-                            let newPlayer = new Player(this.appModel);
+                            let newPlayer = this.generatePlayer(translator.name);
                             translator.addSubscriber(newPlayer);
                             this.appModel.addPlayer(newPlayer);
                             this.keyboardManager.addTranslator(translator);
@@ -198,7 +205,7 @@ export class GameController
                 {
                     if(value[i] == keyCode)
                     {
-                        var newTranslator = new KeycodeTranslator<PlayerAction>();
+                        var newTranslator = new KeycodeTranslator<PlayerAction>(key);
                         this.newPlayerControl = new NewPlayerControl(this.drawing, () =>
                         {
                             this.keyboardManager.removeTranslator(newTranslator);
@@ -276,11 +283,12 @@ export class GameController
             switch(gameObject.type){
                 case GameObjectType.Player: 
                     let player = gameObject as Player;
-                    this.drawing.drawSprite(90, gameObject.x - gameObject.width/2, gameObject.y - gameObject.height);
+                    let colorIndex = player.number % 10;
+                    this.drawing.drawSprite(90 + colorIndex, gameObject.x - gameObject.width/2, gameObject.y - gameObject.height);
                     this.drawing.print(player.name, player.x - 10, player.y + 10, 10);
                     break;
                 case GameObjectType.Bullet: 
-                    this.drawing.drawSprite(91, gameObject.x,  gameObject.y - gameObject.height);
+                    this.drawing.drawSprite(84, gameObject.x,  gameObject.y - gameObject.height);
                     break;
             };
         };
@@ -303,6 +311,31 @@ export class GameController
         requestAnimationFrame(this.animation_loop);
     }
 
+    //-------------------------------------------------------------------------
+    // showGamepadStates
+    //-------------------------------------------------------------------------
+    generatePlayer(controlId: string)
+    {
+        let newPlayer = new Player(this.appModel);
+        var playerInfo = new PlayerIdentity();
+        if(this.playerIdentities.has(controlId))
+        {
+            playerInfo = this.playerIdentities.get(controlId) as PlayerIdentity;
+        }
+        else
+        {
+            playerInfo.id = this.seenPlayersCount++;
+            playerInfo.name = `P:${playerInfo.id}`;
+            this.playerIdentities.set(controlId, playerInfo);
+        }
+        newPlayer.number = playerInfo.id;
+        newPlayer.name = playerInfo.name;
+        return newPlayer;
+    }
+
+    //-------------------------------------------------------------------------
+    // showGamepadStates
+    //-------------------------------------------------------------------------
     showGamepadStates()
     {
         for(var i = 0; i < 10; i++)

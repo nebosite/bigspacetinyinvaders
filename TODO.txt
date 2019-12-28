@@ -10,14 +10,15 @@ TODO
     [x] Align sprite draws to that they don't have the little lines
     [x] Players should go away after 20 seconds of intactivity
     [x] Show player ID under ship
-    [ ] Sounds when new player window comes up
-    [ ] Sound when player enters
-    [ ] Different color Ships
+    [x] Different color Ships
+    [x] Remember player identity when they re-enter with same controls
     [ ] Aliens
     [ ] Bullets and destruction
     [ ] Animation on entry
     [ ] Aliens shoot Back 
     [ ] Shields
+    [ ] Sounds when new player window comes up
+    [ ] Sound when player enters
 
     
 

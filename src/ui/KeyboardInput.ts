@@ -12,6 +12,15 @@ export interface IKeycodeTranslator {
 export class KeycodeTranslator<T> implements IKeycodeTranslator {
     keyActions: Map<number, T> = new Map();
     private subscribers = new Array<IInputReceiver<T>>();
+    name: string;
+    
+    // ------------------------------------------------------------------------
+    // ctor
+    // ------------------------------------------------------------------------
+    constructor(name: string)
+    {
+        this.name = name;
+    }
 
     // ------------------------------------------------------------------------
     // getHandledCodes

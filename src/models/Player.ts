@@ -4,8 +4,6 @@ import { GameObject, GameObjectType } from "./GameObject";
 import { IAppModel } from "./AppModel";
 import { Bullet } from "./Bullet";
 
-let playerCount = 1;
-
 export class Player extends GameObject implements IInputReceiver<PlayerAction>
 {
     xLeft = 0;
@@ -16,7 +14,8 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
     shooting = false;
     lastShotTime = 0;
     lastActivityTime = Date.now();
-    name: string = `P${playerCount++}`;
+    name: string = "dude";
+    number = 0;
     onCleanup= () => {};
 
     constructor(appModel: IAppModel){
