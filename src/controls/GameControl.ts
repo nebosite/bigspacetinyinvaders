@@ -240,6 +240,7 @@ export class GameController
 
         if (this.resized_recently) {
             this.drawing.resizeToWindow();
+            this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
             this.resized_recently = false;
         }
 
@@ -259,10 +260,8 @@ export class GameController
             10, this.drawing.height - 20, 10,"#0000FF");
 
         // Render the players
+        this.appModel.think(gameTime, elapsed);
         this.appModel.getPlayers().forEach( player => {
-            player.think(gameTime, elapsed);
-            if(player.x < 0) player.x = 0;
-            if(player.x > this.drawing.width - PLAYER_SIZE) player.x = this.drawing.width - PLAYER_SIZE;
             this.drawing.drawSprite(90, player.x, this.drawing.height - 40);
         });
 
