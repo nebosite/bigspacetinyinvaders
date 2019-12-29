@@ -13,6 +13,9 @@ TODO
     [x] Different color Ships
     [x] Remember player identity when they re-enter with same controls
     [x] Aliens
+    [ ] Try out webgl drawing   
+        https://dev.to/samthor/webgl-point-sprites-a-tutorial-4m6p
+    [ ] Pay attention to gametime to account for frame rates
     [ ] Alien Bullets
     [ ] Can kill aliens
     [ ] Aliens can kill player
@@ -22,6 +25,8 @@ TODO
     
 
 NEW
+    [ ] Improve performance
+        https://www.html5rocks.com/en/tutorials/canvas/performance/
     [ ] Sounds when new player window comes up
     [ ] Sound when player enters
     [ ] Animation on entry
