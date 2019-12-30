@@ -3,6 +3,44 @@
 import * as PIXI from 'pixi.js'; 
 //const PIXI = require('pixi.js');
 
+var currentObjectId = 0;
+
+export class DrawnObject
+{
+    id: number;
+    drawHelper: DrawHelper;
+
+    constructor(drawHelper: DrawHelper)
+    {
+        this.id = currentObjectId++;
+        this.drawHelper = drawHelper;
+    }
+
+    remove() {
+        this.drawHelper.removeTrackedObject(this.id);
+    }
+
+}
+
+export class DrawnText extends DrawnObject 
+{
+    private _textObject: PIXI.Text;
+    get x(): number { return this._textObject.x; }
+    set x(value: number) { this._textObject.x = value; }
+    
+    get y(): number { return this._textObject.y; }
+    set y(value: number) { this._textObject.y = value; }
+
+    get text(): string { return this._textObject.text; }
+    set text(value: string) { this._textObject.text = value; }
+
+    constructor(drawHelper: DrawHelper, textObject : PIXI.Text)
+    {
+        super(drawHelper);
+        this._textObject = textObject;
+    }
+}
+
 
 export class DrawHelper {
 // https://github.com/kittykatattack/learningPixi
@@ -13,6 +51,7 @@ export class DrawHelper {
     pixiRenderer: PIXI.Renderer;
     pixiStage: PIXI.Container;
     shipTextures: PIXI.Texture[] = new Array<PIXI.Texture>();
+    trackedItems = new Map<number, any>();
 
     width = 0;
     height = 0;
@@ -42,6 +81,7 @@ export class DrawHelper {
         this.testSprite.y = 50;
         this.pixiStage.addChild(this.testSprite);
 
+
         requestAnimationFrame(this.handleAnimationFrame);
     }
 
@@ -62,13 +102,53 @@ export class DrawHelper {
         this.resizeToWindow();
     }
 
-    clear(fillStyle: string = "#0000000") {
-        
-        // this.drawContext.fillStyle = fillStyle;
-        // this.drawContext.globalAlpha = 1.0;
-        // this.drawContext.fillRect(0, 0, this.width, this.height);
+    //-------------------------------------------------------------------------
+    // Remove an item from the stage
+    //-------------------------------------------------------------------------
+    removeTrackedObject(id: number)
+    {
+        this.pixiStage.removeChild(this.trackedItems.get(id));
+        this.trackedItems.delete(id);
     }
 
+    //-------------------------------------------------------------------------
+    // Add a text objet to the stage
+    //-------------------------------------------------------------------------
+    addTextObject (text: string,
+        x: number, y:number, 
+        size: number = 16, 
+        fillStyle: string = "#FFFFFF", 
+        strokeStyle: string = "",
+        strokeWidth: number = 1,
+        wrapWidth: number = 99999,
+        centering: number[] = [0,0]) 
+    {
+        const style = new PIXI.TextStyle({
+            fontFamily: 'Arial',
+            fontSize: size,
+            //fontStyle: 'italic',
+            //fontWeight: 'bold',
+            fill: [fillStyle], // gradient
+            stroke: strokeStyle,
+            strokeThickness: strokeWidth,
+            //dropShadow: true,
+            //dropShadowColor: '#000000',
+            //dropShadowBlur: 4,
+            //dropShadowAngle: Math.PI / 6,
+            //dropShadowDistance: 6,
+            wordWrap: true,
+            wordWrapWidth: wrapWidth,
+        });
+        let pixiText = new PIXI.Text(text, style);
+        pixiText.anchor.set(centering[0], centering[1]);
+        pixiText.x = x;
+        pixiText.y = y;
+        this.pixiStage.addChild(pixiText);
+        let returnMe = new DrawnText(this, pixiText );
+        this.trackedItems.set(returnMe.id,pixiText );
+        return returnMe;
+    } 
+    
     drawRect(x: number, y: number, width: number, height: number, 
         fillStyle: string = "#FFFFFF", 
         strokeStyle: string = "", 

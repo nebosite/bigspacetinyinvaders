@@ -3,7 +3,7 @@ import { Sprite } from "../ui/Sprite";
 import { KeycodeTranslator, KeyboardManager } from "../ui/KeyboardInput";
 import { NewPlayerControl } from "./NewPlayerControl";
 import { Player } from "../models/Player";
-import { DrawHelper } from "../ui/DrawHelper";
+import { DrawHelper, DrawnObject, DrawnText } from "../ui/DrawHelper";
 import { GamepadManager, GamepadInputCode, GamepadTranslator } from "../ui/GamepadInput";
 import { GameObjectType, GameObject } from "../models/GameObject";
 import { Alien } from "../models/Alien";
@@ -40,6 +40,8 @@ export class GameController
     inputState = new Array<number>();
     playerIdentities = new Map<string, PlayerIdentity>();
     seenPlayersCount = 0;
+    frameText: DrawnText;
+    inviteText: DrawnText | null = null;
 
     CommonDirectionKeyLayouts = new Map([
         ["IJKL", [73,74,75,76]],
@@ -85,8 +87,133 @@ export class GameController
         window.addEventListener("mousemove", this.handleCanvasMouseMove);
 
         for(var i = 0; i < 50; i++) this.inputState.push(0);
+
+        this.frameText = drawing.addTextObject("Frame:", 10, 10, 12, "#00eeFF");
     } 
 
+    //-------------------------------------------------------------------------
+    // Animation Loop
+    //-------------------------------------------------------------------------
+    animation_loop = (event: unknown) => {
+        let gameTime = Date.now();
+        let elapsed = gameTime - this.lastFrameTime;
+        let lastFrameTime = gameTime;
+
+        // if (this.resized_recently) {
+        //     this.drawing.resizeToWindow();
+        //     this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
+        //     this.resized_recently = false;
+        // }
+
+        if(this.play_ding)
+        {
+            this.play_ding = false;
+            const sound = new Audio("ding.wav");
+            sound.play();
+        }
+
+        // Clear the screen
+        // this.drawing.clear("#000000");
+
+        // Show some info about the current frame and screen size
+        this.frameText.x = 10;
+        this.frameText.y =  this.drawing.height - 20;
+        this.frameText.text =  "Frame: " + this.frame;
+        // this.drawing.print(
+        //     "Frame: " + this.frame, 
+        //     10, this.drawing.height - 20, 10,"#0000FF");
+
+        // Render the players
+        // this.appModel.think(gameTime, elapsed);
+        // for(let gameObject of this.appModel.getGameObjects()) {
+        //     this.drawGameObject(gameObject);
+        // };
+
+        if(this.appModel.getPlayers().length == 0 && !this.inviteText)
+        {
+            this.inviteText = this.drawing.addTextObject("Use movement controls to add a new player...",
+                this.drawing.width/2, this.drawing.height - 100, 20,"#FFFFFF","",0,2000, [.5,.5]);
+        }
+        if(this.appModel.getPlayers().length > 0 && this.inviteText)
+        {
+            this.inviteText.remove();
+            this.inviteText = null;
+        }
+
+        if(this.newPlayerControl)
+        {
+            // this.newPlayerControl.render();
+        }
+
+        //this.showGamepadStates();
+
+        this.frame++;
+        requestAnimationFrame(this.animation_loop);
+    }
+
+    //-------------------------------------------------------------------------
+    // drawGameObject
+    //-------------------------------------------------------------------------
+    drawGameObject(drawMe: GameObject)
+    {
+        let x = drawMe.x - drawMe.width/2;
+        let y = drawMe.y - drawMe.height/2;
+
+        switch(drawMe.type){
+            case GameObjectType.Player: 
+                let player = drawMe as Player;
+                let colorIndex = player.number % 10;
+                this.drawing.drawSprite(90 + colorIndex, x, y);
+                this.drawing.print(player.name, x, y + 10 + drawMe.height, 10);
+                break;
+            case GameObjectType.Bullet: 
+                this.drawing.drawSprite(84, x,  y);
+                break;
+            case GameObjectType.Alien:
+                let alien = drawMe as Alien;
+                this.drawing.drawSprite(alien.alienType * 10 + alien.localFrame % 2, x, y);
+                break;
+        };
+    }
+
+    //-------------------------------------------------------------------------
+    // showGamepadStates
+    //-------------------------------------------------------------------------
+    generatePlayer(controlId: string)
+    {
+        let newPlayer = new Player(this.appModel);
+        var playerInfo = new PlayerIdentity();
+        if(this.playerIdentities.has(controlId))
+        {
+            playerInfo = this.playerIdentities.get(controlId) as PlayerIdentity;
+        }
+        else
+        {
+            playerInfo.id = this.seenPlayersCount++;
+            playerInfo.name = `P:${playerInfo.id}`;
+            this.playerIdentities.set(controlId, playerInfo);
+        }
+        newPlayer.number = playerInfo.id;
+        newPlayer.name = playerInfo.name;
+        return newPlayer;
+    }
+
+    //-------------------------------------------------------------------------
+    // showGamepadStates
+    //-------------------------------------------------------------------------
+    showGamepadStates()
+    {
+        for(var i = 0; i < 10; i++)
+        {
+            this.drawing.print(`A${i}: ${this.inputState[GamepadInputCode.Axis0 + i]}`, 30, 50 + i *15);
+        }
+        for(var i = 0; i < 20; i++)
+        {
+            this.drawing.print(`B${i}: ${this.inputState[GamepadInputCode.Button00 + i]}`, 330, 50 + i *15);
+        }
+    }
+
+    
     //-------------------------------------------------------------------------
     // handle gamepads
     //-------------------------------------------------------------------------
@@ -239,118 +366,4 @@ export class GameController
         this.mouseY = e.clientY;
     }
 
-    //-------------------------------------------------------------------------
-    // Animation Loop
-    //-------------------------------------------------------------------------
-    animation_loop = (event: unknown) => {
-        let gameTime = Date.now();
-        let elapsed = gameTime - this.lastFrameTime;
-        let lastFrameTime = gameTime;
-
-        // if (this.resized_recently) {
-        //     this.drawing.resizeToWindow();
-        //     this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
-        //     this.resized_recently = false;
-        // }
-
-        if(this.play_ding)
-        {
-            this.play_ding = false;
-            const sound = new Audio("ding.wav");
-            sound.play();
-        }
-
-        // Clear the screen
-        this.drawing.clear("#000000");
-
-        // Show some info about the current frame and screen size
-        this.drawing.print(
-            "Frame: " + this.frame, 
-            10, this.drawing.height - 20, 10,"#0000FF");
-
-        // Render the players
-        this.appModel.think(gameTime, elapsed);
-        for(let gameObject of this.appModel.getGameObjects()) {
-            this.drawGameObject(gameObject);
-        };
-
-        if(this.appModel.getPlayers().length == 0)
-        {
-            this.drawing.print(
-                "Use movement controls to add a new player...", 
-                this.drawing.width/2 - 200, this.drawing.height - 100, 20,"#FFFFFF");
-        }
-
-        if(this.newPlayerControl)
-        {
-            this.newPlayerControl.render();
-        }
-
-        //this.showGamepadStates();
-
-        this.frame++;
-        requestAnimationFrame(this.animation_loop);
-    }
-
-    //-------------------------------------------------------------------------
-    // drawGameObject
-    //-------------------------------------------------------------------------
-    drawGameObject(drawMe: GameObject)
-    {
-        let x = drawMe.x - drawMe.width/2;
-        let y = drawMe.y - drawMe.height/2;
-
-        switch(drawMe.type){
-            case GameObjectType.Player: 
-                let player = drawMe as Player;
-                let colorIndex = player.number % 10;
-                this.drawing.drawSprite(90 + colorIndex, x, y);
-                this.drawing.print(player.name, x, y + 10 + drawMe.height, 10);
-                break;
-            case GameObjectType.Bullet: 
-                this.drawing.drawSprite(84, x,  y);
-                break;
-            case GameObjectType.Alien:
-                let alien = drawMe as Alien;
-                this.drawing.drawSprite(alien.alienType * 10 + alien.localFrame % 2, x, y);
-                break;
-        };
-    }
-
-    //-------------------------------------------------------------------------
-    // showGamepadStates
-    //-------------------------------------------------------------------------
-    generatePlayer(controlId: string)
-    {
-        let newPlayer = new Player(this.appModel);
-        var playerInfo = new PlayerIdentity();
-        if(this.playerIdentities.has(controlId))
-        {
-            playerInfo = this.playerIdentities.get(controlId) as PlayerIdentity;
-        }
-        else
-        {
-            playerInfo.id = this.seenPlayersCount++;
-            playerInfo.name = `P:${playerInfo.id}`;
-            this.playerIdentities.set(controlId, playerInfo);
-        }
-        newPlayer.number = playerInfo.id;
-        newPlayer.name = playerInfo.name;
-        return newPlayer;
-    }
-
-    //-------------------------------------------------------------------------
-    // showGamepadStates
-    //-------------------------------------------------------------------------
-    showGamepadStates()
-    {
-        for(var i = 0; i < 10; i++)
-        {
-            this.drawing.print(`A${i}: ${this.inputState[GamepadInputCode.Axis0 + i]}`, 30, 50 + i *15);
-        }
-        for(var i = 0; i < 20; i++)
-        {
-            this.drawing.print(`B${i}: ${this.inputState[GamepadInputCode.Button00 + i]}`, 330, 50 + i *15);
-        }
-    }
 }
