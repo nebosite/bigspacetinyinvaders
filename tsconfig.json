@@ -5,7 +5,11 @@
       "declaration": true,
       "outDir": "./dist",
       "strict": true,
-      "sourceMap": true
+      "sourceMap": true,
+      "baseUrl": ".", 
+      "paths": {
+        "three": ["node_modules/pixi.js"]
+      }
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules", "**/__tests__/*"]

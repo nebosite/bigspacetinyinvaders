@@ -27,7 +27,6 @@ class PlayerIdentity{
 export class GameController 
 {
     appModel: IAppModel;
-    resized_recently = true;
     play_ding = false;
     frame = 0;
     drawing: DrawHelper;
@@ -71,21 +70,19 @@ export class GameController
     //-------------------------------------------------------------------------
     // ctor
     //-------------------------------------------------------------------------
-    constructor(appModel: IAppModel, canvas: HTMLCanvasElement)
+    constructor(appModel: IAppModel, drawing: DrawHelper)
     {
-        this.appModel = appModel;  
+        this.appModel = appModel; 
+        this.drawing = drawing; 
         appModel.onPlayerRemoved = player => {};
-        const drawContext = canvas.getContext("2d") || (() => { throw new Error('No 2D support'); })();
-        this.drawing = new DrawHelper(drawContext);
         this.keyboardManager = new KeyboardManager();
         this.keyboardManager.onUnhandledKeyCode = this.handleUnhandledKey;
         this.gamepadManager = new GamepadManager();
         this.gamepadManager.onUnhandledInputCode = this.handleUnhandledGamepadCode;
     
         requestAnimationFrame(this.animation_loop);
-        window.addEventListener("resize", this.resize_handler);
-        canvas.addEventListener("click", this.handleCanvasClick);
-        canvas.addEventListener("mousemove", this.handleCanvasMouseMove);
+        window.addEventListener("click", this.handleCanvasClick);
+        window.addEventListener("mousemove", this.handleCanvasMouseMove);
 
         for(var i = 0; i < 50; i++) this.inputState.push(0);
     } 
@@ -243,13 +240,6 @@ export class GameController
     }
 
     //-------------------------------------------------------------------------
-    // Resize event - don't do anything here other than signal a resize
-    //-------------------------------------------------------------------------
-    resize_handler = (event: unknown) => {
-        this.resized_recently = true;
-    }
-
-    //-------------------------------------------------------------------------
     // Animation Loop
     //-------------------------------------------------------------------------
     animation_loop = (event: unknown) => {
@@ -257,11 +247,11 @@ export class GameController
         let elapsed = gameTime - this.lastFrameTime;
         let lastFrameTime = gameTime;
 
-        if (this.resized_recently) {
-            this.drawing.resizeToWindow();
-            this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
-            this.resized_recently = false;
-        }
+        // if (this.resized_recently) {
+        //     this.drawing.resizeToWindow();
+        //     this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
+        //     this.resized_recently = false;
+        // }
 
         if(this.play_ding)
         {
