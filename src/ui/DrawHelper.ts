@@ -6,11 +6,17 @@ import * as PIXI from 'pixi.js';
 
 var currentObjectId = 0;
 
-export class DrawnObject
+export abstract class DrawnObject
 {
     id: number;
     pixiObject: any;
     drawHelper: DrawHelper;
+    abstract get x(): number;
+    abstract set x(value: number);
+    abstract get y(): number;
+    abstract set y(value: number);
+    abstract get rotation(): number;
+    abstract set rotation(value: number);
 
     constructor(drawHelper: DrawHelper, pixiObject: any)
     {
@@ -32,6 +38,9 @@ export class DrawnText extends DrawnObject
     
     get y(): number { return this._pixiObject.y; }
     set y(value: number) { this._pixiObject.y = value; }
+
+    get rotation(): number { return this._pixiObject.rotation; }
+    set rotation(value: number) { this._pixiObject.rotation = value; }
 
     get text(): string { return this._pixiObject.text; }
     set text(value: string) { this._pixiObject.text = value; }
@@ -62,17 +71,35 @@ export class DrawnVectorObject extends DrawnObject
     }
 }
 
+export class DrawnSprite extends DrawnObject 
+{
+    private _pixiObject: PIXI.Sprite;
+    get x(): number { return this._pixiObject.x; }
+    set x(value: number) { this._pixiObject.x = value; }
+    
+    get y(): number { return this._pixiObject.y; }
+    set y(value: number) { this._pixiObject.y = value; }
+
+    get rotation(): number { return this._pixiObject.rotation; }
+    set rotation(value: number) { this._pixiObject.rotation = value; }
+
+    constructor(drawHelper: DrawHelper, pixiObject : PIXI.Sprite)
+    {
+        super(drawHelper, pixiObject);
+        this._pixiObject = pixiObject;   
+    }
+}
+
 
 export class DrawHelper {
 
     pixiRenderer: PIXI.Renderer;
     pixiStage: PIXI.Container;
-    shipTextures: PIXI.Texture[] = new Array<PIXI.Texture>();
+    indexedSprites = new Map<string, Array<PIXI.Texture>>();
+    onWindowResized = (width: number, height: number) => {};
 
     width = 0;
     height = 0;
-
-    testSprite: PIXI.Sprite;
 
     constructor() {
         document.documentElement.style.overflow = 'hidden';  // firefox, chrome
@@ -85,19 +112,17 @@ export class DrawHelper {
         this.pixiStage = new PIXI.Container();      
         document.body.appendChild(this.pixiRenderer.view);
         window.addEventListener("resize", this.resize_handler);
-
-        for(let i = 0; i < 10; i++)
-        {
-            this.shipTextures.push(PIXI.Texture.from(`sprites/ship${String(i).padStart(2, '0')}.png`));
-        }
-
-        this.testSprite = new PIXI.Sprite(this.shipTextures[0]);
-        this.testSprite.anchor.set(.5);
-        this.testSprite.x = 100;
-        this.testSprite.y = 50;
-        this.pixiStage.addChild(this.testSprite);
-
         requestAnimationFrame(this.handleAnimationFrame);
+    }
+
+    addIndexedSpriteTextures(rootName: string, suffix: string, padSize: number, count: number)
+    {
+        let textureArray = new Array<PIXI.Texture>();
+        for(let i = 0; i < count; i++)
+        {
+            textureArray.push(PIXI.Texture.from(`${rootName}${String(i).padStart(padSize, '0')}${suffix}`));
+        }
+        this.indexedSprites.set(rootName, textureArray);
     }
 
     //-------------------------------------------------------------------------
@@ -105,7 +130,6 @@ export class DrawHelper {
     //-------------------------------------------------------------------------
     handleAnimationFrame = () =>
     {
-        this.testSprite.rotation += 0.005;
         this.pixiRenderer.render(this.pixiStage);
         requestAnimationFrame(this.handleAnimationFrame);
     }
@@ -161,6 +185,9 @@ export class DrawHelper {
         return new DrawnText(this, pixiText );
     } 
 
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
     makeVectorObject(
         x: number, y: number, width: number, height: number, 
         fillColor: number, 
@@ -188,6 +215,9 @@ export class DrawHelper {
     }
 
 
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
     addRectangleObject(x: number, y: number, width: number, height: number, 
         fillColor: number = 0xffffff, 
         fillAlpha: number = 1,
@@ -206,6 +236,9 @@ export class DrawHelper {
             });
     }
     
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
     addTriangleObject(x: number, y: number, width: number, height: number, 
         fillColor: number = 0xffffff, 
         fillAlpha: number = 1,
@@ -228,135 +261,30 @@ export class DrawHelper {
             });
     }
     
-    drawSprite(index: number, x: number, y: number, alpha: number = 1)
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
+    addSpriteObject(name: string, index: number, x: number, y: number, alpha: number = 1)
     {
-        // this.drawContext.globalAlpha = alpha;
-        // this.gameSprites.draw(index, Math.floor(x), Math.floor(y));
+        let spriteLookup = this.indexedSprites.get(name);
+        if(!spriteLookup) {
+            throw new Error(`Unknown sprite: ${name}`); 
+        }
+        let sprite = new PIXI.Sprite(spriteLookup[index]);
+        sprite.anchor.set(.5);
+        sprite.x = x;
+        sprite.y = y;
+        sprite.alpha = alpha;
+        this.pixiStage.addChild(sprite);
+        return new DrawnSprite(this, sprite);
     }
     
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
     resizeToWindow(){
         this.pixiRenderer.resize(window.innerWidth, window.innerHeight);
         this.width = window.innerWidth;
         this.height = window.innerHeight;
     }
 }
-
-// export class DrawHelper_OLD {
-//     // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
-//     drawContext: CanvasRenderingContext2D;
-//     gameSprites: Sprite;
-
-//     width = 0;
-//     height = 0;
-
-//     constructor(drawContext: CanvasRenderingContext2D) {
-//         this.drawContext = drawContext;
-//         this.width = drawContext.canvas.width;
-//         this.height = drawContext.canvas.height;
-//         this.gameSprites = new Sprite(this.drawContext, "sprites.png", 16,16);
-//     }
-
-//     clear(fillStyle: string = "#0000000") {
-//         this.drawContext.fillStyle = fillStyle;
-//         this.drawContext.globalAlpha = 1.0;
-//         this.drawContext.fillRect(0, 0, this.width, this.height);
-//     }
-
-//     drawRect(x: number, y: number, width: number, height: number, 
-//         fillStyle: string = "#FFFFFF", 
-//         strokeStyle: string = "", 
-//         lineWidth: number = 1, alpha: number = 1.0)
-//     {
-//         this.drawContext.fillStyle = fillStyle
-//         this.drawContext.strokeStyle = strokeStyle;
-//         this.drawContext.globalAlpha = alpha;
-//         this.drawContext.lineWidth = lineWidth;
-
-//         if(fillStyle && fillStyle != "")
-//         {
-//             this.drawContext.fillRect(x, y, width, height);
-//         }
-//         if(strokeStyle && strokeStyle != "")
-//         {
-//             this.drawContext.strokeRect(x, y, width, height);
-//         }    
-//     }
-
-//     drawTriangle(x: number, y: number, width: number, height: number, 
-//         fillStyle: string = "#FFFFFF", 
-//         strokeStyle: string = "", 
-//         lineWidth: number = 1, alpha: number = 1.0)
-//     {
-//         // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes    
-
-//         this.drawContext.fillStyle = fillStyle
-//         this.drawContext.strokeStyle = strokeStyle;
-//         this.drawContext.globalAlpha = alpha;
-//         this.drawContext.lineWidth = lineWidth;
-//         this.drawContext.lineCap = "round";
-
-//         this.drawContext.beginPath();
-//         this.drawContext.moveTo(x, y);
-//         this.drawContext.lineTo(x + width/2, y - height);
-//         this.drawContext.lineTo(x + width, y);
-//         this.drawContext.lineTo(x,y);
-
-//         this.drawContext.fill();
-//         if(fillStyle && fillStyle != "")
-//         {
-//             this.drawContext.beginPath();
-//             this.drawContext.moveTo(x, y);
-//             this.drawContext.lineTo(x + width/2, y - height);
-//             this.drawContext.lineTo(x + width, y);
-//             this.drawContext.lineTo(x,y);
-//             this.drawContext.fill();
-//         }
-//         if(strokeStyle && strokeStyle != "")
-//         {
-//             this.drawContext.beginPath();
-//             this.drawContext.moveTo(x, y);
-//             this.drawContext.lineTo(x + width/2, y - height);
-//             this.drawContext.moveTo(x + width/2, y - height);
-//             this.drawContext.lineTo(x + width, y);
-//             this.drawContext.moveTo(x + width, y);
-//             this.drawContext.lineTo(x,y);    
-//             this.drawContext.stroke();
-//         }    
-
-//     }
-
-//     print(text: string, x: number, y:number, size: number = 16, 
-//         fillStyle: string = "#FFFFFF", 
-//         strokeStyle: string = "",
-//         strokeWidth: number = 1,
-//         alpha: number = 1.0)
-//     {
-//         this.drawContext.fillStyle = fillStyle
-//         this.drawContext.strokeStyle = strokeStyle;
-//         this.drawContext.font = `${size}px sans-serif`;
-//         this.drawContext.globalAlpha = alpha;
-//         this.drawContext.lineWidth = strokeWidth;
-
-//         if(fillStyle && fillStyle != "")
-//         {
-//             this.drawContext.fillText(text, x,y);
-//         }
-//         if(strokeStyle && strokeStyle != "")
-//         {
-//             this.drawContext.strokeText(text, x, y);
-//         }    
-//     }
-
-//     drawSprite(index: number, x: number, y: number, alpha: number = 1)
-//     {
-//         this.drawContext.globalAlpha = alpha;
-//         this.gameSprites.draw(index, Math.floor(x), Math.floor(y));
-//     }
-    
-//     resizeToWindow(){
-//         this.width = window.innerWidth - 5;
-//         this.height = window.innerHeight - 5;
-//         this.drawContext.canvas.width = this.width;
-//         this.drawContext.canvas.height = this.height;
-//     }
-// }

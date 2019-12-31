@@ -17,6 +17,8 @@ export interface IAppModel
     removeGameObject: (gameObject: GameObject) => void; 
     addGameObject: (gameObject: GameObject) => void; 
     onPlayerRemoved: (player: Player) => void;
+    onAddedGameObject: (gameObject: GameObject) => void;
+    onRemovedGameObject: (gameObject: GameObject) => void;
 
     worldSize: { width:number, height: number} ;
     playerSize: number;
@@ -31,6 +33,8 @@ export class AppModel implements IAppModel
     gameObjects = new Map<number,GameObject>();
     playerSize = 16;
     onPlayerRemoved = (player: Player) => {};
+    onAddedGameObject = (gameObject: GameObject) => {};
+    onRemovedGameObject = (gameObject: GameObject) => {};
     shouldStartLevel = true;
 
     private _worldSize = {width: 10, height: 10};
@@ -49,11 +53,11 @@ export class AppModel implements IAppModel
     addPlayer = (player: Player) =>
     {
         this.players.push(player);
-        this.gameObjects.set(player.id, player);
         player.x = this.worldSize.width/2;
         player.y = this.worldSize.height - 20;
         player.width = this.playerSize;
         player.height = this.playerSize;
+        this.addGameObject(player);
     }
 
     //---------------------------------------------------------------------------
@@ -107,12 +111,14 @@ export class AppModel implements IAppModel
             this.players.splice(this.players.indexOf(gameObject as Player), 1);
             this.onPlayerRemoved(gameObject as Player);
         }
+        this.onRemovedGameObject(gameObject);
     }
 
     //---------------------------------------------------------------------------
     // 
     //---------------------------------------------------------------------------
     addGameObject(gameObject: GameObject){
-        this.gameObjects.set(gameObject.id, gameObject);  
+        this.gameObjects.set(gameObject.id, gameObject); 
+        this.onAddedGameObject(gameObject); 
     }
 }

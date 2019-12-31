@@ -14,6 +14,7 @@ document.body.style.background = "Green";
 //gameCanvas.style.padding = "0";
 //const drawContext = gameCanvas.getContext("2d") || (() => { throw new Error('No 2D support'); })();
 let drawing = new DrawHelper();
+drawing.addIndexedSpriteTextures("sprites/ship", ".png", 2, 10);
 
 var theGameController = new GameController(theApp, drawing);
 

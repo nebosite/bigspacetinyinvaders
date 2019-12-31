@@ -7,6 +7,7 @@ import { DrawHelper, DrawnObject, DrawnText } from "../ui/DrawHelper";
 import { GamepadManager, GamepadInputCode, GamepadTranslator } from "../ui/GamepadInput";
 import { GameObjectType, GameObject } from "../models/GameObject";
 import { Alien } from "../models/Alien";
+import { GameObjectRenderer, PlayerObjectRenderer } from "./GameObjectRendering";
 
 const PLAYER_SIZE = 16;
 
@@ -42,6 +43,7 @@ export class GameController
     seenPlayersCount = 0;
     frameText: DrawnText;
     inviteText: DrawnText | null = null;
+    renderingControls = new Map<GameObject, GameObjectRenderer>();
 
     CommonDirectionKeyLayouts = new Map([
         ["IJKL", [73,74,75,76]],
@@ -76,7 +78,11 @@ export class GameController
     {
         this.appModel = appModel; 
         this.drawing = drawing; 
+        this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
+        this.drawing.onWindowResized = (w,h) => this.appModel.worldSize = {width: w, height: h};
         appModel.onPlayerRemoved = player => {};
+        appModel.onAddedGameObject = this.handleAddedGameObject;
+        appModel.onRemovedGameObject = this.handleRemovedGameObject;
         this.keyboardManager = new KeyboardManager();
         this.keyboardManager.onUnhandledKeyCode = this.handleUnhandledKey;
         this.gamepadManager = new GamepadManager();
@@ -90,6 +96,27 @@ export class GameController
 
         this.frameText = drawing.addTextObject("Frame:", 10, 10, 12, "#00eeFF");
     } 
+
+    //-------------------------------------------------------------------------
+    // Deal with added objects
+    //-------------------------------------------------------------------------
+    handleAddedGameObject = (gameObject: GameObject) => {
+        switch(gameObject.type)
+        {
+            case GameObjectType.Player: this.renderingControls.set(gameObject, new PlayerObjectRenderer(gameObject as Player, this.drawing)); break;
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    // Deal with removed objects
+    //-------------------------------------------------------------------------
+    handleRemovedGameObject = (gameObject: GameObject) => {
+        let renderer = this.renderingControls.get(gameObject);
+        if(!renderer) return;
+        renderer.delete();
+        this.renderingControls.delete(gameObject);
+    }
+
 
     //-------------------------------------------------------------------------
     // Animation Loop
@@ -123,11 +150,11 @@ export class GameController
         //     "Frame: " + this.frame, 
         //     10, this.drawing.height - 20, 10,"#0000FF");
 
-        // Render the players
-        // this.appModel.think(gameTime, elapsed);
-        // for(let gameObject of this.appModel.getGameObjects()) {
-        //     this.drawGameObject(gameObject);
-        // };
+        // Update rendered object
+        this.appModel.think(gameTime, elapsed);
+        for(let renderer of this.renderingControls.values()) {
+            renderer.render();
+        };
 
         if(this.appModel.getPlayers().length == 0 && !this.inviteText)
         {
@@ -229,6 +256,7 @@ export class GameController
                     if(value[i] == code)
                     {
                         const translator = this.newPlayerControl?.translator as GamepadTranslator<PlayerAction>;
+                        this.newPlayerControl?.cancelMe();
                         if(translator)
                         {
                             translator.mapButton(value[0], PlayerAction.Fire);
@@ -247,7 +275,6 @@ export class GameController
                                 this.gamepadManager.removeTranslator(translator);
                             }
                         }
-                        this.newPlayerControl?.cancelMe();
                         this.newPlayerControl = null;
                         return;
                     }
@@ -295,7 +322,8 @@ export class GameController
                 {
                     if(value[i] == keyCode)
                     {
-                        const translator = this.newPlayerControl?.translator;
+                        const translator = this.newPlayerControl?.translator as KeycodeTranslator<PlayerAction>;
+                        this.newPlayerControl?.cancelMe();
                         if(translator)
                         {
                             translator.mapKey(value[0], PlayerAction.Fire);
@@ -314,7 +342,6 @@ export class GameController
                             }
 
                         }
-                        this.newPlayerControl?.cancelMe();
                         this.newPlayerControl = null;
                         return;
                     }
