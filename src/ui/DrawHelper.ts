@@ -1,4 +1,5 @@
-//import { Sprite } from "./Sprite";
+// https://pixijs.io/examples/#/demos-basic/container.js
+
 // TODO: Find out why the heck the "import" syntax isn't working here
 import * as PIXI from 'pixi.js'; 
 //const PIXI = require('pixi.js');
@@ -8,40 +9,41 @@ var currentObjectId = 0;
 export class DrawnObject
 {
     id: number;
+    pixiObject: any;
     drawHelper: DrawHelper;
 
-    constructor(drawHelper: DrawHelper)
+    constructor(drawHelper: DrawHelper, pixiObject: any)
     {
         this.id = currentObjectId++;
         this.drawHelper = drawHelper;
+        this.pixiObject = pixiObject;
     }
 
     delete() {
-        this.drawHelper.removeTrackedObject(this.id);
+        this.drawHelper.removeTrackedObject(this.pixiObject);
     }
-
 }
 
 export class DrawnText extends DrawnObject 
 {
-    private _textObject: PIXI.Text;
-    get x(): number { return this._textObject.x; }
-    set x(value: number) { this._textObject.x = value; }
+    private _pixiObject: PIXI.Text;
+    get x(): number { return this._pixiObject.x; }
+    set x(value: number) { this._pixiObject.x = value; }
     
-    get y(): number { return this._textObject.y; }
-    set y(value: number) { this._textObject.y = value; }
+    get y(): number { return this._pixiObject.y; }
+    set y(value: number) { this._pixiObject.y = value; }
 
-    get text(): string { return this._textObject.text; }
-    set text(value: string) { this._textObject.text = value; }
+    get text(): string { return this._pixiObject.text; }
+    set text(value: string) { this._pixiObject.text = value; }
 
-    constructor(drawHelper: DrawHelper, textObject : PIXI.Text)
+    constructor(drawHelper: DrawHelper, pixiObject : PIXI.Text)
     {
-        super(drawHelper);
-        this._textObject = textObject;
+        super(drawHelper, pixiObject);
+        this._pixiObject = pixiObject;
     }
 }
 
-export class DrawnRectangle extends DrawnObject 
+export class DrawnVectorObject extends DrawnObject 
 {
     private _pixiObject: PIXI.Graphics;
     get x(): number { return this._pixiObject.x; }
@@ -50,20 +52,19 @@ export class DrawnRectangle extends DrawnObject
     get y(): number { return this._pixiObject.y; }
     set y(value: number) { this._pixiObject.y = value; }
 
+    get rotation(): number { return this._pixiObject.rotation; }
+    set rotation(value: number) { this._pixiObject.rotation = value; }
+
     constructor(drawHelper: DrawHelper, pixiObject : PIXI.Graphics)
     {
-        super(drawHelper);
+        super(drawHelper, pixiObject);
         this._pixiObject = pixiObject;   
     }
 }
 
 
 export class DrawHelper {
-// https://github.com/kittykatattack/learningPixi
-//https://github.com/pixijs/pixi-typescript/blob/v4.x/pixi.js-tests.ts
 
-    // drawContext: CanvasRenderingContext2D;
-    // gameSprites: Sprite;
     pixiRenderer: PIXI.Renderer;
     pixiStage: PIXI.Container;
     shipTextures: PIXI.Texture[] = new Array<PIXI.Texture>();
@@ -95,7 +96,6 @@ export class DrawHelper {
         this.testSprite.x = 100;
         this.testSprite.y = 50;
         this.pixiStage.addChild(this.testSprite);
-
 
         requestAnimationFrame(this.handleAnimationFrame);
     }
@@ -161,85 +161,73 @@ export class DrawHelper {
         return new DrawnText(this, pixiText );
     } 
 
-    addRectangleObject(x: number, y: number, width: number, height: number, 
+    makeVectorObject(
+        x: number, y: number, width: number, height: number, 
         fillColor: number, 
-        strokeColor:number, 
-        lineWidth: number = 1, alpha: number = 1.0)
+        fillAlpha: number,
+        centering: number[],    
+        strokeColor: number,
+        strokeAlpha: number, 
+        strokeWidth: number ,
+        drawVectors: (graphics: PIXI.Graphics, x: number, y: number) => void)
     {
         let graphics = new PIXI.Graphics();
-        graphics.lineStyle(lineWidth, strokeColor, alpha, 0);
-        graphics.beginFill(fillColor, alpha);
-        graphics.drawRect(x,y,width, height);
+        if(strokeWidth > 0 && strokeAlpha > 0)
+        {
+            graphics.lineStyle(strokeWidth, strokeColor, strokeAlpha, 0);
+        }
+        graphics.beginFill(fillColor, fillAlpha);
+        let cx = -width * centering[0];
+        let cy = -height * centering[1];
+        drawVectors(graphics, cx, cy);
+        graphics.x = x;
+        graphics.y = y;
         graphics.endFill();
         this.pixiStage.addChild(graphics);
-        return new DrawnRectangle(this, graphics);
+        return new DrawnVectorObject(this, graphics);
+    }
+
+
+    addRectangleObject(x: number, y: number, width: number, height: number, 
+        fillColor: number = 0xffffff, 
+        fillAlpha: number = 1,
+        centering: number[] = [0,0],    
+        strokeColor: number = 0,
+        strokeAlpha: number = 0, 
+        strokeWidth: number = 0
+        )
+    {
+        return this.makeVectorObject(
+            x, y, width, height, 
+            fillColor, fillAlpha, centering, strokeColor, strokeAlpha, strokeWidth,
+            (graphics, cx, cy) =>
+            {
+                graphics.drawRect(cx,cy,width, height);
+            });
     }
     
-    drawTriangle(x: number, y: number, width: number, height: number, 
-        fillStyle: string = "#FFFFFF", 
-        strokeStyle: string = "", 
-        lineWidth: number = 1, alpha: number = 1.0)
+    addTriangleObject(x: number, y: number, width: number, height: number, 
+        fillColor: number = 0xffffff, 
+        fillAlpha: number = 1,
+        centering: number[] = [0.5,0.5],    
+        strokeColor: number = 0,
+        strokeAlpha: number = 0, 
+        strokeWidth: number = 0
+        )
     {
-        // // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes    
-
-        // this.drawContext.fillStyle = fillStyle
-        // this.drawContext.strokeStyle = strokeStyle;
-        // this.drawContext.globalAlpha = alpha;
-        // this.drawContext.lineWidth = lineWidth;
-        // this.drawContext.lineCap = "round";
-
-        // this.drawContext.beginPath();
-        // this.drawContext.moveTo(x, y);
-        // this.drawContext.lineTo(x + width/2, y - height);
-        // this.drawContext.lineTo(x + width, y);
-        // this.drawContext.lineTo(x,y);
-
-        // this.drawContext.fill();
-        // if(fillStyle && fillStyle != "")
-        // {
-        //     this.drawContext.beginPath();
-        //     this.drawContext.moveTo(x, y);
-        //     this.drawContext.lineTo(x + width/2, y - height);
-        //     this.drawContext.lineTo(x + width, y);
-        //     this.drawContext.lineTo(x,y);
-        //     this.drawContext.fill();
-        // }
-        // if(strokeStyle && strokeStyle != "")
-        // {
-        //     this.drawContext.beginPath();
-        //     this.drawContext.moveTo(x, y);
-        //     this.drawContext.lineTo(x + width/2, y - height);
-        //     this.drawContext.moveTo(x + width/2, y - height);
-        //     this.drawContext.lineTo(x + width, y);
-        //     this.drawContext.moveTo(x + width, y);
-        //     this.drawContext.lineTo(x,y);    
-        //     this.drawContext.stroke();
-        // }    
-
+        return this.makeVectorObject(
+            x, y, width, height, 
+            fillColor, fillAlpha, centering, strokeColor, strokeAlpha, strokeWidth,
+            (graphics, cx, cy) =>
+            {
+                graphics.moveTo(cx, cy + height);
+                graphics.lineTo(cx + width/2, cy);
+                graphics.lineTo(cx + width, cy + height);
+                graphics.lineTo(cx, cy + height);
+                graphics.closePath();
+            });
     }
-
-    print(text: string, x: number, y:number, size: number = 16, 
-        fillStyle: string = "#FFFFFF", 
-        strokeStyle: string = "",
-        strokeWidth: number = 1,
-        alpha: number = 1.0)
-    {
-        // this.drawContext.fillStyle = fillStyle
-        // this.drawContext.strokeStyle = strokeStyle;
-        // this.drawContext.font = `${size}px sans-serif`;
-        // this.drawContext.globalAlpha = alpha;
-        // this.drawContext.lineWidth = strokeWidth;
-
-        // if(fillStyle && fillStyle != "")
-        // {
-        //     this.drawContext.fillText(text, x,y);
-        // }
-        // if(strokeStyle && strokeStyle != "")
-        // {
-        //     this.drawContext.strokeText(text, x, y);
-        // }    
-    }
-
+    
     drawSprite(index: number, x: number, y: number, alpha: number = 1)
     {
         // this.drawContext.globalAlpha = alpha;

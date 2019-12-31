@@ -1,7 +1,7 @@
 import { IInputReceiver } from "../ui/InputReceiver";
 import { PlayerAction } from "./GameControl";
 import { IKeycodeTranslator, KeycodeTranslator } from "../ui/KeyboardInput";
-import { DrawHelper, DrawnObject } from "../ui/DrawHelper";
+import { DrawHelper, DrawnObject, DrawnVectorObject } from "../ui/DrawHelper";
 
 export class NewPlayerControl implements IInputReceiver<PlayerAction>
 {
@@ -18,6 +18,7 @@ export class NewPlayerControl implements IInputReceiver<PlayerAction>
     cancelled = false;
     translator: any = null;
     drawingObjects = new Array<DrawnObject>();
+    playerShip: DrawnVectorObject;
     
     constructor(drawing: DrawHelper, onCancel: () => void)
     {
@@ -30,7 +31,7 @@ export class NewPlayerControl implements IInputReceiver<PlayerAction>
 
         this.drawingObjects.push(
             drawing.addRectangleObject(
-                this.left, this.top, this.width, this.height, 0x777777, 0, 0, .5
+                this.left, this.top, this.width, this.height, 0x777777, 0.5
             )
         );
         let size = this.width * .1;
@@ -46,27 +47,26 @@ export class NewPlayerControl implements IInputReceiver<PlayerAction>
                 this.left + size/2, this.top + size * 1.5, this.height * .10, "#aaaa00"
             )
         );
+
+        let x = this.playerX * this.width * .8 + this.width * .1 + this.left;
+        this.playerShip = this.drawing.addTriangleObject(
+            x, this.top + this.height - size, size, size * 1.6, 0x00ff00, 1, [.5, .5],  0xFFFFFF, 1,  size * .1);
+        this.drawingObjects.push(this.playerShip);
     }
 
     render = () =>
     {
         if(this.cancelled) return;
-        //this.drawing.drawRect(this.left, this.top, this.width, this.height, "#777777", "", 0, .5);
 
         let size = this.width * .1;
         let x = this.playerX * this.width * .8 + this.width * .1 + this.left;
-        //this.drawing.drawTriangle(x - size/2, this.top + this.height - size/2, size, size * 1.6, "#00ff00", "#FFFFFF", size * .2);
+        this.playerShip.x = x;
 
         this.playerX -= this.xLeft;
         this.playerX += this.xRight;
         if(this.playerX < 0) this.playerX = 0;
         if(this.playerX > 1.0) this.playerX = 1.0;
 
-        // this.drawing.print("New Player", 
-        //     this.left + size/2, this.top + size,     this.height * .15, "#FFFF00");
-        // this.drawing.print("press an action button to start", 
-        //     this.left + size/2, this.top + size * 2, this.height * .10, "#aaaa00");
-        
         if (this.millisecondsAgo(this.lastActionTime) > 3000)
         {
             this.cancelMe();

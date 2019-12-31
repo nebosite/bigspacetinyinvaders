@@ -142,7 +142,7 @@ export class GameController
 
         if(this.newPlayerControl)
         {
-            // this.newPlayerControl.render();
+            this.newPlayerControl.render();
         }
 
         //this.showGamepadStates();
@@ -159,21 +159,21 @@ export class GameController
         let x = drawMe.x - drawMe.width/2;
         let y = drawMe.y - drawMe.height/2;
 
-        switch(drawMe.type){
-            case GameObjectType.Player: 
-                let player = drawMe as Player;
-                let colorIndex = player.number % 10;
-                this.drawing.drawSprite(90 + colorIndex, x, y);
-                this.drawing.print(player.name, x, y + 10 + drawMe.height, 10);
-                break;
-            case GameObjectType.Bullet: 
-                this.drawing.drawSprite(84, x,  y);
-                break;
-            case GameObjectType.Alien:
-                let alien = drawMe as Alien;
-                this.drawing.drawSprite(alien.alienType * 10 + alien.localFrame % 2, x, y);
-                break;
-        };
+        // switch(drawMe.type){
+        //     case GameObjectType.Player: 
+        //         let player = drawMe as Player;
+        //         let colorIndex = player.number % 10;
+        //         this.drawing.drawSprite(90 + colorIndex, x, y);
+        //         this.drawing.print(player.name, x, y + 10 + drawMe.height, 10);
+        //         break;
+        //     case GameObjectType.Bullet: 
+        //         this.drawing.drawSprite(84, x,  y);
+        //         break;
+        //     case GameObjectType.Alien:
+        //         let alien = drawMe as Alien;
+        //         this.drawing.drawSprite(alien.alienType * 10 + alien.localFrame % 2, x, y);
+        //         break;
+        // };
     }
 
     //-------------------------------------------------------------------------
@@ -203,14 +203,14 @@ export class GameController
     //-------------------------------------------------------------------------
     showGamepadStates()
     {
-        for(var i = 0; i < 10; i++)
-        {
-            this.drawing.print(`A${i}: ${this.inputState[GamepadInputCode.Axis0 + i]}`, 30, 50 + i *15);
-        }
-        for(var i = 0; i < 20; i++)
-        {
-            this.drawing.print(`B${i}: ${this.inputState[GamepadInputCode.Button00 + i]}`, 330, 50 + i *15);
-        }
+        // for(var i = 0; i < 10; i++)
+        // {
+        //     this.drawing.print(`A${i}: ${this.inputState[GamepadInputCode.Axis0 + i]}`, 30, 50 + i *15);
+        // }
+        // for(var i = 0; i < 20; i++)
+        // {
+        //     this.drawing.print(`B${i}: ${this.inputState[GamepadInputCode.Button00 + i]}`, 330, 50 + i *15);
+        // }
     }
 
     
@@ -247,7 +247,7 @@ export class GameController
                                 this.gamepadManager.removeTranslator(translator);
                             }
                         }
-
+                        this.newPlayerControl?.cancelMe();
                         this.newPlayerControl = null;
                         return;
                     }
@@ -314,7 +314,7 @@ export class GameController
                             }
 
                         }
-
+                        this.newPlayerControl?.cancelMe();
                         this.newPlayerControl = null;
                         return;
                     }
