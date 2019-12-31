@@ -36,6 +36,7 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
+        let unit = elapsedMilliseconds / 16;
         if(this.xLeft > 0) 
         {
             this.xLeft += 1;
@@ -48,8 +49,8 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
             if(this.xRight > this.maxSpeed) this.xRight = this.maxSpeed;
         }
         
-        this.x -= this.xLeft;
-        this.x += this.xRight;
+        this.x -= this.xLeft * unit;
+        this.x += this.xRight * unit;
         if(this.x < this.width/2) this.x = this.width/2;
         if(this.x > this.appModel.worldSize.width - this.width/2) {
             this.x = this.appModel.worldSize.width - this.width/2;

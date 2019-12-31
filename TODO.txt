@@ -1,20 +1,5 @@
 
 TODO
-    [x] Use a controller to add a player
-    [x] Resize to the web page 
-        [x] make sure it works full screen
-        https://zinoui.com/blog/javascript-fullscreen-api
-    [x] Move thinking and player regulation into the app model
-    [x] Shooting
-        [x] Track the shooting keys when you map them
-    [x] Align sprite draws to that they don't have the little lines
-    [x] Players should go away after 20 seconds of intactivity
-    [x] Show player ID under ship
-    [x] Different color Ships
-    [x] Remember player identity when they re-enter with same controls
-    [x] Aliens
-    [x] Try out webgl drawing   
-        https://dev.to/samthor/webgl-point-sprites-a-tutorial-4m6p
     [ ] Pay attention to gametime to account for frame rates
     [ ] Alien Bullets
     [ ] Can kill aliens
@@ -48,6 +33,23 @@ NEW
 
 
 DONE
+    [x] Use a controller to add a player
+    [x] Resize to the web page 
+        [x] make sure it works full screen
+        https://zinoui.com/blog/javascript-fullscreen-api
+    [x] Move thinking and player regulation into the app model
+    [x] Shooting
+        [x] Track the shooting keys when you map them
+    [x] Align sprite draws to that they don't have the little lines
+    [x] Players should go away after 20 seconds of intactivity
+    [x] Show player ID under ship
+    [x] Different color Ships
+    [x] Remember player identity when they re-enter with same controls
+    [x] Aliens
+    [x] Try out webgl drawing   
+        https://dev.to/samthor/webgl-point-sprites-a-tutorial-4m6p
+
+
     [x] Add a controlled player when a known control surface enganges
         [x] player presses arrow set, WASD, IJKL, NUMPAD
         [x] Little translucent window opens up, asks player to press fire button (suggestions provided)

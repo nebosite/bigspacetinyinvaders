@@ -143,6 +143,7 @@ export class GameController
     animation_loop = (event: unknown) => {
         let gameTime = Date.now();
         let elapsed = gameTime - this.lastFrameTime;
+        this.lastFrameTime = gameTime;
 
         if(this.play_ding)
         {

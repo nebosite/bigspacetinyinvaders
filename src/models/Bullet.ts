@@ -3,6 +3,7 @@ import { IAppModel } from "./AppModel";
 
 export class Bullet extends GameObject{
     appModel: IAppModel;
+    velocity: number;
 
     constructor(appModel: IAppModel){
         super();
@@ -10,13 +11,17 @@ export class Bullet extends GameObject{
         this.type = GameObjectType.Bullet;
         this.width = 1;
         this.height = 4;
+        this.velocity = 300;
     }
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
-        for(let i = 0; i < 3; i++)
+        let movement = elapsedMilliseconds  /1000.0 * this.velocity;
+        let steps = Math.floor(movement /2 ) + 1;
+        let delta = movement / steps;
+        for(let i = 0; i < steps; i++)
         {
-            this.y -= 2;
+            this.y -= delta;
             if(this.y < 0)
             {
                 this.appModel.removeGameObject(this);
