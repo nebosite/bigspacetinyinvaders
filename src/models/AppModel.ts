@@ -80,8 +80,10 @@ export class AppModel implements IAppModel
     startLevel()
     {
         this.shouldStartLevel = false;
-        let columns = Math.floor((this.worldSize.width * .8) / 20);
-        let rows = Math.floor((this.worldSize.height * .6) / 20);
+        let alienSize = 11;
+        let alienSpacing = alienSize + 4;
+        let columns = Math.floor((this.worldSize.width * .8) / alienSpacing);
+        let rows = Math.floor((this.worldSize.height * .6) / alienSpacing);
         let hive = new Hive(this);
         this.addGameObject(hive);
 
@@ -90,8 +92,8 @@ export class AppModel implements IAppModel
             for(let j = 0; j < rows; j++)
             {
                 let newAlien = new Alien(this);
-                newAlien.x = 20 + i * 20;
-                newAlien.y = 100 + j * 20;
+                newAlien.x = 50 + i * alienSpacing;
+                newAlien.y = 100 + j * alienSpacing;
                 if(j < 2) newAlien.alienType = 2;
                 else if (j < 8) newAlien.alienType = 1;
                 this.addGameObject(newAlien);

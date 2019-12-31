@@ -1,6 +1,7 @@
 
 TODO
-    [ ] Pay attention to gametime to account for frame rates
+    [x] Pay attention to gametime to account for frame rates
+    [x] Real space invader glyphs
     [ ] Alien Bullets
     [ ] Can kill aliens
     [ ] Aliens can kill player
