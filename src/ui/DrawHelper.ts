@@ -83,10 +83,20 @@ export class DrawnSprite extends DrawnObject
     get rotation(): number { return this._pixiObject.rotation; }
     set rotation(value: number) { this._pixiObject.rotation = value; }
 
-    constructor(drawHelper: DrawHelper, pixiObject : PIXI.Sprite)
+    private _textureFrame = 0;
+    private _textures: Array<PIXI.Texture>;
+    get textureFrame(): number { return this._textureFrame; }
+    set textureFrame(value: number) { 
+        this._textureFrame = value; 
+        this._pixiObject.texture = this._textures[this._textureFrame];
+     }
+
+    constructor(drawHelper: DrawHelper, pixiObject : PIXI.Sprite, textures: Array<PIXI.Texture>, textureFrame: number)
     {
         super(drawHelper, pixiObject);
-        this._pixiObject = pixiObject;   
+        this._pixiObject = pixiObject;  
+        this._textureFrame = textureFrame;
+        this._textures = textures; 
     }
 }
 
@@ -266,17 +276,17 @@ export class DrawHelper {
     //-------------------------------------------------------------------------
     addSpriteObject(name: string, index: number, x: number, y: number, alpha: number = 1)
     {
-        let spriteLookup = this.indexedSprites.get(name);
-        if(!spriteLookup) {
+        let textures = this.indexedSprites.get(name);
+        if(!textures) {
             throw new Error(`Unknown sprite: ${name}`); 
         }
-        let sprite = new PIXI.Sprite(spriteLookup[index]);
+        let sprite = new PIXI.Sprite(textures[index]);
         sprite.anchor.set(.5);
         sprite.x = x;
         sprite.y = y;
         sprite.alpha = alpha;
         this.pixiStage.addChild(sprite);
-        return new DrawnSprite(this, sprite);
+        return new DrawnSprite(this, sprite, textures, index);
     }
     
     //-------------------------------------------------------------------------

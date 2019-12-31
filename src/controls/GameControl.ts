@@ -7,7 +7,8 @@ import { DrawHelper, DrawnObject, DrawnText } from "../ui/DrawHelper";
 import { GamepadManager, GamepadInputCode, GamepadTranslator } from "../ui/GamepadInput";
 import { GameObjectType, GameObject } from "../models/GameObject";
 import { Alien } from "../models/Alien";
-import { GameObjectRenderer, PlayerObjectRenderer } from "./GameObjectRendering";
+import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienObjectRenderer } from "./GameObjectRendering";
+import { Bullet } from "src/models/Bullet";
 
 const PLAYER_SIZE = 16;
 
@@ -104,88 +105,11 @@ export class GameController
         switch(gameObject.type)
         {
             case GameObjectType.Player: this.renderingControls.set(gameObject, new PlayerObjectRenderer(gameObject as Player, this.drawing)); break;
-        }
-    }
-
-    //-------------------------------------------------------------------------
-    // Deal with removed objects
-    //-------------------------------------------------------------------------
-    handleRemovedGameObject = (gameObject: GameObject) => {
-        let renderer = this.renderingControls.get(gameObject);
-        if(!renderer) return;
-        renderer.delete();
-        this.renderingControls.delete(gameObject);
-    }
-
-
-    //-------------------------------------------------------------------------
-    // Animation Loop
-    //-------------------------------------------------------------------------
-    animation_loop = (event: unknown) => {
-        let gameTime = Date.now();
-        let elapsed = gameTime - this.lastFrameTime;
-        let lastFrameTime = gameTime;
-
-        // if (this.resized_recently) {
-        //     this.drawing.resizeToWindow();
-        //     this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
-        //     this.resized_recently = false;
-        // }
-
-        if(this.play_ding)
-        {
-            this.play_ding = false;
-            const sound = new Audio("ding.wav");
-            sound.play();
+            case GameObjectType.Bullet: this.renderingControls.set(gameObject, new BulletObjectRenderer(gameObject as Bullet, this.drawing)); break;
+            case GameObjectType.Alien: this.renderingControls.set(gameObject, new AlienObjectRenderer(gameObject as Alien, this.drawing)); break;
         }
 
-        // Clear the screen
-        // this.drawing.clear("#000000");
-
-        // Show some info about the current frame and screen size
-        this.frameText.x = 10;
-        this.frameText.y =  this.drawing.height - 20;
-        this.frameText.text =  "Frame: " + this.frame;
-        // this.drawing.print(
-        //     "Frame: " + this.frame, 
-        //     10, this.drawing.height - 20, 10,"#0000FF");
-
-        // Update rendered object
-        this.appModel.think(gameTime, elapsed);
-        for(let renderer of this.renderingControls.values()) {
-            renderer.render();
-        };
-
-        if(this.appModel.getPlayers().length == 0 && !this.inviteText)
-        {
-            this.inviteText = this.drawing.addTextObject("Use movement controls to add a new player...",
-                this.drawing.width/2, this.drawing.height - 100, 20,"#FFFFFF","",0,2000, [.5,.5]);
-        }
-        if(this.appModel.getPlayers().length > 0 && this.inviteText)
-        {
-            this.inviteText.delete();
-            this.inviteText = null;
-        }
-
-        if(this.newPlayerControl)
-        {
-            this.newPlayerControl.render();
-        }
-
-        //this.showGamepadStates();
-
-        this.frame++;
-        requestAnimationFrame(this.animation_loop);
-    }
-
-    //-------------------------------------------------------------------------
-    // drawGameObject
-    //-------------------------------------------------------------------------
-    drawGameObject(drawMe: GameObject)
-    {
-        let x = drawMe.x - drawMe.width/2;
-        let y = drawMe.y - drawMe.height/2;
-
+        
         // switch(drawMe.type){
         //     case GameObjectType.Player: 
         //         let player = drawMe as Player;
@@ -201,6 +125,64 @@ export class GameController
         //         this.drawing.drawSprite(alien.alienType * 10 + alien.localFrame % 2, x, y);
         //         break;
         // };
+    }
+
+    //-------------------------------------------------------------------------
+    // Deal with removed objects
+    //-------------------------------------------------------------------------
+    handleRemovedGameObject = (gameObject: GameObject) => {
+        let renderer = this.renderingControls.get(gameObject);
+        if(!renderer) return;
+        renderer.delete();
+        this.renderingControls.delete(gameObject);
+    }
+
+    //-------------------------------------------------------------------------
+    // Animation Loop
+    //-------------------------------------------------------------------------
+    animation_loop = (event: unknown) => {
+        let gameTime = Date.now();
+        let elapsed = gameTime - this.lastFrameTime;
+
+        if(this.play_ding)
+        {
+            this.play_ding = false;
+            const sound = new Audio("ding.wav");
+            sound.play();
+        }
+
+        // Show some info about the current frame and screen size
+        this.frameText.x = 10;
+        this.frameText.y =  this.drawing.height - 20;
+        this.frameText.text =  "Frame: " + this.frame;
+
+        // Update rendered object
+        this.appModel.think(gameTime, elapsed);
+        for(let renderer of this.renderingControls.values()) {
+            renderer.render();
+        };
+
+        if(this.appModel.getPlayers().length == 0 && !this.inviteText)
+        {
+            this.inviteText = this.drawing.addTextObject("Use movement controls to add a new player...",
+                this.drawing.width/2, this.drawing.height - 100, 20,"#FFFFFF","",0,2000, [.5,.5]);
+        }
+
+        if(this.appModel.getPlayers().length > 0 && this.inviteText)
+        {
+            this.inviteText.delete();
+            this.inviteText = null;
+        }
+
+        if(this.newPlayerControl)
+        {
+            this.newPlayerControl.render();
+        }
+
+        //this.showGamepadStates();
+
+        this.frame++;
+        requestAnimationFrame(this.animation_loop);
     }
 
     //-------------------------------------------------------------------------
