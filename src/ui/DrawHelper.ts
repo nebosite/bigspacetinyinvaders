@@ -16,7 +16,7 @@ export class DrawnObject
         this.drawHelper = drawHelper;
     }
 
-    remove() {
+    delete() {
         this.drawHelper.removeTrackedObject(this.id);
     }
 
@@ -41,6 +41,22 @@ export class DrawnText extends DrawnObject
     }
 }
 
+export class DrawnRectangle extends DrawnObject 
+{
+    private _pixiObject: PIXI.Graphics;
+    get x(): number { return this._pixiObject.x; }
+    set x(value: number) { this._pixiObject.x = value; }
+    
+    get y(): number { return this._pixiObject.y; }
+    set y(value: number) { this._pixiObject.y = value; }
+
+    constructor(drawHelper: DrawHelper, pixiObject : PIXI.Graphics)
+    {
+        super(drawHelper);
+        this._pixiObject = pixiObject;   
+    }
+}
+
 
 export class DrawHelper {
 // https://github.com/kittykatattack/learningPixi
@@ -51,7 +67,6 @@ export class DrawHelper {
     pixiRenderer: PIXI.Renderer;
     pixiStage: PIXI.Container;
     shipTextures: PIXI.Texture[] = new Array<PIXI.Texture>();
-    trackedItems = new Map<number, any>();
 
     width = 0;
     height = 0;
@@ -105,10 +120,9 @@ export class DrawHelper {
     //-------------------------------------------------------------------------
     // Remove an item from the stage
     //-------------------------------------------------------------------------
-    removeTrackedObject(id: number)
+    removeTrackedObject(removeMe: any)
     {
-        this.pixiStage.removeChild(this.trackedItems.get(id));
-        this.trackedItems.delete(id);
+        this.pixiStage.removeChild(removeMe);
     }
 
     //-------------------------------------------------------------------------
@@ -144,31 +158,23 @@ export class DrawHelper {
         pixiText.x = x;
         pixiText.y = y;
         this.pixiStage.addChild(pixiText);
-        let returnMe = new DrawnText(this, pixiText );
-        this.trackedItems.set(returnMe.id,pixiText );
-        return returnMe;
+        return new DrawnText(this, pixiText );
     } 
-    
-    drawRect(x: number, y: number, width: number, height: number, 
-        fillStyle: string = "#FFFFFF", 
-        strokeStyle: string = "", 
+
+    addRectangleObject(x: number, y: number, width: number, height: number, 
+        fillColor: number, 
+        strokeColor:number, 
         lineWidth: number = 1, alpha: number = 1.0)
     {
-        // this.drawContext.fillStyle = fillStyle
-        // this.drawContext.strokeStyle = strokeStyle;
-        // this.drawContext.globalAlpha = alpha;
-        // this.drawContext.lineWidth = lineWidth;
-
-        // if(fillStyle && fillStyle != "")
-        // {
-        //     this.drawContext.fillRect(x, y, width, height);
-        // }
-        // if(strokeStyle && strokeStyle != "")
-        // {
-        //     this.drawContext.strokeRect(x, y, width, height);
-        // }    
+        let graphics = new PIXI.Graphics();
+        graphics.lineStyle(lineWidth, strokeColor, alpha, 0);
+        graphics.beginFill(fillColor, alpha);
+        graphics.drawRect(x,y,width, height);
+        graphics.endFill();
+        this.pixiStage.addChild(graphics);
+        return new DrawnRectangle(this, graphics);
     }
-
+    
     drawTriangle(x: number, y: number, width: number, height: number, 
         fillStyle: string = "#FFFFFF", 
         strokeStyle: string = "", 

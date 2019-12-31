@@ -136,7 +136,7 @@ export class GameController
         }
         if(this.appModel.getPlayers().length > 0 && this.inviteText)
         {
-            this.inviteText.remove();
+            this.inviteText.delete();
             this.inviteText = null;
         }
 
