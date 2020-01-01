@@ -7,7 +7,7 @@ export class Bullet extends GameObject{
     source: GameObject;
 
     constructor(appModel: IAppModel, source: GameObject){
-        super();
+        super(appModel);
         this.appModel = appModel;
         this.type = GameObjectType.Bullet;
         this.width = 1;
@@ -28,6 +28,14 @@ export class Bullet extends GameObject{
             {
                 this.appModel.removeGameObject(this);
             }
+
+            let target = this.appModel.hitTest(this);
+            if(target)
+            {
+                target.doDamage(1);
+                this.appModel.removeGameObject(this);
+            }
+            
         }
     }
 }

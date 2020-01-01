@@ -91,7 +91,6 @@ export class NewPlayerControl implements IInputReceiver<PlayerAction>
             case PlayerAction.Left: this.xLeft = .03 * value; break;
             case PlayerAction.Right: this.xRight = .03 * value; break;
         }   
-        console.log(`I: ${action}:${value}   ${this.xLeft},${this.xRight}`);
         this.lastActionTime = Date.now();
     };
 }

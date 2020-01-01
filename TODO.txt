@@ -2,8 +2,8 @@
 TODO
     [x] Pay attention to gametime to account for frame rates
     [x] Real space invader glyphs
-    [ ] Alien Bullets
-    [ ] Can kill aliens
+    [x] Alien Bullets
+    [x] Can kill aliens
     [ ] Aliens can kill player
     [ ] Aliens can win
     [ ] Shields

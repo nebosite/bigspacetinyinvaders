@@ -16,10 +16,9 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
     lastActivityTime = Date.now();
     name: string = "dude";
     number = 0;
-    onCleanup= () => {};
 
     constructor(appModel: IAppModel){
-        super();
+        super(appModel);
         this.appModel = appModel;
         this.type = GameObjectType.Player;
     }
@@ -57,10 +56,9 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         }
 
         if(this.shooting) this.maybeShoot();
-        if(Date.now() - this.lastActivityTime > 25000)
+        if(Date.now() - this.lastActivityTime > 25000 && !shooting)
         {
-            this.onCleanup();
-            this.appModel.removeGameObject(this);
+            this.delete();
         }
     }
 

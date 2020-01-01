@@ -19,6 +19,7 @@ export interface IAppModel
     onPlayerRemoved: (player: Player) => void;
     onAddedGameObject: (gameObject: GameObject) => void;
     onRemovedGameObject: (gameObject: GameObject) => void;
+    hitTest: (gameObject: GameObject) => GameObject | undefined;
 
     worldSize: { width:number, height: number} ;
     playerSize: number;
@@ -122,5 +123,28 @@ export class AppModel implements IAppModel
     addGameObject(gameObject: GameObject){
         this.gameObjects.set(gameObject.id, gameObject); 
         this.onAddedGameObject(gameObject); 
+    }
+
+    //---------------------------------------------------------------------------
+    // 
+    //---------------------------------------------------------------------------
+    hitTest(gameObject: GameObject)
+    {
+        if(gameObject.type == GameObjectType.Bullet)
+        {
+            let bullet = gameObject as Bullet;
+            if(bullet.source.type == GameObjectType.Player)
+            {
+                for(let target of this.getGameObjects())
+                {
+                    if(target.type != GameObjectType.Alien) continue;
+                    let dx = Math.abs(bullet.x - target.x);
+                    if(dx > 10) continue;
+                    let dy = Math.abs(bullet.y - target.y);
+                    if(dy > 10) continue;
+                    return target;
+                }
+            }
+        }
     }
 }

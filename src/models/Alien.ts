@@ -8,9 +8,11 @@ export class Alien extends GameObject{
     appModel: IAppModel;
     localFrame = 0;
     alienType = 0;
+    hitPoints = 1;
+    explosionEnd = 0;
 
     constructor(appModel: IAppModel){
-        super();
+        super(appModel);
         this.appModel = appModel;
         this.type = GameObjectType.Alien;
         this.width = 16;
@@ -19,7 +21,15 @@ export class Alien extends GameObject{
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
+        if(this.hitPoints <= 0 && this.explosionEnd == 0)
+        {
+            this.explosionEnd = gameTime + 200;
+        }
 
+        if(this.explosionEnd > 0 && this.explosionEnd < gameTime)
+        {
+            this.delete();
+        }
     }
 
     shoot()
@@ -30,4 +40,9 @@ export class Alien extends GameObject{
         bullet.y = this.y;
         this.appModel.addGameObject(bullet);
     }
+
+    doDamage(damageAmount: number) {
+        this.hitPoints -= damageAmount;  
+    }
+
 }

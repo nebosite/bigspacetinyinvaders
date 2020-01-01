@@ -14,7 +14,7 @@ export class Hive extends GameObject{
     bulletCache = 0;
 
     constructor(appModel: IAppModel){
-        super();
+        super(appModel);
         this.appModel = appModel;
         this.type = GameObjectType.Hive;
         this.width = 1;

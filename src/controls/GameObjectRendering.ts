@@ -81,7 +81,9 @@ export class AlienObjectRenderer extends GameObjectRenderer
         super.render();
         if(!this.drawnObject) return;
         let alien = this.gameObject as Alien;
-        (this.drawnObject as DrawnSprite).textureFrame = alien.alienType * 2 + alien.localFrame % 2
+        let textureFrame =  alien.alienType * 2 + alien.localFrame % 2;
+        if (alien.hitPoints <= 0) textureFrame = 6;
+        (this.drawnObject as DrawnSprite).textureFrame = textureFrame;
     };
 
 }

@@ -16,7 +16,7 @@ document.body.style.background = "Green";
 let drawing = new DrawHelper();
 drawing.addIndexedSpriteTextures("sprites/ship", ".png", 2, 10);
 drawing.addIndexedSpriteTextures("sprites/bullet", ".png", 2, 2);
-drawing.addIndexedSpriteTextures("sprites/alien", ".png", 2, 6);
+drawing.addIndexedSpriteTextures("sprites/alien", ".png", 2, 7);
 
 var theGameController = new GameController(theApp, drawing);
 

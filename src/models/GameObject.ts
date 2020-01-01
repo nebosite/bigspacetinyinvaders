@@ -1,3 +1,4 @@
+import { IAppModel, AppModel } from "./AppModel";
 
 export enum GameObjectType
 {
@@ -18,7 +19,23 @@ export class GameObject
     height = 1;
     id: number = GameObjectCount++;
     type: GameObjectType = GameObjectType.Unknown;
+    appModel: IAppModel;
+    isDeleted = false;
+    onCleanup = () => {};
+
+    constructor(appModel: IAppModel)
+    {
+        this.appModel = appModel;
+    }
+
+    delete()
+    {
+        if(this.isDeleted) return;
+        this.isDeleted = true;
+        this.onCleanup();
+        this.appModel.removeGameObject(this);
+    }
 
     think(gameTime: number, elapsedMilliseconds: number) {};
-
+    doDamage(damageAmount: number) {};
 }
