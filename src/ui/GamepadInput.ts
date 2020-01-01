@@ -1,4 +1,5 @@
 import { IInputReceiver } from "./InputReceiver";
+import { accessibility } from "pixi.js";
 
 class GamepadState
 {
@@ -11,6 +12,7 @@ class GamepadState
 export interface IGamepadInputCodeTranslator {
     handleInputChange: (code: GamepadInputCode, controllerIndex: number, value: number, lastValue: number) => boolean;
     getHandledCodes: () => IterableIterator<GamepadInputCode>;
+    controllerIndex: number;
 }
 
 export enum GamepadInputCode {
@@ -20,10 +22,10 @@ export enum GamepadInputCode {
     Axis_Stick0Y,
     Axis_Stick1X,
     Axis_Stick1Y,
-    Axis_LeftShoulder,
-    Axis_RightShoulder,
-    Axis_LeftTrigger,
-    Axis_RightTrigger,
+    Axis4,
+    Axis5,
+    Axis6,
+    Axis7,
     Axis8,
     Axis9,
     Button00 = 20,
@@ -31,10 +33,10 @@ export enum GamepadInputCode {
     Button_DiamondRight,
     Button_DiamondLeft,
     Button_DiamondUp,
-    Button04,
-    Button05,
-    Button06,
-    Button07,
+    Button_ShoulderLeft,
+    Button_ShoulderRight,
+    Button_TriggerLeft,
+    Button_TriggerRight,
     Button_Back,
     Button_Forward,
     Button_Stick0,
@@ -61,34 +63,92 @@ export enum GamepadInputCode {
 
 // Translations for [Pro Controller (STANDARD GAMEPAD Vendor: 057e Product: 2009)
 const axisTranslations = new Map<string, Array<GamepadInputCode>>(
-    [["057e", [
-        GamepadInputCode.Axis_Stick0X,
-        GamepadInputCode.Axis_Stick0Y,
-        GamepadInputCode.Axis_Stick1X,
-        GamepadInputCode.Axis_Stick1Y,
-    ]]]);
+    [
+        ["057e", [
+            GamepadInputCode.Axis_Stick0X,
+            GamepadInputCode.Axis_Stick0Y,
+            GamepadInputCode.Axis_Stick1X,
+            GamepadInputCode.Axis_Stick1Y,
+            ]
+        ],
+        ["xbox 360", [
+            GamepadInputCode.Axis_Stick0X,
+            GamepadInputCode.Axis_Stick0Y,
+            GamepadInputCode.Axis_Stick1X,
+            GamepadInputCode.Axis_Stick1Y,
+            ]
+        ],
+        ["STANDARD GAMEPAD", [
+            GamepadInputCode.Axis_Stick0X,
+            GamepadInputCode.Axis_Stick0Y,
+            GamepadInputCode.Axis_Stick1X,
+            GamepadInputCode.Axis_Stick1Y,
+            ]
+        ]
+    ]);
 
 const buttonTranslations = new Map<string, Array<GamepadInputCode>>(
-    [["057e", [
-        GamepadInputCode.Button_DiamondDown,
-        GamepadInputCode.Button_DiamondRight,
-        GamepadInputCode.Button_DiamondLeft,
-        GamepadInputCode.Button_DiamondUp,
-        GamepadInputCode.Button04,
-        GamepadInputCode.Button05,
-        GamepadInputCode.Button06,
-        GamepadInputCode.Button07,
-        GamepadInputCode.Button_Back,
-        GamepadInputCode.Button_Forward,
-        GamepadInputCode.Button_Stick0,
-        GamepadInputCode.Button_Stick1,
-        GamepadInputCode.Button_DPadUp,
-        GamepadInputCode.Button_DPadDown,
-        GamepadInputCode.Button_DPadLeft,
-        GamepadInputCode.Button_DPadRight,
-        GamepadInputCode.Button_Home,
-        GamepadInputCode.Button_Snap,
-    ]]]);
+    [
+        ["057e", [
+            GamepadInputCode.Button_DiamondDown,
+            GamepadInputCode.Button_DiamondRight,
+            GamepadInputCode.Button_DiamondLeft,
+            GamepadInputCode.Button_DiamondUp,
+            GamepadInputCode.Button_ShoulderLeft,
+            GamepadInputCode.Button_ShoulderRight,
+            GamepadInputCode.Button_TriggerLeft,
+            GamepadInputCode.Button_TriggerRight,
+            GamepadInputCode.Button_Back,
+            GamepadInputCode.Button_Forward,
+            GamepadInputCode.Button_Stick0,
+            GamepadInputCode.Button_Stick1,
+            GamepadInputCode.Button_DPadUp,
+            GamepadInputCode.Button_DPadDown,
+            GamepadInputCode.Button_DPadLeft,
+            GamepadInputCode.Button_DPadRight,
+            GamepadInputCode.Button_Home,
+            GamepadInputCode.Button_Snap,
+            ]
+        ],
+        ["xbox 360", [
+            GamepadInputCode.Button_DiamondDown,
+            GamepadInputCode.Button_DiamondRight,
+            GamepadInputCode.Button_DiamondLeft,
+            GamepadInputCode.Button_DiamondUp,
+            GamepadInputCode.Button_ShoulderLeft,
+            GamepadInputCode.Button_ShoulderRight,
+            GamepadInputCode.Button_TriggerLeft,
+            GamepadInputCode.Button_TriggerRight,
+            GamepadInputCode.Button_Back,
+            GamepadInputCode.Button_Forward,
+            GamepadInputCode.Button_Stick0,
+            GamepadInputCode.Button_Stick1,
+            GamepadInputCode.Button_DPadUp,
+            GamepadInputCode.Button_DPadDown,
+            GamepadInputCode.Button_DPadLeft,
+            GamepadInputCode.Button_DPadRight,
+            ]
+        ],
+        ["STANDARD GAMEPAD", [
+            GamepadInputCode.Button_DiamondDown,
+            GamepadInputCode.Button_DiamondRight,
+            GamepadInputCode.Button_DiamondLeft,
+            GamepadInputCode.Button_DiamondUp,
+            GamepadInputCode.Button_ShoulderLeft,
+            GamepadInputCode.Button_ShoulderRight,
+            GamepadInputCode.Button_TriggerLeft,
+            GamepadInputCode.Button_TriggerRight,
+            GamepadInputCode.Button_Back,
+            GamepadInputCode.Button_Forward,
+            GamepadInputCode.Button_Stick0,
+            GamepadInputCode.Button_Stick1,
+            GamepadInputCode.Button_DPadUp,
+            GamepadInputCode.Button_DPadDown,
+            GamepadInputCode.Button_DPadLeft,
+            GamepadInputCode.Button_DPadRight,
+            ]
+        ]
+    ]);
 
     
 // ------------------------------------------------------------------------
@@ -100,13 +160,15 @@ export class GamepadTranslator<T> implements IGamepadInputCodeTranslator {
     private subscribers = new Array<IInputReceiver<T>>();
     private inputActions = new Map<GamepadInputCode, T[]>();
     name: string;
-    
+    controllerIndex : number;
+
     // ------------------------------------------------------------------------
     // ctor
     // ------------------------------------------------------------------------
-    constructor(name: string)
+    constructor(name: string, controllerIndex: number)
     {
         this.name = name;
+        this.controllerIndex = controllerIndex;
     }
 
     // ------------------------------------------------------------------------
@@ -216,8 +278,8 @@ export class GamepadManager {
         const gamePads = navigator.getGamepads();
         if(gamePads)
         {
-            for (var i = 0, len = gamePads.length; i < len; i++) {
-                const gp =  gamePads[i] as Gamepad;
+            for (var gamePadIndex = 0, len = gamePads.length; gamePadIndex < len; gamePadIndex++) {
+                const gp =  gamePads[gamePadIndex] as Gamepad;
                 if(!gp) continue;
 
                 if(!this.gamePadStates.has(gp.index))
@@ -238,15 +300,17 @@ export class GamepadManager {
                 {
                     const code = GamepadInputCode.Axis0 + i;
                     let key = gp.index * 1000 + code;
-                    if(state.axes[i] != gp.axes[i]) {
+                    let axisState = gp.axes[i];
+                    if(Math.abs(axisState) < .1) axisState = 0;
+                    if(state.axes[i] != axisState) {
                         if(this.handlerLookup.has(key)) {
-                            this.handlerLookup.get(code)?.handleInputChange(code, gp.index, gp.axes[i], state.axes[i]);
+                            this.handlerLookup.get(key)?.handleInputChange(code, gp.index, axisState, state.axes[i]);
                         }
                         else {
-                            this.onUnhandledInputCode(gp.index, code, gp.axes[i]);
+                            this.onUnhandledInputCode(gp.index, code, axisState);
                         }
                     }
-                    state.axes[i] = gp.axes[i];
+                    state.axes[i] = axisState;
                 }
 
                 for(var i = 0; i < gp.buttons.length; i++)
@@ -256,9 +320,10 @@ export class GamepadManager {
                     var newValue = gp.buttons[i].value;
                     if(newValue == 0 && gp.buttons[i].pressed) newValue = 1;
                     if(newValue == 1 && !gp.buttons[i].pressed) newValue = 0;
+                    if(newValue < 0.1) newValue = 0;
                     if(state.buttons[i] != newValue) {
                         if(this.handlerLookup.has(key)) {
-                            this.handlerLookup.get(code)?.handleInputChange(code, gp.index, newValue, state.buttons[i]);
+                            this.handlerLookup.get(key)?.handleInputChange(code, gp.index, newValue, state.buttons[i]);
                         }
                         else {
                             this.onUnhandledInputCode(gp.index, code, newValue);
@@ -279,7 +344,7 @@ export class GamepadManager {
         if(connecting) {
             // access like this: gam
             const gp = gamepadEvent.gamepad;    
-            console.log(`Connect detected: Axes:${gp.axes.length} Buttons:${gp.buttons.length} Id:${gp.id}`);
+            console.log(`Connect detected: Index:${gp.index} Axes:${gp.axes.length} Buttons:${gp.buttons.length} Id:${gp.id}`);
             
             let newState = new GamepadState();
             gp.buttons.forEach(b => newState.buttons.push(b.value));
@@ -301,11 +366,11 @@ export class GamepadManager {
     // ------------------------------------------------------------------------
     // addTranslator
     // ------------------------------------------------------------------------
-    addTranslator = (translator: IGamepadInputCodeTranslator, controllerIndex: number) =>
+    addTranslator = (translator: IGamepadInputCodeTranslator) =>
     {
         for(let code of translator.getHandledCodes())
         {
-            this.handlerLookup.set(code + controllerIndex * 1000, translator);
+            this.handlerLookup.set(code + translator.controllerIndex * 1000, translator);
         }
     }
 
@@ -314,7 +379,8 @@ export class GamepadManager {
     // ------------------------------------------------------------------------
     removeTranslator = (translator: IGamepadInputCodeTranslator) =>
     {
-        for(let key of Array.from( this.handlerLookup.keys()) ) {
+        for(let partialKey of Array.from( this.handlerLookup.keys()) ) {
+            let key = partialKey + translator.controllerIndex * 1000;
             if(this.handlerLookup.get(key) === translator)
             {
                 this.handlerLookup.delete(key);

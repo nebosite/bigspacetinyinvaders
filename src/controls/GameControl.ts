@@ -68,8 +68,8 @@ export class GameController
     CommonGamepadActionButtonLayouts  = new Map([
         ["DPad", [GamepadInputCode.Button_DPadDown,GamepadInputCode.Button_DPadLeft,GamepadInputCode.Button_DPadRight,GamepadInputCode.Button_DPadUp]],
         ["Diamond", [GamepadInputCode.Button_DiamondDown,GamepadInputCode.Button_DiamondLeft,GamepadInputCode.Button_DiamondRight,GamepadInputCode.Button_DiamondUp]],
-        ["Right Trigger", [GamepadInputCode.Axis_RightTrigger,GamepadInputCode.Axis_RightShoulder]],
-        ["Left Trigger", [GamepadInputCode.Axis_LeftTrigger,GamepadInputCode.Axis_LeftShoulder]],
+        ["Right Trigger", [GamepadInputCode.Button_ShoulderRight,GamepadInputCode.Button_TriggerRight]],
+        ["Left Trigger", [GamepadInputCode.Button_ShoulderLeft,GamepadInputCode.Button_TriggerLeft]],
     ]); 
 
     //-------------------------------------------------------------------------
@@ -108,23 +108,6 @@ export class GameController
             case GameObjectType.Bullet: this.renderingControls.set(gameObject, new BulletObjectRenderer(gameObject as Bullet, this.drawing)); break;
             case GameObjectType.Alien: this.renderingControls.set(gameObject, new AlienObjectRenderer(gameObject as Alien, this.drawing)); break;
         }
-
-        
-        // switch(drawMe.type){
-        //     case GameObjectType.Player: 
-        //         let player = drawMe as Player;
-        //         let colorIndex = player.number % 10;
-        //         this.drawing.drawSprite(90 + colorIndex, x, y);
-        //         this.drawing.print(player.name, x, y + 10 + drawMe.height, 10);
-        //         break;
-        //     case GameObjectType.Bullet: 
-        //         this.drawing.drawSprite(84, x,  y);
-        //         break;
-        //     case GameObjectType.Alien:
-        //         let alien = drawMe as Alien;
-        //         this.drawing.drawSprite(alien.alienType * 10 + alien.localFrame % 2, x, y);
-        //         break;
-        // };
     }
 
     //-------------------------------------------------------------------------
@@ -208,19 +191,30 @@ export class GameController
         return newPlayer;
     }
 
+    gamePadText: DrawnText | null = null;
+
     //-------------------------------------------------------------------------
     // showGamepadStates
     //-------------------------------------------------------------------------
     showGamepadStates()
     {
-        // for(var i = 0; i < 10; i++)
-        // {
-        //     this.drawing.print(`A${i}: ${this.inputState[GamepadInputCode.Axis0 + i]}`, 30, 50 + i *15);
-        // }
-        // for(var i = 0; i < 20; i++)
-        // {
-        //     this.drawing.print(`B${i}: ${this.inputState[GamepadInputCode.Button00 + i]}`, 330, 50 + i *15);
-        // }
+        if(!this.gamePadText)
+        {
+            this.gamePadText = this.drawing.addTextObject("", 10,10, 14);
+        }
+
+        let output = "";
+        for(var i = 0; i < 10; i++)
+        {
+            output += `A${i}: ${this.inputState[GamepadInputCode.Axis0 + i]}\n`;
+        }
+        output += '\n';
+        for(var i = 0; i < 20; i++)
+        {
+            output += `B${i}: ${this.inputState[GamepadInputCode.Button00 + i]}\n`;
+        }
+
+        this.gamePadText.text = output;
     }
 
     
@@ -229,6 +223,7 @@ export class GameController
     //-------------------------------------------------------------------------
     handleUnhandledGamepadCode = (controllerIndex: number, code: GamepadInputCode, value: number) => {
         this.inputState[code] = value;
+        if(this.gamePadText) return;
         if(this.newPlayerControl) 
         {
             // Let's see if the staged player has pressed a fire key
@@ -253,7 +248,7 @@ export class GameController
                             let newPlayer = this.generatePlayer(translator.name);
                             translator.addSubscriber(newPlayer);
                             this.appModel.addPlayer(newPlayer);
-                            this.gamepadManager.addTranslator(translator, controllerIndex);
+                            this.gamepadManager.addTranslator(translator);
                             newPlayer.onCleanup = () =>{
                                 this.gamepadManager.removeTranslator(translator);
                             }
@@ -273,7 +268,7 @@ export class GameController
                 {
                     if(value[i] == code)
                     {
-                        var newTranslator = new GamepadTranslator<PlayerAction>(`${key}:${controllerIndex}`);
+                        var newTranslator = new GamepadTranslator<PlayerAction>(`${key}:${controllerIndex}`, controllerIndex);
                         this.newPlayerControl = new NewPlayerControl(this.drawing, () =>
                         {
                             this.gamepadManager.removeTranslator(newTranslator);
@@ -283,7 +278,7 @@ export class GameController
                         newTranslator.mapAxis(value[0], PlayerAction.Left, PlayerAction.Right);
                         newTranslator.mapAxis(value[1], PlayerAction.Up, PlayerAction.Down);
 
-                        this.gamepadManager.addTranslator(newTranslator, controllerIndex);
+                        this.gamepadManager.addTranslator(newTranslator);
                         newTranslator.addSubscriber(this.newPlayerControl);
                         this.newPlayerControl.translator = newTranslator;
                     }
