@@ -3,7 +3,7 @@ TODO
     [x] Add version
     [x] Move frame into diagnostics
         [x] Diagnostics on/off with a keystroke (`)
-    [ ] smooth out controller movement, slow accelleration rate
+    [x] smooth out controller movement, slow accelleration rate
     [ ] Add some color  
         [ ] Gradient background
         [ ] sillouette citiscape?

@@ -11,7 +11,7 @@ export class DiagnosticsControl
     gamePad: GamepadManager;
     keyboard: KeyboardManager;
     appDiagnostics: AppDiagnostics;
-    fontSize = 12;
+    fontSize = 16;
     lastFrameTime = Date.now();
     cancelled = false;
     averageThinkTime = 0;
@@ -27,6 +27,7 @@ export class DiagnosticsControl
         this.drawing = drawing;
         this.appDiagnostics = appDiagnostics;
         
+        this.fontSize = drawing.height / 80;
         this.drawingObjects.push(drawing.addRectangleObject(0,0, 500,500,0x000000, .7));
 
         this.frameRateText = drawing.addTextObject("F:", 5,5,this.fontSize);
