@@ -10,6 +10,7 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
     xTargetVelocity = 0;
     accelerationRate = 30;
     maxSpeed = 6;
+    shootRate = 5;
     onShoot = (player: Player) => {};
     appModel: IAppModel;
     shooting = false;
@@ -66,7 +67,8 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
 
     maybeShoot(){
         let millisecondsSinceLastShot = Date.now() - this.lastShotTime;
-        if(millisecondsSinceLastShot < 300) return;
+        let timeBetweenShots = 1000/this.shootRate;
+        if(millisecondsSinceLastShot < timeBetweenShots) return;
         this.lastShotTime= Date.now();
         var bullet = new Bullet(this.appModel, this);
         bullet.x = this.x;

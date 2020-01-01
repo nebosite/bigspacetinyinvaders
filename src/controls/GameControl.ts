@@ -10,6 +10,7 @@ import { Alien } from "../models/Alien";
 import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienObjectRenderer } from "./GameObjectRendering";
 import { Bullet } from "src/models/Bullet";
 import { DiagnosticsControl } from "./DiagnosticsControl";
+import { GLOBALS } from "src/globals";
 
 const PLAYER_SIZE = 16;
 
@@ -97,7 +98,7 @@ export class GameController
 
         for(var i = 0; i < 50; i++) this.inputState.push(0);
 
-        this.versonText = drawing.addTextObject("Version 0.0.1.0", 5, drawing.height, 15, "#800000", "", 0, 1000, [0,1]);
+        this.versonText = drawing.addTextObject(`Version ${GLOBALS.version}`, 5, drawing.height, 15, "#800000", "", 0, 1000, [0,1]);
     } 
 
     //-------------------------------------------------------------------------

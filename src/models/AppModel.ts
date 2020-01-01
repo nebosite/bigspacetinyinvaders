@@ -36,7 +36,7 @@ export interface IAppModel
     onPlayerRemoved: (player: Player) => void;
     onAddedGameObject: (gameObject: GameObject) => void;
     onRemovedGameObject: (gameObject: GameObject) => void;
-    hitTest: (gameObject: GameObject) => GameObject | undefined;
+    hitTest: (gameObject: GameObject) => GameObject | null;
     diagnostics: AppDiagnostics;
 
     worldSize: { width:number, height: number} ;
@@ -56,6 +56,8 @@ export class AppModel implements IAppModel
     onRemovedGameObject = (gameObject: GameObject) => {};
     shouldStartLevel = true;
     diagnostics = new AppDiagnostics();
+    collisionCellSize = 50;
+
 
     private _worldSize = {width: 10, height: 10};
     get worldSize(): { width:number, height: number} {return this._worldSize;}
@@ -80,12 +82,41 @@ export class AppModel implements IAppModel
         this.addGameObject(player);
     }
 
+    collisionLookup: Array<Array<Array<GameObject>>> = new Array<Array<Array<GameObject>>>();
+
     //---------------------------------------------------------------------------
     // 
     //---------------------------------------------------------------------------
     think (gameTime: number, elapsedMilliseconds: number) {
         this.diagnostics.addFrame(elapsedMilliseconds);
         let startTime = Date.now();
+
+        // Create a lookup Table to speed up collision tests
+        let xCellCount = Math.ceil(this.worldSize.width / this.collisionCellSize);
+        let yCellCount = Math.ceil(this.worldSize.height / this.collisionCellSize);
+        
+        for(let x = 0; x < xCellCount; x++)
+        {
+            this.collisionLookup[x] = new Array<Array<GameObject>>();
+            for(let y = 0; y < yCellCount; y++)
+            {
+                this.collisionLookup[x][y] = new Array<GameObject>();
+            }
+        }
+
+        this.gameObjects.forEach( gameObject => {
+            let xCell = Math.floor(gameObject.x / this.collisionCellSize);
+            if(xCell < 0) xCell = 0;
+            if(xCell >= xCellCount) xCell = xCellCount - 1;
+
+            let yCell = Math.floor(gameObject.y / this.collisionCellSize);
+            if(yCell < 0) yCell = 0;
+            if(yCell >= yCellCount) yCell = yCellCount - 1;
+
+            this.collisionLookup[xCell][yCell].push(gameObject);
+        });   
+       
+
         this.gameObjects.forEach( gameObject => {
             gameObject.think(gameTime, elapsedMilliseconds);
         });   
@@ -152,21 +183,45 @@ export class AppModel implements IAppModel
     //---------------------------------------------------------------------------
     hitTest(gameObject: GameObject)
     {
+        let gridXSize = this.collisionLookup.length;
+        let gridYSize = this.collisionLookup[0].length;
+        let xCell = Math.floor(gameObject.x / this.collisionCellSize);
+        if(xCell < 0) xCell = 0;
+        if(xCell >= gridXSize) xCell = gridXSize - 1;
+
+        let yCell = Math.floor(gameObject.y / this.collisionCellSize);
+        if(yCell < 0) yCell = 0;
+        if(yCell >= gridYSize) yCell = gridYSize - 1;
+    
         if(gameObject.type == GameObjectType.Bullet)
         {
             let bullet = gameObject as Bullet;
             if(bullet.source.type == GameObjectType.Player)
             {
-                for(let target of this.getGameObjects())
+                for(let x = -1; x < 2; x++) 
                 {
-                    if(target.type != GameObjectType.Alien) continue;
-                    let dx = Math.abs(bullet.x - target.x);
-                    if(dx > 10) continue;
-                    let dy = Math.abs(bullet.y - target.y);
-                    if(dy > 10) continue;
-                    return target;
+                    let xRead = xCell + x;
+                    if(xRead < 0 || xRead >= gridXSize) continue;
+                    for(let y = -1; y < 2; y++)
+                    {
+                        let yRead = yCell + y;
+                        if(yRead < 0 || yRead >= gridYSize) continue;
+
+                        for(let i = 0; i < this.collisionLookup[xRead][yRead].length; i++)
+                        {
+                            let target = this.collisionLookup[xRead][yRead][i];
+                            if(target.type != GameObjectType.Alien) continue;
+                            let dx = Math.abs(bullet.x - target.x);
+                            if(dx > 10) continue;
+                            let dy = Math.abs(bullet.y - target.y);
+                            if(dy > 10) continue;
+                            return target;
+
+                        }
+                    }
                 }
             }
         }
+        return null;
     }
 }
