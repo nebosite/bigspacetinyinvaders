@@ -56,7 +56,7 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         }
 
         if(this.shooting) this.maybeShoot();
-        if(Date.now() - this.lastActivityTime > 25000 && !shooting)
+        if(Date.now() - this.lastActivityTime > 25000 && !this.shooting)
         {
             this.delete();
         }
