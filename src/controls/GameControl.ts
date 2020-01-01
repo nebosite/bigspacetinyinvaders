@@ -234,6 +234,7 @@ export class GameController
         if(this.gamePadText) return;
         if(this.newPlayerControl) 
         {
+            if(this.newPlayerControl.controllerId != controllerIndex.toString()) return;
             // Let's see if the staged player has pressed a fire key
             this.CommonGamepadActionButtonLayouts.forEach((value, key) =>
             {
@@ -277,7 +278,7 @@ export class GameController
                     if(value[i] == code)
                     {
                         var newTranslator = new GamepadTranslator<PlayerAction>(`${key}:${controllerIndex}`, controllerIndex);
-                        this.newPlayerControl = new NewPlayerControl(this.drawing, () =>
+                        this.newPlayerControl = new NewPlayerControl(controllerIndex.toString(), this.drawing, () =>
                         {
                             this.gamepadManager.removeTranslator(newTranslator);
                             this.newPlayerControl = null;
@@ -312,6 +313,7 @@ export class GameController
 
         if(this.newPlayerControl) 
         {
+            if(this.newPlayerControl.controllerId != 'keyboard') return;
             // Let's see if the staged player has pressed a fire key
             this.CommonActionKeyLayouts.forEach((value, key) =>
             {
@@ -355,7 +357,7 @@ export class GameController
                     if(value[i] == keyCode)
                     {
                         var newTranslator = new KeycodeTranslator<PlayerAction>(key);
-                        this.newPlayerControl = new NewPlayerControl(this.drawing, () =>
+                        this.newPlayerControl = new NewPlayerControl('keyboard', this.drawing, () =>
                         {
                             this.keyboardManager.removeTranslator(newTranslator);
                             this.newPlayerControl = null;

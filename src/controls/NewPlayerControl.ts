@@ -19,9 +19,11 @@ export class NewPlayerControl implements IInputReceiver<PlayerAction>
     translator: any = null;
     drawingObjects = new Array<DrawnObject>();
     playerShip: DrawnVectorObject;
+    controllerId = "";
     
-    constructor(drawing: DrawHelper, onCancel: () => void)
+    constructor(controllerId: string, drawing: DrawHelper, onCancel: () => void)
     {
+        this.controllerId = controllerId;
         this.drawing = drawing;
         this.width = drawing.width * .25;
         this.height = this.width * .6;

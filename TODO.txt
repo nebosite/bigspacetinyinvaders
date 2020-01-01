@@ -4,10 +4,7 @@ TODO
     [x] Move frame into diagnostics
         [x] Diagnostics on/off with a keystroke (`)
     [x] smooth out controller movement, slow accelleration rate
-    [ ] Add some color  
-        [ ] Gradient background
-        [ ] sillouette citiscape?
-    [ ] Limit controller initiation to the same device
+    [x] Limit controller initiation to the same device
     [ ] Fix slow hit test
     [ ] Remove dead invaders from the hive
         [ ] Aliens should not shoot when they are dead, they should know they are dead and thrown an error
@@ -22,6 +19,9 @@ EASY/URGENT
 NEXT
 
 SOON
+    [ ] Add some color  
+        [ ] Gradient background
+        [ ] sillouette citiscape?
     [ ] Add player score, total score, max score, score graph, time alive
         - Player death resets score to zero
     [ ] Alien position is broken, especially for small screens
