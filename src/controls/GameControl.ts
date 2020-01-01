@@ -42,9 +42,9 @@ export class GameController
     inputState = new Array<number>();
     playerIdentities = new Map<string, PlayerIdentity>();
     seenPlayersCount = 0;
-    frameText: DrawnText;
     inviteText: DrawnText | null = null;
     renderingControls = new Map<GameObject, GameObjectRenderer>();
+    versonText: DrawnText;
 
     CommonDirectionKeyLayouts = new Map([
         ["IJKL", [73,74,75,76]],
@@ -80,7 +80,7 @@ export class GameController
         this.appModel = appModel; 
         this.drawing = drawing; 
         this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
-        this.drawing.onWindowResized = (w,h) => this.appModel.worldSize = {width: w, height: h};
+        this.drawing.onWindowResized = this.handleResize;
         appModel.onPlayerRemoved = player => {};
         appModel.onAddedGameObject = this.handleAddedGameObject;
         appModel.onRemovedGameObject = this.handleRemovedGameObject;
@@ -95,8 +95,15 @@ export class GameController
 
         for(var i = 0; i < 50; i++) this.inputState.push(0);
 
-        this.frameText = drawing.addTextObject("Frame:", 10, 10, 12, "#00eeFF");
+        this.versonText = drawing.addTextObject("Version 0.0.1.0", 5, drawing.height, 15, "#800000", "", 0, 1000, [0,1]);
     } 
+
+    //-------------------------------------------------------------------------
+    // uhoh, the window resized
+    //-------------------------------------------------------------------------
+    handleResize = (width: number, height: number) =>{
+        this.appModel.worldSize = {width: width, height: height};
+    }
 
     //-------------------------------------------------------------------------
     // Deal with added objects
@@ -135,11 +142,6 @@ export class GameController
             sound.play();
         }
 
-        // Show some info about the current frame and screen size
-        this.frameText.x = 10;
-        this.frameText.y =  this.drawing.height - 20;
-        this.frameText.text =  "Frame: " + this.frame;
-
         // Update rendered object
         this.appModel.think(gameTime, elapsed);
         for(let renderer of this.renderingControls.values()) {
@@ -164,6 +166,12 @@ export class GameController
         }
 
         //this.showGamepadStates();
+        this.versonText.y = this.drawing.height - 5;
+        if(this.inviteText)
+        {
+            this.inviteText.x = this.drawing.width/2;
+            this.inviteText.y = this.drawing.height - 100;
+        }
 
         this.frame++;
         requestAnimationFrame(this.animation_loop);

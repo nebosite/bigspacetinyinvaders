@@ -296,5 +296,6 @@ export class DrawHelper {
         this.pixiRenderer.resize(window.innerWidth, window.innerHeight);
         this.width = window.innerWidth;
         this.height = window.innerHeight;
+        this.onWindowResized(this.width, this.height);
     }
 }

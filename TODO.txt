@@ -1,39 +1,71 @@
 
 TODO
-    [x] Pay attention to gametime to account for frame rates
-    [x] Real space invader glyphs
-    [x] Alien Bullets
-    [x] Can kill aliens
-    [ ] Aliens can kill player
-    [ ] Aliens can win
-    [ ] Shields
-
+    [x] Add version
+    [ ] Move frame into diagnostics
+        [ ] Have the controller code give you diagnostic text
+        [ ] Diagnostics on/off with a keystroke (F10)
+    [ ] smooth out controller movement, slow accelleration rate
+    [ ] Add some color  
+        [ ] Gradient background
+        [ ] sillouette citiscape?
+    [ ] Limit controller initiation to the same device
+    [ ] Fix slow hit test
+    [ ] Remove dead invaders from the hive
+        [ ] Aliens should not shoot when they are dead, they should know they are dead and thrown an error
     
 
 NEW
-    [ ] Improve performance
-        https://www.html5rocks.com/en/tutorials/canvas/performance/
-    [ ] Sounds when new player window comes up
-    [ ] Sound when player enters
+
+EASY/URGENT
+
+
+NEXT
+
+SOON
+    [ ] Add player score, total score, max score, score graph, time alive
+        - Player death resets score to zero
+    [ ] Alien position is broken, especially for small screens
+    [ ] Shields
+    [ ] Aliens can kill player
+    [ ] Aliens can win
+    [ ] Simple Sounds
+        [ ] Player window up/down
+        [ ] Player enters
+        [ ] Player shot
+        [ ] Alien destroyed
+
+LATER
+    [ ] Generate alien rows gradually in waves (add animation)
     [ ] Animation on entry
-    [ ] Show players on slightly differet levels
     [ ] Powerup: Homing shots
-    [ ] Individual score + coop score
     [ ] More powerups with coop score is high
         - playing "zone"
         - powerups distributed
         - kills distributed
         - sharing energy with others
     [ ] Resizing should reset game object positions
-    [ ] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/
-    [ ] Break up logic and graphics frames
     [ ] Pack resources too: https://webpack.js.org/guides/typescript/
+
+PROBABLY NEVER
+    [ ] Improve canvas performance
+        https://www.html5rocks.com/en/tutorials/canvas/performance/
+    [ ] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/
     [ ] Setup tests with JEST  https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c
-    [ ] Optimization: use raw byte buffer for sprites
-    [ ] Alert when using IE
+    [ ] Alert when using IE    
+
+        
+
+    
 
 
-DONE
+
+
+DONE ================================================================================================================================
+    [x] Pay attention to gametime to account for frame rates
+    [x] Real space invader glyphs
+    [x] Alien Bullets
+    [x] Can kill aliens
+
     [x] Use a controller to add a player
     [x] Resize to the web page 
         [x] make sure it works full screen
