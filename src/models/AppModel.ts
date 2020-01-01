@@ -136,22 +136,28 @@ export class AppModel implements IAppModel
         this.shouldStartLevel = false;
         let alienSize = 11;
         let alienSpacing = alienSize + 4;
-        let columns = Math.floor((this.worldSize.width * .8) / alienSpacing);
-        let rows = Math.floor((this.worldSize.height * .6) / alienSpacing);
-        let hive = new Hive(this);
+        let ufoArea = alienSize * 5;
+        let playerArea = 50;
+        let shieldArea = 60;
+        let yForAliens = this.worldSize.height - ufoArea - playerArea - shieldArea;
+        let xForAliens = this.worldSize.width - alienSpacing * 4;
+        let columns = Math.ceil((xForAliens * .7) / alienSpacing);
+        let rows = Math.ceil((yForAliens * .7) / alienSpacing);
+        let hive = new Hive(this, columns * rows);
         this.addGameObject(hive);
 
         for(let i = 0; i < columns; i++)
         {
             for(let j = 0; j < rows; j++)
             {
-                let newAlien = new Alien(this);
-                newAlien.x = 50 + i * alienSpacing;
-                newAlien.y = 100 + j * alienSpacing;
-                if(j < 2) newAlien.alienType = 2;
-                else if (j < 8) newAlien.alienType = 1;
+                let newType = 0;
+                if(j < 2) newType = 2;
+                else if (j < 8) newType = 1;
+                let newAlien = new Alien(this, newType);
+                newAlien.x = alienSpacing * 3 + i * alienSpacing;
+                newAlien.y = alienSpacing * 3 + j * alienSpacing;
                 this.addGameObject(newAlien);
-                hive.members.push(newAlien);
+                hive.addMember(newAlien);
             }
         }
 

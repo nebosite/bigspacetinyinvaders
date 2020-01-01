@@ -8,9 +8,9 @@ import { GamepadManager, GamepadInputCode, GamepadTranslator } from "../ui/Gamep
 import { GameObjectType, GameObject } from "../models/GameObject";
 import { Alien } from "../models/Alien";
 import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienObjectRenderer } from "./GameObjectRendering";
-import { Bullet } from "src/models/Bullet";
+import { Bullet } from "../models/Bullet";
 import { DiagnosticsControl } from "./DiagnosticsControl";
-import { GLOBALS } from "src/globals";
+import { GLOBALS } from "../globals";
 
 const PLAYER_SIZE = 16;
 

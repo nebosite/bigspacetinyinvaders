@@ -5,7 +5,7 @@ TODO
         [x] Diagnostics on/off with a keystroke (`)
     [x] smooth out controller movement, slow accelleration rate
     [x] Limit controller initiation to the same device
-    [ ] Fix slow hit test
+    [x] Fix slow hit test
     [ ] Remove dead invaders from the hive
         [ ] Aliens should not shoot when they are dead, they should know they are dead and thrown an error
     
