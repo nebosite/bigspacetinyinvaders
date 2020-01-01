@@ -1,11 +1,8 @@
-import { IInputReceiver } from "../ui/InputReceiver";
-import { PlayerAction } from "./GameControl";
-import { IKeycodeTranslator, KeycodeTranslator } from "../ui/KeyboardInput";
 import { DrawHelper, DrawnObject, DrawnVectorObject, DrawnSprite } from "../ui/DrawHelper";
-import { GameObject } from "src/models/GameObject";
-import { Player } from "src/models/Player";
-import { Bullet } from "src/models/Bullet";
-import { Alien } from "src/models/Alien";
+import { GameObject, GameObjectType } from "../models/GameObject";
+import { Player } from "../models/Player";
+import { Bullet } from "../models/Bullet";
+import { Alien } from "../models/Alien";
 
 export class GameObjectRenderer
 {
@@ -55,17 +52,27 @@ export class PlayerObjectRenderer extends GameObjectRenderer
 
 export class BulletObjectRenderer extends GameObjectRenderer
 {
-    constructor(gameObject: Bullet, drawing: DrawHelper)
+    constructor(gameObject: Bullet, drawing: DrawHelper) 
     {
         super(gameObject,
-            drawing.addSpriteObject("sprites/bullet", 0, gameObject.x, gameObject.y) as DrawnObject);
+            drawing.addSpriteObject("sprites/bullet", BulletObjectRenderer.getBullentTextureIndex(gameObject), gameObject.x, gameObject.y) as DrawnObject);
+    }
+
+    static getBullentTextureIndex(bullet: Bullet)
+    {   
+        var type = bullet.source.type;
+        switch(type)
+        {
+            case GameObjectType.Player : return 0;
+            default: return 1;
+        }
     }
 }
 
 export class AlienObjectRenderer extends GameObjectRenderer
 {
     constructor(gameObject: Alien, drawing: DrawHelper)
-    {
+    { 
         super(gameObject,
             drawing.addSpriteObject("sprites/alien", gameObject.alienType * 2, gameObject.x, gameObject.y) as DrawnObject);
     }

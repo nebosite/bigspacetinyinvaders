@@ -11,6 +11,7 @@ export class Hive extends GameObject{
     descend = 0;
     nextTick = 0;
     tickSpan = 1000;
+    bulletCache = 0;
 
     constructor(appModel: IAppModel){
         super();
@@ -31,7 +32,15 @@ export class Hive extends GameObject{
             return;
         }
 
+        if(this.bulletCache > 0)
+        {
+            this.bulletCache--;
+            let alien = this.members[Math.floor(Math.random() * this.members.length)];
+            alien.shoot();
+        }
+
         if(gameTime < this.nextTick) return;
+        this.bulletCache += 10;
         this.nextTick = gameTime + this.tickSpan;
 
         let shouldReverse = false;

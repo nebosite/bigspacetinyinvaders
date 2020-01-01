@@ -68,7 +68,7 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         let millisecondsSinceLastShot = Date.now() - this.lastShotTime;
         if(millisecondsSinceLastShot < 300) return;
         this.lastShotTime= Date.now();
-        var bullet = new Bullet(this.appModel);
+        var bullet = new Bullet(this.appModel, this);
         bullet.x = this.x;
         bullet.y = this.y - this.height;
         this.appModel.addGameObject(bullet);
