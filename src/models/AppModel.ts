@@ -8,6 +8,23 @@ import { Alien } from "./Alien";
 //---------------------------------------------------------------------------
 // 
 //---------------------------------------------------------------------------
+export class AppDiagnostics
+{
+    frame = 0;
+    lastThinkTime = 0;
+    frameRate = 60;
+
+    addFrame(elapsedTime: number)
+    {
+        this.frame++;
+        let newRate = 1000/elapsedTime;
+        this.frameRate = this.frameRate * .99 + newRate * .01;
+    }
+}
+
+//---------------------------------------------------------------------------
+// 
+//---------------------------------------------------------------------------
 export interface IAppModel
 {
     addPlayer: (player: Player) => void; 
@@ -20,6 +37,7 @@ export interface IAppModel
     onAddedGameObject: (gameObject: GameObject) => void;
     onRemovedGameObject: (gameObject: GameObject) => void;
     hitTest: (gameObject: GameObject) => GameObject | undefined;
+    diagnostics: AppDiagnostics;
 
     worldSize: { width:number, height: number} ;
     playerSize: number;
@@ -37,6 +55,7 @@ export class AppModel implements IAppModel
     onAddedGameObject = (gameObject: GameObject) => {};
     onRemovedGameObject = (gameObject: GameObject) => {};
     shouldStartLevel = true;
+    diagnostics = new AppDiagnostics();
 
     private _worldSize = {width: 10, height: 10};
     get worldSize(): { width:number, height: number} {return this._worldSize;}
@@ -65,6 +84,8 @@ export class AppModel implements IAppModel
     // 
     //---------------------------------------------------------------------------
     think (gameTime: number, elapsedMilliseconds: number) {
+        this.diagnostics.addFrame(elapsedMilliseconds);
+        let startTime = Date.now();
         this.gameObjects.forEach( gameObject => {
             gameObject.think(gameTime, elapsedMilliseconds);
         });   
@@ -73,6 +94,7 @@ export class AppModel implements IAppModel
         {
             this.startLevel();
         }
+        this.diagnostics.lastThinkTime = Date.now() - startTime;
     }
 
     //---------------------------------------------------------------------------

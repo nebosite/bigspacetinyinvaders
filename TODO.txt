@@ -1,9 +1,8 @@
 
 TODO
     [x] Add version
-    [ ] Move frame into diagnostics
-        [ ] Have the controller code give you diagnostic text
-        [ ] Diagnostics on/off with a keystroke (F10)
+    [x] Move frame into diagnostics
+        [x] Diagnostics on/off with a keystroke (`)
     [ ] smooth out controller movement, slow accelleration rate
     [ ] Add some color  
         [ ] Gradient background
@@ -15,6 +14,7 @@ TODO
     
 
 NEW
+    [ ] Add concept of children in drawing code to simplify the movement of complex objects
 
 EASY/URGENT
 

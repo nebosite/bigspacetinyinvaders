@@ -9,6 +9,7 @@ import { GameObjectType, GameObject } from "../models/GameObject";
 import { Alien } from "../models/Alien";
 import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienObjectRenderer } from "./GameObjectRendering";
 import { Bullet } from "src/models/Bullet";
+import { DiagnosticsControl } from "./DiagnosticsControl";
 
 const PLAYER_SIZE = 16;
 
@@ -38,6 +39,7 @@ export class GameController
     keyboardManager: KeyboardManager;
     gamepadManager: GamepadManager;
     newPlayerControl: NewPlayerControl | null = null;
+    diagnosticsControl: DiagnosticsControl | null = null;
     lastFrameTime = Date.now();
     inputState = new Array<number>();
     playerIdentities = new Map<string, PlayerIdentity>();
@@ -160,10 +162,8 @@ export class GameController
             this.inviteText = null;
         }
 
-        if(this.newPlayerControl)
-        {
-            this.newPlayerControl.render();
-        }
+        if(this.newPlayerControl) this.newPlayerControl.render();
+        if(this.diagnosticsControl) this.diagnosticsControl.render();
 
         //this.showGamepadStates();
         this.versonText.y = this.drawing.height - 5;
@@ -299,6 +299,17 @@ export class GameController
     // handle keyboard
     //-------------------------------------------------------------------------
     handleUnhandledKey = (keyCode: number) => {
+        if(keyCode == 192){ // ` turns diagnostics on/off
+            if(this.diagnosticsControl) {
+                this.diagnosticsControl.cancelMe();
+                this.diagnosticsControl = null;
+            }
+            else {
+                this.diagnosticsControl = new DiagnosticsControl(this.drawing, this.gamepadManager, this.keyboardManager, this.appModel.diagnostics)
+            }
+            return;
+        }
+
         if(this.newPlayerControl) 
         {
             // Let's see if the staged player has pressed a fire key
