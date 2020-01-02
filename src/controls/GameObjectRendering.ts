@@ -35,7 +35,7 @@ export class PlayerObjectRenderer extends GameObjectRenderer
         super(gameObject,
             drawing.addSpriteObject("sprites/ship", gameObject.number % 10, gameObject.x, gameObject.y) as DrawnObject);
 
-        this.playerName = drawing.addTextObject(gameObject.name, gameObject.x, gameObject.y + 10, 12, "#ffffff", "", 0, 300, [.5, 0]);
+        this.playerName = drawing.addTextObject(gameObject.name, gameObject.x, gameObject.y + 10, 10, "#ffffff", "", 0, 300, [.5, 0]);
     }
 
     render(){
@@ -43,6 +43,14 @@ export class PlayerObjectRenderer extends GameObjectRenderer
         if(!this.playerName) return;
         this.playerName.x = this.gameObject.x;
         this.playerName.y = this.gameObject.y + 10;
+        let player = this.gameObject as Player;
+        if(player)
+        {
+            if(player.dyingTime > 0)
+            {
+                this.drawnObject.rotation += .4;
+            }
+        }
     };
 
     delete() {

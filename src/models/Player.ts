@@ -6,6 +6,7 @@ import { Bullet } from "./Bullet";
 
 export class Player extends GameObject implements IInputReceiver<PlayerAction>
 {
+    hitPoints = 1;
     xVelocity = 0;
     xTargetVelocity = 0;
     accelerationRate = 30;
@@ -18,6 +19,7 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
     lastActivityTime = Date.now();
     name: string = "dude";
     number = 0;
+    dyingTime = 0;
 
     constructor(appModel: IAppModel){
         super(appModel);
@@ -26,6 +28,7 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
     }
 
     actionChanged = (action: PlayerAction, value: number) => {
+        if(this.dyingTime > 0) return;
         switch(action)
         {
             case PlayerAction.Left: this.xTargetVelocity = -value * this.maxSpeed; break;
@@ -63,6 +66,12 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         {
             this.delete();
         }
+
+        if(this.dyingTime > 0) 
+        {
+            this.dyingTime -= elapsedMilliseconds;
+            if(this.dyingTime <= 0) this.delete();
+        }
     }
 
     maybeShoot(){
@@ -75,4 +84,13 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         bullet.y = this.y - this.height;
         this.appModel.addGameObject(bullet);
     }
+
+    doDamage(damageAmount: number) {
+        this.hitPoints -= damageAmount;
+        if(this.hitPoints <= 0)
+        {
+            this.dyingTime = 1000;
+            this.shooting = false;
+        }
+    };
 }
