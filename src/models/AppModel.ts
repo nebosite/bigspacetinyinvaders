@@ -176,8 +176,9 @@ export class AppModel implements IAppModel
     {
         let xForShields = this.worldSize.width;
         let shieldWidth = 44;
-        let shieldSpacing = 120;
+        let shieldSpacing = 220;
         let shieldCount = Math.floor(xForShields / shieldSpacing);
+        if(shieldCount < 3) shieldCount = 3;
         let xForSpace = this.worldSize.width - shieldWidth * shieldCount;
         let padding = xForSpace / 2 / shieldCount;
 

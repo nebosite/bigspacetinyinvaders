@@ -285,7 +285,6 @@ export class DrawHelper {
         sprite.x = x;
         sprite.y = y;
         sprite.alpha = alpha;
-        sprite.colo.
         this.pixiStage.addChild(sprite);
         return new DrawnSprite(this, sprite, textures, index);
     }
