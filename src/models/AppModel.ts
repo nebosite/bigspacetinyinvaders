@@ -198,6 +198,8 @@ export class AppModel implements IAppModel
         let columns = Math.ceil((xForAliens * .9) / alienSpacing);
         let rows = Math.ceil((yForAliens * .7) / alienSpacing);
         let hive = new Hive(this, columns * rows);
+        let topRowCount = Math.ceil(rows * .05);
+        let nextRowCount = Math.ceil(rows * .2) + topRowCount;
         this.addGameObject(hive);
 
         for(let i = 0; i < columns; i++)
@@ -205,8 +207,8 @@ export class AppModel implements IAppModel
             for(let j = 0; j < rows; j++)
             {
                 let newType = 0;
-                if(j < 2) newType = 2;
-                else if (j < 8) newType = 1;
+                if(j < topRowCount) newType = 2;
+                else if (j < nextRowCount) newType = 1;
                 let newAlien = new Alien(this, newType);
                 newAlien.x = alienSpacing * 3 + i * alienSpacing;
                 newAlien.y = alienSpacing * 3 + j * alienSpacing;

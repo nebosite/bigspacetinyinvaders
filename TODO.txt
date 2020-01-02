@@ -1,11 +1,17 @@
 
 TODO
     [x] Shields
-    [ ] Aliens can kill player
-    [ ] Aliens can win
-    [ ] When Hive dies, kick off next level
-    [ ] Add player score, total score, max score, score graph, time alive
+    [x] Aliens can kill player
+    [ ] Add player score, total score, max score, cutoff, score graph, time alive
         - Player death resets score to zero
+    [ ] Add some color  
+        [ ] Gradient background
+        [ ] sillouette citiscape?
+    [ ] Simple Sounds
+        [ ] Player window up/down
+        [ ] Player enters
+        [ ] Player shot
+        [ ] Alien destroyed
     [ ] Default to "STANDARD GAMEPAD" if no controller is found
 
 NEW
@@ -16,14 +22,8 @@ EASY/URGENT
 NEXT
 
 SOON
-    [ ] Add some color  
-        [ ] Gradient background
-        [ ] sillouette citiscape?
-    [ ] Simple Sounds
-        [ ] Player window up/down
-        [ ] Player enters
-        [ ] Player shot
-        [ ] Alien destroyed
+    [ ] Aliens can win
+    [ ] When Hive dies, kick off next level
 
 LATER
     [ ] Generate alien rows gradually in waves (add animation)
