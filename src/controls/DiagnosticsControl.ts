@@ -28,7 +28,7 @@ export class DiagnosticsControl
         this.appDiagnostics = appDiagnostics;
         
         this.fontSize = drawing.height / 80;
-        this.drawingObjects.push(drawing.addRectangleObject(0,0, 500,500,0x000000, .7));
+        this.drawingObjects.push(drawing.addRectangleObject(0,0, 100,60,0x000000, .7));
 
         this.frameRateText = drawing.addTextObject("F:", 5,5,this.fontSize);
         this.drawingObjects.push(this.frameRateText);

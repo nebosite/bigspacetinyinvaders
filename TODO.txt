@@ -1,20 +1,5 @@
 
 TODO
-    [x] Shields
-    [x] Aliens can kill player
-    [x] Add player score, total score, max score, cutoff, score graph, time alive
-        - Player death resets score to zero
-    [x] Spread out shilelds, min 3
-    [x] Default to "STANDARD GAMEPAD" if no controller is found
-    [ ] Simple Sounds
-        [ ] Player window up/down
-        [ ] Player enters
-        [ ] Player shot
-        [ ] Alien destroyed
-    [ ] Add some color  
-        [ ] Gradient background
-        [ ] sillouette citiscape?
-        [ ] Give the aliens some color
     [ ] Aliens can win
     [ ] When Hive dies, kick off next level
 
@@ -54,6 +39,17 @@ PROBABLY NEVER
 
 
 DONE ================================================================================================================================
+Version 0.0.2.0
+    [x] Shields
+    [x] Aliens can kill player
+    [x] Add player score, total score, max score, cutoff, score graph, time alive
+        - Player death resets score to zero
+    [x] Spread out shilelds, min 3
+    [x] Default to "STANDARD GAMEPAD" if no controller is found
+    [x] Simple Sounds Player shot, Alien destroyed, player destroyed
+    [x] Add some color  
+
+
     [x] Alien position is broken, especially for small screens
     [x] Add version
     [x] Move frame into diagnostics
