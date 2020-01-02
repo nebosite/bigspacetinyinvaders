@@ -4,6 +4,7 @@ import { GameObject, GameObjectType } from "./GameObject";
 import { Bullet } from "./Bullet";
 import { Hive } from "./Hive";
 import { Alien } from "./Alien";
+import { ShieldBlock } from "./ShieldBlock";
 
 //---------------------------------------------------------------------------
 // 
@@ -57,6 +58,7 @@ export class AppModel implements IAppModel
     shouldStartLevel = true;
     diagnostics = new AppDiagnostics();
     collisionCellSize = 50;
+    hasShields = false;
 
 
     private _worldSize = {width: 10, height: 10};
@@ -90,6 +92,12 @@ export class AppModel implements IAppModel
     think (gameTime: number, elapsedMilliseconds: number) {
         this.diagnostics.addFrame(elapsedMilliseconds);
         let startTime = Date.now();
+
+        if(!this.hasShields)
+        {
+            this.hasShields = true;
+            this.createShields();
+        }
 
         // Create a lookup Table to speed up collision tests
         let xCellCount = Math.ceil(this.worldSize.width / this.collisionCellSize);
@@ -128,6 +136,54 @@ export class AppModel implements IAppModel
         this.diagnostics.lastThinkTime = Date.now() - startTime;
     }
 
+    readonly PLAYER_Y_AREA = 80;
+    readonly SHIELD_Y_AREA = 60;
+    readonly shieldMap = [
+        [0,0,1,1,1,1,1,1,1,0,0],
+        [0,1,1,1,1,1,1,1,1,1,0],
+        [1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,0,0,0,1,1,1,1],
+        [1,1,1,1,0,0,0,1,1,1,1],
+    ]
+    //---------------------------------------------------------------------------
+    // 
+    //---------------------------------------------------------------------------
+    createShields()
+    {
+        let xForShields = this.worldSize.width;
+        let shieldWidth = 44;
+        let shieldSpacing = 120;
+        let shieldCount = Math.floor(xForShields / shieldSpacing);
+        let xForSpace = this.worldSize.width - shieldWidth * shieldCount;
+        let padding = xForSpace / 2 / shieldCount;
+
+        let x = padding;
+        let y = this.worldSize.height - this.PLAYER_Y_AREA - this.SHIELD_Y_AREA;
+        for(let q = 0; q < shieldCount; q++)
+        {
+            for(let i = 0; i < this.shieldMap[0].length; i++)
+            {
+                for(let j = 0; j < this.shieldMap.length; j++)
+                {
+                    if(this.shieldMap[j][i] == 0) continue;
+                    let newBlock = new ShieldBlock(this);
+                    newBlock.x = x + i * 4;
+                    newBlock.y = y + j * 4;
+                    this.addGameObject(newBlock);
+                }
+            }
+            x += shieldWidth + padding * 2;
+        }
+    }
+
     //---------------------------------------------------------------------------
     // 
     //---------------------------------------------------------------------------
@@ -137,11 +193,9 @@ export class AppModel implements IAppModel
         let alienSize = 11;
         let alienSpacing = alienSize + 4;
         let ufoArea = alienSize * 5;
-        let playerArea = 50;
-        let shieldArea = 60;
-        let yForAliens = this.worldSize.height - ufoArea - playerArea - shieldArea;
+        let yForAliens = this.worldSize.height - ufoArea - this.PLAYER_Y_AREA - this.SHIELD_Y_AREA;
         let xForAliens = this.worldSize.width - alienSpacing * 4;
-        let columns = Math.ceil((xForAliens * .7) / alienSpacing);
+        let columns = Math.ceil((xForAliens * .9) / alienSpacing);
         let rows = Math.ceil((yForAliens * .7) / alienSpacing);
         let hive = new Hive(this, columns * rows);
         this.addGameObject(hive);
@@ -202,31 +256,37 @@ export class AppModel implements IAppModel
         if(gameObject.type == GameObjectType.Bullet)
         {
             let bullet = gameObject as Bullet;
-            if(bullet.source.type == GameObjectType.Player)
+            for(let x = -1; x < 2; x++) 
             {
-                for(let x = -1; x < 2; x++) 
+                let xRead = xCell + x;
+                if(xRead < 0 || xRead >= gridXSize) continue;
+                for(let y = -1; y < 2; y++)
                 {
-                    let xRead = xCell + x;
-                    if(xRead < 0 || xRead >= gridXSize) continue;
-                    for(let y = -1; y < 2; y++)
+                    let yRead = yCell + y;
+                    if(yRead < 0 || yRead >= gridYSize) continue;
+
+                    for(let i = 0; i < this.collisionLookup[xRead][yRead].length; i++)
                     {
-                        let yRead = yCell + y;
-                        if(yRead < 0 || yRead >= gridYSize) continue;
-
-                        for(let i = 0; i < this.collisionLookup[xRead][yRead].length; i++)
+                        let target = this.collisionLookup[xRead][yRead][i];
+                        if(bullet.source.type == GameObjectType.Player)
                         {
-                            let target = this.collisionLookup[xRead][yRead][i];
-                            if(target.type != GameObjectType.Alien) continue;
-                            let dx = Math.abs(bullet.x - target.x);
-                            if(dx > 10) continue;
-                            let dy = Math.abs(bullet.y - target.y);
-                            if(dy > 10) continue;
-                            return target;
-
+                            if(target.type != GameObjectType.Alien
+                                && target.type != GameObjectType.ShieldBlock) continue;
                         }
+                        if(bullet.source.type == GameObjectType.Alien)
+                        {
+                            if(target.type != GameObjectType.Player
+                                && target.type != GameObjectType.ShieldBlock) continue;
+                        }
+
+                        let dx = Math.abs(bullet.x - target.x);
+                        if(dx > target.width/2) continue;
+                        let dy = Math.abs(bullet.y - target.y);
+                        if(dy > target.height/2) continue;
+                        return target;                    
                     }
                 }
-            }
+            }      
         }
         return null;
     }

@@ -7,7 +7,7 @@ import { DrawHelper, DrawnObject, DrawnText } from "../ui/DrawHelper";
 import { GamepadManager, GamepadInputCode, GamepadTranslator } from "../ui/GamepadInput";
 import { GameObjectType, GameObject } from "../models/GameObject";
 import { Alien } from "../models/Alien";
-import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienObjectRenderer } from "./GameObjectRendering";
+import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienObjectRenderer, ShieldBlockObjectRenderer } from "./GameObjectRendering";
 import { Bullet } from "../models/Bullet";
 import { DiagnosticsControl } from "./DiagnosticsControl";
 import { GLOBALS } from "../globals";
@@ -117,6 +117,7 @@ export class GameController
             case GameObjectType.Player: this.renderingControls.set(gameObject, new PlayerObjectRenderer(gameObject as Player, this.drawing)); break;
             case GameObjectType.Bullet: this.renderingControls.set(gameObject, new BulletObjectRenderer(gameObject as Bullet, this.drawing)); break;
             case GameObjectType.Alien: this.renderingControls.set(gameObject, new AlienObjectRenderer(gameObject as Alien, this.drawing)); break;
+            case GameObjectType.ShieldBlock: this.renderingControls.set(gameObject, new ShieldBlockObjectRenderer(gameObject as Alien, this.drawing)); break;
         }
     }
 
@@ -171,7 +172,7 @@ export class GameController
         if(this.inviteText)
         {
             this.inviteText.x = this.drawing.width/2;
-            this.inviteText.y = this.drawing.height - 100;
+            this.inviteText.y = 100;
         }
 
         this.frame++;

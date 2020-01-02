@@ -3,6 +3,7 @@ import { GameObject, GameObjectType } from "../models/GameObject";
 import { Player } from "../models/Player";
 import { Bullet } from "../models/Bullet";
 import { Alien } from "../models/Alien";
+import { ShieldBlock } from "../models/ShieldBlock";
 
 export class GameObjectRenderer
 {
@@ -87,3 +88,22 @@ export class AlienObjectRenderer extends GameObjectRenderer
     };
 
 }
+
+export class ShieldBlockObjectRenderer extends GameObjectRenderer
+{
+    constructor(gameObject: ShieldBlock, drawing: DrawHelper) 
+    {
+        super(gameObject,
+            drawing.addSpriteObject("sprites/brick", Math.max(7 - gameObject.hitPoints, 0), gameObject.x-2, gameObject.y-2, 1, [0,0]) as DrawnObject);
+    }
+
+    render(){
+        super.render();
+        if(!this.drawnObject) return;
+        let block = this.gameObject as ShieldBlock;
+        let textureFrame = Math.max(7 - block.hitPoints, 0);
+        (this.drawnObject as DrawnSprite).textureFrame = textureFrame;
+    };
+
+}
+

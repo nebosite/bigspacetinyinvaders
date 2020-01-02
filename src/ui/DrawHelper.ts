@@ -274,14 +274,14 @@ export class DrawHelper {
     //-------------------------------------------------------------------------
     // 
     //-------------------------------------------------------------------------
-    addSpriteObject(name: string, index: number, x: number, y: number, alpha: number = 1)
+    addSpriteObject(name: string, index: number, x: number, y: number, alpha: number = 1, centering: number[] = [0.5, 0.5])
     {
         let textures = this.indexedSprites.get(name);
         if(!textures) {
             throw new Error(`Unknown sprite: ${name}`); 
         }
         let sprite = new PIXI.Sprite(textures[index]);
-        sprite.anchor.set(.5);
+        sprite.anchor.set(centering[0], centering[1]);
         sprite.x = x;
         sprite.y = y;
         sprite.alpha = alpha;

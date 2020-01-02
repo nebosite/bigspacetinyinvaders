@@ -17,6 +17,7 @@ let drawing = new DrawHelper();
 drawing.addIndexedSpriteTextures("sprites/ship", ".png", 2, 10);
 drawing.addIndexedSpriteTextures("sprites/bullet", ".png", 2, 2);
 drawing.addIndexedSpriteTextures("sprites/alien", ".png", 2, 7);
+drawing.addIndexedSpriteTextures("sprites/brick", ".png", 2, 8);
 
 var theGameController = new GameController(theApp, drawing);
 

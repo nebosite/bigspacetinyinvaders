@@ -1,17 +1,14 @@
 
 TODO
-    [x] Add version
-    [x] Move frame into diagnostics
-        [x] Diagnostics on/off with a keystroke (`)
-    [x] smooth out controller movement, slow accelleration rate
-    [x] Limit controller initiation to the same device
-    [x] Fix slow hit test
-    [ ] Remove dead invaders from the hive
-        [ ] Aliens should not shoot when they are dead, they should know they are dead and thrown an error
-    
+    [x] Shields
+    [ ] Aliens can kill player
+    [ ] Aliens can win
+    [ ] When Hive dies, kick off next level
+    [ ] Add player score, total score, max score, score graph, time alive
+        - Player death resets score to zero
+    [ ] Default to "STANDARD GAMEPAD" if no controller is found
 
 NEW
-    [ ] Add concept of children in drawing code to simplify the movement of complex objects
 
 EASY/URGENT
 
@@ -22,12 +19,6 @@ SOON
     [ ] Add some color  
         [ ] Gradient background
         [ ] sillouette citiscape?
-    [ ] Add player score, total score, max score, score graph, time alive
-        - Player death resets score to zero
-    [ ] Alien position is broken, especially for small screens
-    [ ] Shields
-    [ ] Aliens can kill player
-    [ ] Aliens can win
     [ ] Simple Sounds
         [ ] Player window up/down
         [ ] Player enters
@@ -47,20 +38,26 @@ LATER
     [ ] Pack resources too: https://webpack.js.org/guides/typescript/
 
 PROBABLY NEVER
+    [ ] Add concept of children in drawing code to simplify the movement of complex objects
     [ ] Improve canvas performance
         https://www.html5rocks.com/en/tutorials/canvas/performance/
     [ ] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/
     [ ] Setup tests with JEST  https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c
     [ ] Alert when using IE    
 
-        
-
-    
-
 
 
 
 DONE ================================================================================================================================
+    [x] Alien position is broken, especially for small screens
+    [x] Add version
+    [x] Move frame into diagnostics
+        [x] Diagnostics on/off with a keystroke (`)
+    [x] smooth out controller movement, slow accelleration rate
+    [x] Limit controller initiation to the same device
+    [x] Fix slow hit test
+    [x] Remove dead invaders from the hive
+        [x] Aliens should not shoot when they are dead, they should know they are dead and thrown an error
     [x] Pay attention to gametime to account for frame rates
     [x] Real space invader glyphs
     [x] Alien Bullets
