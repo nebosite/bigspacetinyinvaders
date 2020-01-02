@@ -5,7 +5,7 @@ TODO
     [x] Add player score, total score, max score, cutoff, score graph, time alive
         - Player death resets score to zero
     [x] Spread out shilelds, min 3
-    [ ] Default to "STANDARD GAMEPAD" if no controller is found
+    [x] Default to "STANDARD GAMEPAD" if no controller is found
     [ ] Simple Sounds
         [ ] Player window up/down
         [ ] Player enters

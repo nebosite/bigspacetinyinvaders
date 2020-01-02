@@ -61,7 +61,10 @@ export enum GamepadInputCode {
     Button29,
 };
 
-// Translations for [Pro Controller (STANDARD GAMEPAD Vendor: 057e Product: 2009)
+// I've started building these translations for gamepad compatibility but 
+// it looks like they are probably unnecessary.  Maybe 10% of controllers don't
+// meet the "STANDARD GAMEPAD" pattern of input.  
+// SEE: https://html5gamepad.com/controllers
 const axisTranslations = new Map<string, Array<GamepadInputCode>>(
     [
         ["057e", [
