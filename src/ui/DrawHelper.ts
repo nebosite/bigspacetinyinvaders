@@ -274,7 +274,7 @@ export class DrawHelper {
     //-------------------------------------------------------------------------
     // 
     //-------------------------------------------------------------------------
-    addSpriteObject(name: string, index: number, x: number, y: number, alpha: number = 1, centering: number[] = [0.5, 0.5])
+    addSpriteObject(name: string, index: number, x: number, y: number, alpha: number = 1, centering: number[] = [0.5, 0.5], rgb: number[] = [1,1,1])
     {
         let textures = this.indexedSprites.get(name);
         if(!textures) {
@@ -285,6 +285,7 @@ export class DrawHelper {
         sprite.x = x;
         sprite.y = y;
         sprite.alpha = alpha;
+        sprite.colo.
         this.pixiStage.addChild(sprite);
         return new DrawnSprite(this, sprite, textures, index);
     }

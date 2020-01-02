@@ -2,6 +2,7 @@ import { GameObject, GameObjectType } from "./GameObject";
 import { IAppModel } from "./AppModel";
 import { Bullet } from "./Bullet";
 import { BulletObjectRenderer } from "src/controls/GameObjectRendering";
+import { Player } from "./Player";
 
 
 export class Alien extends GameObject{
@@ -58,8 +59,21 @@ export class Alien extends GameObject{
         this.shotOrders++;
     }
 
-    doDamage(damageAmount: number) {
+    doDamage(damageAmount: number, sourceObject: GameObject) {
+        if(this.hitPoints <= 0) return;
         this.hitPoints -= damageAmount;  
+        let bullet = sourceObject as Bullet;
+        if(!bullet) return;
+        let player = bullet.source as Player;
+        if(!player) return;
+
+        if(this.hitPoints <= 0)
+        {
+            player.score+= 10; // Kill points
+        }
+        else{
+            player.score ++; // Assist points
+        }
     }
 
 }

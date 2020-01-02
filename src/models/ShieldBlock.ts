@@ -17,7 +17,7 @@ export class ShieldBlock extends GameObject{
     {
     }
 
-    doDamage(damageAmount: number) {
+    doDamage(damageAmount: number, sourceObject: GameObject) {
         if(this.hitPoints == 0) return;
         this.hitPoints -= damageAmount * 2;
         if(this.hitPoints <= 0) 

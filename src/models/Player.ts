@@ -20,6 +20,7 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
     name: string = "dude";
     number = 0;
     dyingTime = 0;
+    score = 0;
 
     constructor(appModel: IAppModel){
         super(appModel);
@@ -85,7 +86,7 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         this.appModel.addGameObject(bullet);
     }
 
-    doDamage(damageAmount: number) {
+    doDamage(damageAmount: number, sourceObject: GameObject) {
         this.hitPoints -= damageAmount;
         if(this.hitPoints <= 0)
         {

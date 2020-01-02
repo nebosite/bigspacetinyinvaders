@@ -42,6 +42,9 @@ export interface IAppModel
 
     worldSize: { width:number, height: number} ;
     playerSize: number;
+    maxScore: number;
+    totalScore : number;
+
 }
 
 //---------------------------------------------------------------------------
@@ -59,6 +62,8 @@ export class AppModel implements IAppModel
     diagnostics = new AppDiagnostics();
     collisionCellSize = 50;
     hasShields = false;
+    maxScore = 0;
+    totalScore = 0;
 
 
     private _worldSize = {width: 10, height: 10};
@@ -133,8 +138,19 @@ export class AppModel implements IAppModel
         {
             this.startLevel();
         }
+
+        this.totalScore = 0;
+        this.players.forEach(player =>
+            {
+                this.totalScore += player.score;
+            });
+        
+        if(this.totalScore > this.maxScore) this.maxScore = this.totalScore;
+
         this.diagnostics.lastThinkTime = Date.now() - startTime;
     }
+
+
 
     readonly PLAYER_Y_AREA = 80;
     readonly SHIELD_Y_AREA = 60;

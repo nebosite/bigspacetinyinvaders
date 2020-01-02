@@ -48,6 +48,8 @@ export class GameController
     inviteText: DrawnText | null = null;
     renderingControls = new Map<GameObject, GameObjectRenderer>();
     versonText: DrawnText;
+    playerScoresText: DrawnText;
+    mainScoreText: DrawnText;
 
     CommonDirectionKeyLayouts = new Map([
         ["IJKL", [73,74,75,76]],
@@ -99,6 +101,8 @@ export class GameController
         for(var i = 0; i < 50; i++) this.inputState.push(0);
 
         this.versonText = drawing.addTextObject(`Version ${GLOBALS.version}`, 5, drawing.height, 15, "#800000", "", 0, 1000, [0,1]);
+        this.playerScoresText = drawing.addTextObject("P0:0000\nP1:0000\nP3:0000", 5, drawing.height-20, 10, "#FFFF00", "", 0, 1000, [0,1] );
+        this.mainScoreText = drawing.addTextObject("Score: 00000", drawing.width-10, 3, 15, "#FFFF00", "", 0, 1000, [1,0] );
     } 
 
     //-------------------------------------------------------------------------
@@ -174,6 +178,16 @@ export class GameController
             this.inviteText.x = this.drawing.width/2;
             this.inviteText.y = 100;
         }
+
+        let scores = "";
+        this.appModel.getPlayers().forEach(player => {
+            scores += `${player.name}:${player.score.toString().padStart(5, '0')}\n`;
+        });
+        this.playerScoresText.text = scores;
+
+        let totalText = this.appModel.totalScore.toString().padStart(6, '0');
+        let maxText = this.appModel.maxScore.toString().padStart(6, '0');
+        this.mainScoreText.text = `Score: ${totalText}  Max:${maxText}`;
 
         this.frame++;
         requestAnimationFrame(this.animation_loop);

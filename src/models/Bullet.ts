@@ -32,7 +32,7 @@ export class Bullet extends GameObject{
             let target = this.appModel.hitTest(this);
             if(target)
             {
-                target.doDamage(1);
+                target.doDamage(1, this);
                 this.appModel.removeGameObject(this);
             }
             

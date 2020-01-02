@@ -1,4 +1,5 @@
 import { IAppModel, AppModel } from "./AppModel";
+import { GameObjectRenderer } from "src/controls/GameObjectRendering";
 
 export enum GameObjectType
 {
@@ -38,5 +39,5 @@ export class GameObject
     }
 
     think(gameTime: number, elapsedMilliseconds: number) {};
-    doDamage(damageAmount: number) {};
+    doDamage(damageAmount: number, sourceObject: GameObject) {};
 }
