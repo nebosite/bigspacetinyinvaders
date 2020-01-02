@@ -2,6 +2,7 @@
 import { GameController } from "./controls/GameControl";
 import { AppModel } from "./models/AppModel";
 import { DrawHelper } from "./ui/DrawHelper";
+import { SoundHelper } from "./ui/SoundHelper";
 
 // https://github.com/kittykatattack/learningPixi
 
@@ -19,5 +20,6 @@ drawing.addIndexedSpriteTextures("sprites/bullet", ".png", 2, 2);
 drawing.addIndexedSpriteTextures("sprites/alien", ".png", 2, 7);
 drawing.addIndexedSpriteTextures("sprites/brick", ".png", 2, 8);
 
-var theGameController = new GameController(theApp, drawing);
+let sound = new SoundHelper();
+var theGameController = new GameController(theApp, drawing, sound);
 

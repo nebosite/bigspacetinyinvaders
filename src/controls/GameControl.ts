@@ -11,6 +11,7 @@ import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienOb
 import { Bullet } from "../models/Bullet";
 import { DiagnosticsControl } from "./DiagnosticsControl";
 import { GLOBALS } from "../globals";
+import { SoundHelper } from "src/ui/SoundHelper";
 
 const PLAYER_SIZE = 16;
 
@@ -34,6 +35,7 @@ export class GameController
     play_ding = false;
     frame = 0;
     drawing: DrawHelper;
+    sound: SoundHelper;
     mouseX = 0;
     mouseY = 0;
     gamepadThingX = 0;
@@ -80,10 +82,11 @@ export class GameController
     //-------------------------------------------------------------------------
     // ctor
     //-------------------------------------------------------------------------
-    constructor(appModel: IAppModel, drawing: DrawHelper)
+    constructor(appModel: IAppModel, drawing: DrawHelper, sound: SoundHelper)
     {
         this.appModel = appModel; 
         this.drawing = drawing; 
+        this.sound = sound;
         this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
         this.drawing.onWindowResized = this.handleResize;
         appModel.onPlayerRemoved = player => {};
@@ -118,10 +121,10 @@ export class GameController
     handleAddedGameObject = (gameObject: GameObject) => {
         switch(gameObject.type)
         {
-            case GameObjectType.Player: this.renderingControls.set(gameObject, new PlayerObjectRenderer(gameObject as Player, this.drawing)); break;
-            case GameObjectType.Bullet: this.renderingControls.set(gameObject, new BulletObjectRenderer(gameObject as Bullet, this.drawing)); break;
-            case GameObjectType.Alien: this.renderingControls.set(gameObject, new AlienObjectRenderer(gameObject as Alien, this.drawing)); break;
-            case GameObjectType.ShieldBlock: this.renderingControls.set(gameObject, new ShieldBlockObjectRenderer(gameObject as Alien, this.drawing)); break;
+            case GameObjectType.Player: this.renderingControls.set(gameObject, new PlayerObjectRenderer(gameObject as Player, this.drawing, this.sound)); break;
+            case GameObjectType.Bullet: this.renderingControls.set(gameObject, new BulletObjectRenderer(gameObject as Bullet, this.drawing, this.sound)); break;
+            case GameObjectType.Alien: this.renderingControls.set(gameObject, new AlienObjectRenderer(gameObject as Alien, this.drawing, this.sound)); break;
+            case GameObjectType.ShieldBlock: this.renderingControls.set(gameObject, new ShieldBlockObjectRenderer(gameObject as Alien, this.drawing, this.sound)); break;
         }
     }
 
@@ -274,9 +277,7 @@ export class GameController
                             translator.addSubscriber(newPlayer);
                             this.appModel.addPlayer(newPlayer);
                             this.gamepadManager.addTranslator(translator);
-                            newPlayer.onCleanup = () =>{
-                                this.gamepadManager.removeTranslator(translator);
-                            }
+                            newPlayer.onCleanup.subscribe("removeTranslator", () => this.gamepadManager.removeTranslator(translator));
                         }
                         this.newPlayerControl = null;
                         return;
@@ -352,10 +353,7 @@ export class GameController
                             translator.addSubscriber(newPlayer);
                             this.appModel.addPlayer(newPlayer);
                             this.keyboardManager.addTranslator(translator);
-                            newPlayer.onCleanup = () =>{
-                                this.keyboardManager.removeTranslator(translator);
-                            }
-
+                            newPlayer.onCleanup.subscribe("removeKeyTranslator",() =>  this.keyboardManager.removeTranslator(translator));
                         }
                         this.newPlayerControl = null;
                         return;

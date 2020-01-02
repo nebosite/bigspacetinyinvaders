@@ -1,5 +1,6 @@
 import { IAppModel, AppModel } from "./AppModel";
 import { GameObjectRenderer } from "src/controls/GameObjectRendering";
+import { EventThing } from "../tools/EventThing";
 
 export enum GameObjectType
 {
@@ -23,7 +24,7 @@ export class GameObject
     type: GameObjectType = GameObjectType.Unknown;
     appModel: IAppModel;
     isDeleted = false;
-    onCleanup = () => {};
+    onCleanup = new EventThing();
 
     constructor(appModel: IAppModel)
     {
@@ -34,7 +35,7 @@ export class GameObject
     {
         if(this.isDeleted) return;
         this.isDeleted = true;
-        this.onCleanup();
+        this.onCleanup.invoke();
         this.appModel.removeGameObject(this);
     }
 

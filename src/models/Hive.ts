@@ -27,7 +27,7 @@ export class Hive extends GameObject{
     addMember(alien: Alien)
     {
         this._members.push(alien);
-        alien.onDeath = () => this._members.splice(this._members.indexOf(alien),1);
+        alien.onDeath.subscribe("removeFromHive", () => this._members.splice(this._members.indexOf(alien),1));
     }
 
     think(gameTime: number, elapsedMilliseconds: number) 

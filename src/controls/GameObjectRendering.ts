@@ -4,15 +4,18 @@ import { Player } from "../models/Player";
 import { Bullet } from "../models/Bullet";
 import { Alien } from "../models/Alien";
 import { ShieldBlock } from "../models/ShieldBlock";
+import { SoundHelper } from "src/ui/SoundHelper";
 
 export class GameObjectRenderer
 {
     gameObject: GameObject;
     drawnObject: DrawnObject;
+    sound: SoundHelper;
 
-    constructor(gameObject: GameObject, drawnObject: DrawnObject){
+    constructor(gameObject: GameObject, drawnObject: DrawnObject, sound: SoundHelper){
         this.gameObject = gameObject;
         this.drawnObject = drawnObject;
+        this.sound = sound;
     }
 
     render(){
@@ -30,12 +33,15 @@ export class PlayerObjectRenderer extends GameObjectRenderer
 {
     playerName: DrawnObject;
 
-    constructor(gameObject: Player, drawing: DrawHelper)
+    constructor(gameObject: Player, drawing: DrawHelper, sound: SoundHelper)
     {
         super(gameObject,
-            drawing.addSpriteObject("sprites/ship", gameObject.number % 10, gameObject.x, gameObject.y) as DrawnObject);
+            drawing.addSpriteObject("sprites/ship", gameObject.number % 10, gameObject.x, gameObject.y) as DrawnObject, sound);
 
         this.playerName = drawing.addTextObject(gameObject.name, gameObject.x, gameObject.y + 10, 10, "#ffffff", "", 0, 300, [.5, 0]);
+
+        gameObject.onShoot.subscribe("playShotSound", () => sound.play("sounds/player_shot.wav"));
+        gameObject.onDeath.subscribe("playPlayerDeathSound", () => sound.play("sounds/player_death.wav"));
     }
 
     render(){
@@ -61,10 +67,11 @@ export class PlayerObjectRenderer extends GameObjectRenderer
 
 export class BulletObjectRenderer extends GameObjectRenderer
 {
-    constructor(gameObject: Bullet, drawing: DrawHelper) 
+    constructor(gameObject: Bullet, drawing: DrawHelper, sound: SoundHelper) 
     {
         super(gameObject,
-            drawing.addSpriteObject("sprites/bullet", BulletObjectRenderer.getBullentTextureIndex(gameObject), gameObject.x, gameObject.y) as DrawnObject);
+            drawing.addSpriteObject("sprites/bullet", BulletObjectRenderer.getBullentTextureIndex(gameObject), gameObject.x, gameObject.y) as DrawnObject, 
+            sound);
     }
 
     static getBullentTextureIndex(bullet: Bullet)
@@ -80,10 +87,13 @@ export class BulletObjectRenderer extends GameObjectRenderer
 
 export class AlienObjectRenderer extends GameObjectRenderer
 {
-    constructor(gameObject: Alien, drawing: DrawHelper)
+    constructor(gameObject: Alien, drawing: DrawHelper, sound: SoundHelper)
     { 
         super(gameObject,
-            drawing.addSpriteObject("sprites/alien", gameObject.alienType * 2, gameObject.x, gameObject.y) as DrawnObject);
+            drawing.addSpriteObject("sprites/alien", gameObject.alienType * 2, gameObject.x, gameObject.y) as DrawnObject, 
+            sound);
+
+        gameObject.onDeath.subscribe("playDeathSound", ()=> sound.play("sounds/alien_die.wav"));
     }
 
     render(){
@@ -99,10 +109,11 @@ export class AlienObjectRenderer extends GameObjectRenderer
 
 export class ShieldBlockObjectRenderer extends GameObjectRenderer
 {
-    constructor(gameObject: ShieldBlock, drawing: DrawHelper) 
+    constructor(gameObject: ShieldBlock, drawing: DrawHelper, sound: SoundHelper) 
     {
         super(gameObject,
-            drawing.addSpriteObject("sprites/brick", Math.max(7 - gameObject.hitPoints, 0), gameObject.x-2, gameObject.y-2, 1, [0,0]) as DrawnObject);
+            drawing.addSpriteObject("sprites/brick", Math.max(7 - gameObject.hitPoints, 0), gameObject.x-2, gameObject.y-2, 1, [0,0]) as DrawnObject, 
+            sound);
     }
 
     render(){

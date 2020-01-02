@@ -3,6 +3,7 @@ import { IAppModel } from "./AppModel";
 import { Bullet } from "./Bullet";
 import { BulletObjectRenderer } from "src/controls/GameObjectRendering";
 import { Player } from "./Player";
+import { EventThing } from "../tools/EventThing";
 
 
 export class Alien extends GameObject{
@@ -12,7 +13,7 @@ export class Alien extends GameObject{
     hitPoints = 1;
     explosionEnd = 0;
     shootRate = 1;
-    onDeath = () => {};
+    onDeath = new EventThing();
     lastShotTime = 0;
     timeBetweenShots = 0;
     shotOrders = 0;
@@ -44,7 +45,7 @@ export class Alien extends GameObject{
         if(this.hitPoints <= 0 && this.explosionEnd == 0)
         {
             this.explosionEnd = gameTime + 200;
-            this.onDeath();
+            this.onDeath.invoke();
         }
 
         if(this.explosionEnd > 0 && this.explosionEnd < gameTime)

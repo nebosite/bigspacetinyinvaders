@@ -3,6 +3,7 @@ import { PlayerAction } from "../controls/GameControl";
 import { GameObject, GameObjectType } from "./GameObject";
 import { IAppModel } from "./AppModel";
 import { Bullet } from "./Bullet";
+import { EventThing } from "../tools/EventThing";
 
 export class Player extends GameObject implements IInputReceiver<PlayerAction>
 {
@@ -12,7 +13,8 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
     accelerationRate = 30;
     maxSpeed = 6;
     shootRate = 5;
-    onShoot = (player: Player) => {};
+    onShoot = new EventThing();
+    onDeath = new EventThing();
     appModel: IAppModel;
     shooting = false;
     lastShotTime = 0;
@@ -84,6 +86,7 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         bullet.x = this.x;
         bullet.y = this.y - this.height;
         this.appModel.addGameObject(bullet);
+        this.onShoot.invoke();
     }
 
     doDamage(damageAmount: number, sourceObject: GameObject) {
@@ -92,6 +95,7 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         {
             this.dyingTime = 1000;
             this.shooting = false;
+            this.onDeath.invoke();
         }
     };
 }
