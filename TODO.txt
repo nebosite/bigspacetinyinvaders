@@ -1,12 +1,13 @@
 
 TODO
-    [ ] Aliens can win
-    [ ] When Hive dies, kick off next level
+    [ ] Esc key to quit game
+    [ ] Bug: keyboard onflicting direction button problem. If I press the left direction button on the keyboard and then press right without fully releasing the left button, then the ship no longer moves until I let go of all direction inputs and try again.
+    [ ] Bug: Explosion sound effect is too loud
+    [ ] Burst firing - build up a firing charge when not firing so that when the button is first pressed, you peel off a could of shots right away
+    [ ] Replace exploding ship with magic debris
+    [ ] Collect debris to increase shot rate
 
 NEW
-    [ ] Score graph
-    [ ] Bug: Sometimes can't get back into game when two people are on the same controller and one dies
-    [ ] Bullets should kill bullets?
 
 EASY/URGENT
 
@@ -14,10 +15,16 @@ EASY/URGENT
 NEXT
 
 SOON
-
-LATER
+    [ ] Aliens can win
+    [ ] When Hive dies, kick off next level
     [ ] Generate alien rows gradually in waves (add animation)
     [ ] Animation on entry
+    [ ] Fan Shot powerup - less powerful bullets, but fanned out
+    [ ] Give ships more hit points and make bullets stronger
+
+LATER
+    [ ] Bug: Sometimes can't get back into game when two people are on the same controller and one dies
+    [ ] Score graph
     [ ] Powerup: Homing shots
     [ ] More powerups with coop score is high
         - playing "zone"
@@ -28,6 +35,7 @@ LATER
     [ ] Pack resources too: https://webpack.js.org/guides/typescript/
 
 PROBABLY NEVER
+    [ ] Bullets should kill bullets?
     [ ] Add concept of children in drawing code to simplify the movement of complex objects
     [ ] Improve canvas performance
         https://www.html5rocks.com/en/tutorials/canvas/performance/

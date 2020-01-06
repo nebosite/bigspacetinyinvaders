@@ -38,6 +38,7 @@ export interface IAppModel
     onAddedGameObject: (gameObject: GameObject) => void;
     onRemovedGameObject: (gameObject: GameObject) => void;
     hitTest: (gameObject: GameObject) => GameObject | null;
+    reset: () => void;
     diagnostics: AppDiagnostics;
 
     worldSize: { width:number, height: number} ;
@@ -75,6 +76,18 @@ export class AppModel implements IAppModel
     getPlayers = () =>  this.players;
 
     getGameObjects = () => this.gameObjects.values();
+
+    //---------------------------------------------------------------------------
+    // 
+    //---------------------------------------------------------------------------
+    reset(){
+        this.players.length = 0;
+        this.gameObjects.clear();
+        this.shouldStartLevel = true;
+        this.maxScore = 0;
+        this.totalScore = 0;
+        this.hasShields = false;
+    }
 
     //---------------------------------------------------------------------------
     // 

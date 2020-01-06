@@ -109,6 +109,21 @@ export class GameController
     } 
 
     //-------------------------------------------------------------------------
+    // reset the game
+    //-------------------------------------------------------------------------
+    reset()
+    {
+        this.gamepadManager.reset();
+        this.keyboardManager.reset();
+        this.appModel.reset(); 
+        for(let control of this.renderingControls.values())
+        {
+            control.delete();
+        }
+        this.renderingControls.clear();
+    }
+
+    //-------------------------------------------------------------------------
     // uhoh, the window resized
     //-------------------------------------------------------------------------
     handleResize = (width: number, height: number) =>{
@@ -326,6 +341,10 @@ export class GameController
                 this.diagnosticsControl = new DiagnosticsControl(this.drawing, this.gamepadManager, this.keyboardManager, this.appModel.diagnostics)
             }
             return;
+        }
+
+        if(keyCode == 27){  // Esc to reset the game
+            this.reset();
         }
 
         if(this.newPlayerControl) 

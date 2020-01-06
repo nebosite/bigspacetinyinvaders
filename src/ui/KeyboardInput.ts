@@ -99,6 +99,14 @@ export class KeyboardManager {
         document.addEventListener('keydown', this.handleKeyDown);
         document.addEventListener('keyup', this.handleKeyUp);
     }
+    
+    // ------------------------------------------------------------------------
+    // reset
+    // ------------------------------------------------------------------------
+    reset()
+    {
+        this.keyHandlerLookup.clear();
+    }
 
     // ------------------------------------------------------------------------
     // handleKeyDown
