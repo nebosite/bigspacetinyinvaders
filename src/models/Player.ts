@@ -23,6 +23,8 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
     number = 0;
     dyingTime = 0;
     score = 0;
+    leftImperativeVelocity = 0;
+    rightImperativeVelocity = 0;
 
     constructor(appModel: IAppModel){
         super(appModel);
@@ -34,10 +36,12 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         if(this.dyingTime > 0) return;
         switch(action)
         {
-            case PlayerAction.Left: this.xTargetVelocity = -value * this.maxSpeed; break;
-            case PlayerAction.Right: this.xTargetVelocity = value * this.maxSpeed; break;
+            case PlayerAction.Left: this.leftImperativeVelocity = value;   break;
+            case PlayerAction.Right:  this.rightImperativeVelocity = value;  break;
             case PlayerAction.Fire: this.shooting = value == 1;
         }   
+        this.xTargetVelocity = (this.rightImperativeVelocity - this.leftImperativeVelocity) * this.maxSpeed;
+
         this.lastActivityTime = Date.now();
     };
 
