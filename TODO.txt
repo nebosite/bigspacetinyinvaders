@@ -5,7 +5,7 @@ TODO
     [x] Bug: keyboard onflicting direction button problem. 
         If I press the left direction button on the keyboard and then press right without fully 
         releasing the left button, then the ship no longer moves until I let go of all direction inputs and try again.
-    [ ] Bug: Explosion sound effect is too loud
+    [x] Bug: Explosion sound effect is too loud
     [ ] Burst firing - build up a firing charge when not firing so that when the button is first pressed, you peel off a could of shots right away
     [ ] Replace exploding ship with magic debris
     [ ] Collect debris to increase shot rate
