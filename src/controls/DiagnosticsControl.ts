@@ -2,7 +2,7 @@ import { IInputReceiver } from "../ui/InputReceiver";
 import { PlayerAction } from "./GameControl";
 import { IKeycodeTranslator, KeycodeTranslator, KeyboardManager } from "../ui/KeyboardInput";
 import { DrawHelper, DrawnObject, DrawnVectorObject, DrawnText } from "../ui/DrawHelper";
-import { GamepadManager } from "src/ui/GamepadInput";
+import { GamepadManager, GamepadState } from "src/ui/GamepadInput";
 import { AppModel, AppDiagnostics } from "src/models/AppModel";
 
 export class DiagnosticsControl 
@@ -19,7 +19,13 @@ export class DiagnosticsControl
     drawingObjects = new Array<DrawnObject>();
     frameRateText: DrawnText;
     timingText: DrawnText;
+    keyboardText: DrawnText;
+    gamepad1Text: DrawnText;
+    gamepad2Text: DrawnText;
     
+    //-------------------------------------------------------------------------
+    // ctor
+    //-------------------------------------------------------------------------
     constructor(drawing: DrawHelper, gamePad: GamepadManager, keyboard: KeyboardManager, appDiagnostics: AppDiagnostics)
     {
         this.gamePad = gamePad;
@@ -28,15 +34,26 @@ export class DiagnosticsControl
         this.appDiagnostics = appDiagnostics;
         
         this.fontSize = drawing.height / 80;
-        this.drawingObjects.push(drawing.addRectangleObject(0,0, 100,60,0x000000, .7));
+        this.drawingObjects.push(drawing.addRectangleObject(0,0, 300,550,0x444444, .7));
 
         this.frameRateText = drawing.addTextObject("F:", 5,5,this.fontSize);
         this.drawingObjects.push(this.frameRateText);
 
         this.timingText = drawing.addTextObject("T:", 5,25,this.fontSize);
         this.drawingObjects.push(this.timingText);
+
+        this.keyboardText = drawing.addTextObject("Keyboard:", 5,40, this.fontSize, "#ffff00");
+        this.gamepad1Text = drawing.addTextObject("GP1:", 5,140, this.fontSize, "#ffff00");
+        this.gamepad2Text = drawing.addTextObject("GP2:", 120,140, this.fontSize, "#ffff00");
+        this.drawingObjects.push(this.keyboardText);
+        this.drawingObjects.push(this.gamepad1Text);
+        this.drawingObjects.push(this.gamepad2Text);
+
     }
 
+    //-------------------------------------------------------------------------
+    // update my state
+    //-------------------------------------------------------------------------
     render = () =>
     {
         this.frameRateText.text = `FRAME: ${this.appDiagnostics.frame}  (${this.appDiagnostics.frameRate.toFixed(0)} fps)`;
@@ -45,8 +62,23 @@ export class DiagnosticsControl
         let percentThinkTime = this.averageThinkTime / frameTime * 100;
 
         this.timingText.text = `THINKING: ${this.appDiagnostics.lastThinkTime.toFixed(1)} ms (${percentThinkTime.toFixed(1)}%)`
+
+        this.keyboardText.text = "Keyboard:\n" + this.keyboard.keyboardStateText;
+        let states = new Array<GamepadState>();
+        for(let state of  this.gamePad.gamePadStates.values()) states.push(state);
+        if(states.length > 0)
+        {
+            this.gamepad1Text.text = "Game pad 1:\n" + states[0].diagnosticsText;
+        }
+        if(states.length > 1)
+        {
+            this.gamepad2Text.text = "Game pad 2:\n" + states[1].diagnosticsText;
+        }
     };
 
+    //-------------------------------------------------------------------------
+    // stop rendering this control
+    //-------------------------------------------------------------------------
     cancelMe(){
         if(this.cancelled) return;
         this.cancelled = false;

@@ -1,12 +1,30 @@
 import { IInputReceiver } from "./InputReceiver";
 import { accessibility } from "pixi.js";
 
-class GamepadState
+export class GamepadState
 {
     axes: Array<number> = new Array<number>();
     buttons: Array<number> = Array<number>();
     index: number = -1;
     lastTimeStamp: number = -1;
+    get diagnosticsText() {
+        let output = "";
+        for(let i = 0; i < this.axes.length; i++)
+        {
+            output += `Ax${i}: ${this.axes[i].toFixed(3)}\n`;
+        }
+        output += '\n';
+        for(let i = 0; i < this.buttons.length; i++)
+        {
+            let buttonText = this.buttons[i].toString();
+            if(this.buttons[i] > 0 && this.buttons[i] < 1)
+            {
+                buttonText = this.buttons[i].toFixed(3);
+            }
+            output += `Bt${i}: ${buttonText}\n`;
+        }
+        return output;
+    }
 }
 
 export interface IGamepadInputCodeTranslator {

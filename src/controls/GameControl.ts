@@ -32,12 +32,9 @@ class PlayerIdentity{
 export class GameController 
 {
     appModel: IAppModel;
-    play_ding = false;
     frame = 0;
     drawing: DrawHelper;
     sound: SoundHelper;
-    mouseX = 0;
-    mouseY = 0;
     gamepadThingX = 0;
     keyboardManager: KeyboardManager;
     gamepadManager: GamepadManager;
@@ -161,13 +158,6 @@ export class GameController
         let elapsed = gameTime - this.lastFrameTime;
         this.lastFrameTime = gameTime;
 
-        if(this.play_ding)
-        {
-            this.play_ding = false;
-            const sound = new Audio("ding.wav");
-            sound.play();
-        }
-
         // Update rendered object
         this.appModel.think(gameTime, elapsed);
         for(let renderer of this.renderingControls.values()) {
@@ -189,7 +179,6 @@ export class GameController
         if(this.newPlayerControl) this.newPlayerControl.render();
         if(this.diagnosticsControl) this.diagnosticsControl.render();
 
-        //this.showGamepadStates();
         this.versonText.y = this.drawing.height - 5;
         if(this.inviteText)
         {
@@ -233,39 +222,16 @@ export class GameController
         return newPlayer;
     }
 
-    gamePadText: DrawnText | null = null;
-
-    //-------------------------------------------------------------------------
-    // showGamepadStates
-    //-------------------------------------------------------------------------
-    showGamepadStates()
-    {
-        if(!this.gamePadText)
-        {
-            this.gamePadText = this.drawing.addTextObject("", 10,10, 14);
-        }
-
-        let output = "";
-        for(var i = 0; i < 10; i++)
-        {
-            output += `A${i}: ${this.inputState[GamepadInputCode.Axis0 + i]}\n`;
-        }
-        output += '\n';
-        for(var i = 0; i < 20; i++)
-        {
-            output += `B${i}: ${this.inputState[GamepadInputCode.Button00 + i]}\n`;
-        }
-
-        this.gamePadText.text = output;
-    }
-
-    
     //-------------------------------------------------------------------------
     // handle gamepads
     //-------------------------------------------------------------------------
     handleUnhandledGamepadCode = (controllerIndex: number, code: GamepadInputCode, value: number) => {
         this.inputState[code] = value;
-        if(this.gamePadText) return;
+        if(code == GamepadInputCode.Button_Back) {
+            console.log("BACK");
+            this.reset();
+            return;
+        }
         if(this.newPlayerControl) 
         {
             if(this.newPlayerControl.controllerId != controllerIndex.toString()) return;
@@ -343,7 +309,7 @@ export class GameController
             return;
         }
 
-        if(keyCode == 27){  // Esc to reset the game
+        if(keyCode == 27) {  // Esc to reset the game
             this.reset();
         }
 
@@ -412,17 +378,16 @@ export class GameController
     // handle mouse clicks
     //-------------------------------------------------------------------------
     handleCanvasClick = (e: MouseEvent) => {
-        this.mouseX = e.clientX;
-        this.mouseY = e.clientY;
-        this.play_ding = true;
+        // this.mouseX = e.clientX;
+        // this.mouseY = e.clientY;
     }
 
     //-------------------------------------------------------------------------
     // handle mouse movement
     //-------------------------------------------------------------------------
     handleCanvasMouseMove = (e: MouseEvent) => {
-        this.mouseX = e.clientX;
-        this.mouseY = e.clientY;
+        // this.mouseX = e.clientX;
+        // this.mouseY = e.clientY;
     }
 
 }

@@ -1,6 +1,7 @@
 
 TODO
-    [ ] Esc key to quit game
+    [x] Esc key to quit game
+    [x] Controller back buttons to quit
     [ ] Bug: keyboard onflicting direction button problem. If I press the left direction button on the keyboard and then press right without fully releasing the left button, then the ship no longer moves until I let go of all direction inputs and try again.
     [ ] Bug: Explosion sound effect is too loud
     [ ] Burst firing - build up a firing charge when not firing so that when the button is first pressed, you peel off a could of shots right away
@@ -8,6 +9,8 @@ TODO
     [ ] Collect debris to increase shot rate
 
 NEW
+    [ ] "Use Movement controls..." should be framed somehow. 
+    [ ] Powerup: Nuke - like a big firework creates pandemonium with falling debris
 
 EASY/URGENT
 
