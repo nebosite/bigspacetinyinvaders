@@ -21,7 +21,12 @@ export class AppViewWidget extends Widget
         })
 
         this.onLoaded.subscribe("AppView Loading", ()=>{
-            this.AddChild(new MainMenuWidget(this.theAppModel));
+            this.ShowMainMenu();
         });
+    }
+
+    ShowMainMenu(){
+        let mainMenu = new MainMenuWidget(this.theAppModel);
+        this.AddChild(mainMenu);
     }
 }

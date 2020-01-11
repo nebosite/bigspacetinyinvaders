@@ -1,18 +1,19 @@
 
 TODO
     [ ] Pregame mode
-        title graphic
-        no player picking, just a menu
-        some instructions and details
-        full screen mode option  https://www.w3schools.com/howto/howto_js_fullscreen.asp
-        "Change browser zoom for larger game characters"
-        Move to fullscreen when the game actually starts 
-        Return to pregame when all players are dead
+        [x] title graphic
+        [ ] no player picking, just a menu
+        [ ] some instructions and details
+        [ ] full screen mode option  https://www.w3schools.com/howto/howto_js_fullscreen.asp
+        [ ] "Change browser zoom for larger game characters"
+        [ ] Move to fullscreen when the game actually starts 
+        [ ] Return to pregame when all players are dead
     [ ] Burst firing - build up a firing charge when not firing so that when the button is first pressed, you peel off a could of shots right away
     [ ] Replace exploding ship with magic debris
     [ ] Collect debris to increase shot rate
 
 NEW
+    [ ] Use scaling to make fonts look better on large screens
     [ ] Remember controllers long-term (and assign names)
     [ ] highscores
     [ ] Better player status displays

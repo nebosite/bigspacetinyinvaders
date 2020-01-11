@@ -9,6 +9,7 @@ export class Widget
     onParentSizeChanged = new EventThing();
     onRender = new EventThing();
     onLoaded = new EventThing();
+    onDestroyed = new EventThing();
     children = new Array<Widget>();
     parent: Widget | null = null;
     destroyed = false;
@@ -104,6 +105,7 @@ export class Widget
             this.destroyed = true;
             this.backgroundRectangle?.delete();
             this.backgroundRectangle = null;
+            this.onDestroyed.invoke();
             this.children.forEach(child => child.Destroy())
         }
     }
