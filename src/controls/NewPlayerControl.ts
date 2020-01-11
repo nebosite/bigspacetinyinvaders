@@ -1,5 +1,5 @@
 import { IInputReceiver } from "../ui/InputReceiver";
-import { PlayerAction } from "./GameControl";
+import { PlayerAction } from "./GameController";
 import { IKeycodeTranslator, KeycodeTranslator } from "../ui/KeyboardInput";
 import { DrawHelper, DrawnObject, DrawnVectorObject } from "../ui/DrawHelper";
 

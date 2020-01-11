@@ -1,5 +1,5 @@
 import { IInputReceiver } from "../ui/InputReceiver";
-import { PlayerAction } from "../controls/GameControl";
+import { PlayerAction } from "../controls/GameController";
 import { GameObject, GameObjectType } from "./GameObject";
 import { IAppModel } from "./AppModel";
 import { Bullet } from "./Bullet";
