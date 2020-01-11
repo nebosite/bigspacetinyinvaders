@@ -9,14 +9,14 @@ export class MainMenuWidget extends Widget
     {
         super();
         this.theAppModel = theAppModel;
-        this.backgroundColor = 0x00ff00;
-        this.alpha = 0.3;
+        this.backgroundColor = 0xffff00;
+        this.alpha = .1;
 
         this.onParentSizeChanged.subscribe("MainScreen Resize", ()=>
         {
-            if(!this.widgetSystem) return;
-            this.width = this.widgetSystem.drawing.width;
-            this.height = this.widgetSystem.drawing.height;
+            if(!this.parent) return;
+            this.width = this.parent.width;
+            this.height = this.parent.height;
         })
     }
 }

@@ -8,7 +8,10 @@ export class Widget
     backgroundRectangle: DrawnVectorObject | null = null;
     onParentSizeChanged = new EventThing();
     onRender = new EventThing();
+    onLoaded = new EventThing();
     children = new Array<Widget>();
+    parent: Widget | null = null;
+    destroyed = false;
 
     _left = 0;
     _top = 0;
@@ -35,8 +38,6 @@ export class Widget
     get alpha()  { return this._alpha;}
     set alpha(value: number) {this._alpha = value;  if(this.backgroundRectangle) this.backgroundRectangle.alpha = value;}
     
-
-
     //-------------------------------------------------------------------------
     // Init
     //-------------------------------------------------------------------------
@@ -48,6 +49,8 @@ export class Widget
             this.left, this.top, this.width, this.height,
             this.backgroundColor, this. alpha
         );
+
+        this.onLoaded.invoke();
     }
 
     //-------------------------------------------------------------------------
@@ -55,14 +58,54 @@ export class Widget
     //-------------------------------------------------------------------------
     ParentResized(){
         this.onParentSizeChanged.invoke();
-        this.children.forEach(child => child.ParentResized);
+        this.children.forEach(child => child.ParentResized());
     } 
 
     //-------------------------------------------------------------------------
     // Render
     //-------------------------------------------------------------------------
     Render(){
+        if(this.destroyed) return;
         this.onRender.invoke();
-        this.children.forEach(child => child.Render);
+        this.children.forEach(child => child.Render());
     } 
+
+    //-------------------------------------------------------------------------
+    // AddChild
+    //-------------------------------------------------------------------------
+    AddChild(child: Widget)
+    {
+        if(this.destroyed) throw new Error("Tried to add a child to a destroyed widget");
+        if(!this.widgetSystem) throw new Error("Children cannot be added until after the widget is loaded (initialized)");
+        this.children.push(child);
+        child.parent = this;
+        child.Init(this.widgetSystem);
+        child.ParentResized();
+    }
+
+    //-------------------------------------------------------------------------
+    // RemoveChild
+    //-------------------------------------------------------------------------
+    RemoveChild(child: Widget)
+    {
+        let index = this.children.indexOf(child);
+        if(index >= 0)
+        {
+            this.children.splice(index, 1);
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    // Destroy
+    //-------------------------------------------------------------------------
+    Destroy()
+    {
+        if(!this.destroyed){
+            this.destroyed = true;
+            this.backgroundRectangle?.delete();
+            this.backgroundRectangle = null;
+            this.children.forEach(child => child.Destroy())
+        }
+    }
+   
 }

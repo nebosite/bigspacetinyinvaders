@@ -20,12 +20,12 @@ export class WidgetSystem
         this.sound = sound;
         this._root = rootWidget;
         this._root.Init(this);
-        requestAnimationFrame(this.animation_loop);
 
         this.drawing.onWindowResized.subscribe("Widget System Resize",
             () => this._root.ParentResized());
         
         this._root.ParentResized();
+        requestAnimationFrame(this.animation_loop);
     }
 
     //-------------------------------------------------------------------------

@@ -4,6 +4,7 @@ import { DrawHelper } from "./ui/DrawHelper";
 import { SoundHelper } from "./ui/SoundHelper";
 import { WidgetSystem } from "./WidgetLib/WidgetSystem";
 import { MainMenuWidget } from "./views/MainMenuWidget";
+import { AppViewWidget } from "./views/AppViewWidget";
 
 var theAppModel = new AppModel();
 document.body.style.margin = "0";
@@ -18,7 +19,7 @@ theDrawHelper.addIndexedSpriteTextures("sprites/brick", ".png", 2, 8);
 
 let theSoundHelper = new SoundHelper();
 
-var mainMenu = new MainMenuWidget(theAppModel);
-var theWidgetSystem = new WidgetSystem(theDrawHelper, theSoundHelper, mainMenu);
+var appView = new AppViewWidget(theAppModel);
+var theWidgetSystem = new WidgetSystem(theDrawHelper, theSoundHelper, appView);
 //var theGameController = new GameController(theAppModel, theDrawHelper, theSoundHelper);
 
