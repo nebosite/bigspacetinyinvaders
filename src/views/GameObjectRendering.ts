@@ -4,7 +4,7 @@ import { Player } from "../models/Player";
 import { Bullet } from "../models/Bullet";
 import { Alien } from "../models/Alien";
 import { ShieldBlock } from "../models/ShieldBlock";
-import { SoundHelper } from "src/ui/SoundHelper";
+import { SoundHelper } from "../ui/SoundHelper";
 
 export class GameObjectRenderer
 {

@@ -1,5 +1,4 @@
 import { IAppModel, AppModel } from "../models/AppModel";
-import { Sprite } from "../ui/Sprite";
 import { KeycodeTranslator, KeyboardManager } from "../ui/KeyboardInput";
 import { NewPlayerControl } from "./NewPlayerControl";
 import { Player } from "../models/Player";
@@ -32,7 +31,6 @@ class PlayerIdentity{
 export class GameController 
 {
     appModel: IAppModel;
-    frame = 0;
     drawing: DrawHelper;
     sound: SoundHelper;
     gamepadThingX = 0;
@@ -85,7 +83,7 @@ export class GameController
         this.drawing = drawing; 
         this.sound = sound;
         this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
-        this.drawing.onWindowResized = this.handleResize;
+        this.drawing.onWindowResized.subscribe("gameController resized", this.handleResize);
         appModel.onPlayerRemoved = player => {};
         appModel.onAddedGameObject = this.handleAddedGameObject;
         appModel.onRemovedGameObject = this.handleRemovedGameObject;
@@ -123,8 +121,8 @@ export class GameController
     //-------------------------------------------------------------------------
     // uhoh, the window resized
     //-------------------------------------------------------------------------
-    handleResize = (width: number, height: number) =>{
-        this.appModel.worldSize = {width: width, height: height};
+    handleResize = () =>{
+        this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
     }
 
     //-------------------------------------------------------------------------
@@ -196,7 +194,6 @@ export class GameController
         let maxText = this.appModel.maxScore.toString().padStart(6, '0');
         this.mainScoreText.text = `Score: ${totalText}  Max:${maxText}`;
 
-        this.frame++;
         requestAnimationFrame(this.animation_loop);
     }
 

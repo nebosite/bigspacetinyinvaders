@@ -1,5 +1,5 @@
 import { IAppModel, AppModel } from "./AppModel";
-import { GameObjectRenderer } from "src/controls/GameObjectRendering";
+import { GameObjectRenderer } from "../views/GameObjectRendering";
 import { EventThing } from "../tools/EventThing";
 
 export enum GameObjectType

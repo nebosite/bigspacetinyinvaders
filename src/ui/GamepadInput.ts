@@ -309,59 +309,59 @@ export class GamepadManager {
         if(gamePads)
         {
             for (var gamePadIndex = 0, len = gamePads.length; gamePadIndex < len; gamePadIndex++) {
-                const gp =  gamePads[gamePadIndex] as Gamepad;
-                if(!gp) continue;
+                const theGamePad =  gamePads[gamePadIndex] as Gamepad;
+                if(!theGamePad) continue;
 
-                if(!this.gamePadStates.has(gp.index))
+                if(!this.gamePadStates.has(theGamePad.index))
                 {
-                    console.error(`ERROR: index ${gp.index} not found in gamepad states`);
+                    console.error(`ERROR: index ${theGamePad.index} not found in gamepad states`);
                     return;
                 }
 
-                let state = this.gamePadStates.get(gp.index);
+                let state = this.gamePadStates.get(theGamePad.index);
                 if(!state) return;
-                if(state.lastTimeStamp == gp.timestamp)
+                if(state.lastTimeStamp == theGamePad.timestamp)
                 {
                     return;
                 }
-                state.lastTimeStamp = gp.timestamp;
+                state.lastTimeStamp = theGamePad.timestamp;
 
-                for(var i = 0; i < gp.axes.length; i++)
+                for(var i = 0; i < theGamePad.axes.length; i++)
                 {
                     const code = GamepadInputCode.Axis0 + i;
-                    let key = gp.index * 1000 + code;
-                    let axisState = gp.axes[i];
+                    let key = theGamePad.index * 1000 + code;
+                    let axisState = theGamePad.axes[i];
                     if(Math.abs(axisState) < this.deadZone) axisState = 0;
                     if(state.axes[i] != axisState) {
                         if(this.handlerLookup.has(key)) {
-                            this.handlerLookup.get(key)?.handleInputChange(code, gp.index, axisState, state.axes[i]);
+                            this.handlerLookup.get(key)?.handleInputChange(code, theGamePad.index, axisState, state.axes[i]);
                         }
                         else {
-                            this.onUnhandledInputCode(gp.index, code, axisState);
+                            this.onUnhandledInputCode(theGamePad.index, code, axisState);
                         }
                     }
                     state.axes[i] = axisState;
                 }
 
-                for(var i = 0; i < gp.buttons.length; i++)
+                for(var i = 0; i < theGamePad.buttons.length; i++)
                 {
                     const code = GamepadInputCode.Button00 + i;
-                    let key = gp.index * 1000 + code;
-                    var newValue = gp.buttons[i].value;
-                    if(newValue == 0 && gp.buttons[i].pressed) newValue = 1;
-                    if(newValue == 1 && !gp.buttons[i].pressed) newValue = 0;
+                    let key = theGamePad.index * 1000 + code;
+                    var newValue = theGamePad.buttons[i].value;
+                    if(newValue == 0 && theGamePad.buttons[i].pressed) newValue = 1;
+                    if(newValue == 1 && !theGamePad.buttons[i].pressed) newValue = 0;
                     if(newValue < this.deadZone) newValue = 0;
                     if(state.buttons[i] != newValue) {
                         if(this.handlerLookup.has(key)) {
-                            this.handlerLookup.get(key)?.handleInputChange(code, gp.index, newValue, state.buttons[i]);
+                            this.handlerLookup.get(key)?.handleInputChange(code, theGamePad.index, newValue, state.buttons[i]);
                         }
                         else {
-                            this.onUnhandledInputCode(gp.index, code, newValue);
+                            this.onUnhandledInputCode(theGamePad.index, code, newValue);
                         }
                     }
                     state.buttons[i] = newValue;
                 }
-                state.lastTimeStamp = gp.timestamp;
+                state.lastTimeStamp = theGamePad.timestamp;
             }
         }
     };

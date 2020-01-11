@@ -1,7 +1,7 @@
 import { GameObject, GameObjectType } from "./GameObject";
 import { IAppModel } from "./AppModel";
 import { Bullet } from "./Bullet";
-import { BulletObjectRenderer } from "src/controls/GameObjectRendering";
+import { BulletObjectRenderer } from "../views/GameObjectRendering";
 import { Player } from "./Player";
 import { EventThing } from "../tools/EventThing";
 

@@ -2,6 +2,7 @@
 
 // TODO: Find out why the heck the "import" syntax isn't working here
 import * as PIXI from 'pixi.js'; 
+import { EventThing } from '../tools/EventThing';
 //const PIXI = require('pixi.js');
 
 var currentObjectId = 0;
@@ -61,6 +62,18 @@ export class DrawnVectorObject extends DrawnObject
     get y(): number { return this._pixiObject.y; }
     set y(value: number) { this._pixiObject.y = value; }
 
+    get height(): number { return this._pixiObject.height; }
+    set height(value: number) { this._pixiObject.height = value; }
+
+    get width(): number { return this._pixiObject.width; }
+    set width(value: number) { this._pixiObject.width = value; }
+
+    get fillColor(): number { return this._pixiObject.fill.color; }
+    set fillColor(value: number) { this._pixiObject.fill.color = value; }
+
+    get alpha(): number { return this._pixiObject.fill.alpha; }
+    set alpha(value: number) { this._pixiObject.fill.alpha = value; }
+
     get rotation(): number { return this._pixiObject.rotation; }
     set rotation(value: number) { this._pixiObject.rotation = value; }
 
@@ -106,7 +119,7 @@ export class DrawHelper {
     pixiRenderer: PIXI.Renderer;
     pixiStage: PIXI.Container;
     indexedSprites = new Map<string, Array<PIXI.Texture>>();
-    onWindowResized = (width: number, height: number) => {};
+    onWindowResized = new EventThing();
 
     width = 0;
     height = 0;
@@ -296,6 +309,6 @@ export class DrawHelper {
         this.pixiRenderer.resize(window.innerWidth, window.innerHeight);
         this.width = window.innerWidth;
         this.height = window.innerHeight;
-        this.onWindowResized(this.width, this.height);
+        this.onWindowResized.invoke();
     }
 }
