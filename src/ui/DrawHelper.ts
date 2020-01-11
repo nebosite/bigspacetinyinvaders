@@ -16,6 +16,16 @@ export abstract class DrawnObject
     abstract set x(value: number);
     abstract get y(): number;
     abstract set y(value: number);
+    abstract get width(): number;
+    abstract set width(value: number);
+    abstract get height(): number;
+    abstract set height(value: number);
+
+    abstract get nativeWidth(): number;
+    abstract get nativeHeight(): number;
+
+    abstract get scale(): number[];
+    abstract set scale(value: number[]);
     abstract get rotation(): number;
     abstract set rotation(value: number);
 
@@ -40,6 +50,19 @@ export class DrawnText extends DrawnObject
     get y(): number { return this._pixiObject.y; }
     set y(value: number) { this._pixiObject.y = value; }
 
+    get width(): number { return this._pixiObject.width; }
+    set width(value: number) { this._pixiObject.width = value; }
+
+    get height(): number { return this._pixiObject.height; }
+    set height(value: number) { this._pixiObject.height = value; }
+
+    _nativeSize = [0,0];
+    get nativeWidth() {return this._nativeSize[0];}
+    get nativeHeight() {return this._nativeSize[1];}
+
+    get scale(): number[] { return [this._pixiObject.scale.x, this._pixiObject.scale.y]; }
+    set scale(value: number[]) { this._pixiObject.scale = new PIXI.Point(value[0], value[1]) ; }
+
     get rotation(): number { return this._pixiObject.rotation; }
     set rotation(value: number) { this._pixiObject.rotation = value; }
 
@@ -50,6 +73,7 @@ export class DrawnText extends DrawnObject
     {
         super(drawHelper, pixiObject);
         this._pixiObject = pixiObject;
+        this._nativeSize = [pixiObject.width, pixiObject.height];
     }
 }
 
@@ -62,11 +86,18 @@ export class DrawnVectorObject extends DrawnObject
     get y(): number { return this._pixiObject.y; }
     set y(value: number) { this._pixiObject.y = value; }
 
-    get height(): number { return this._pixiObject.height; }
-    set height(value: number) { this._pixiObject.height = value; }
+    get scale(): number[] { return [this._pixiObject.scale.x, this._pixiObject.scale.y]; }
+    set scale(value: number[]) { this._pixiObject.scale = new PIXI.Point(value[0], value[1]) ; }
 
     get width(): number { return this._pixiObject.width; }
     set width(value: number) { this._pixiObject.width = value; }
+
+    get height(): number { return this._pixiObject.height; }
+    set height(value: number) { this._pixiObject.height = value; }
+
+    _nativeSize = [0,0];
+    get nativeWidth() {return this._nativeSize[0];}
+    get nativeHeight() {return this._nativeSize[1];}
 
     get fillColor(): number { return this._pixiObject.fill.color; }
     set fillColor(value: number) { this._pixiObject.fill.color = value; }
@@ -81,6 +112,7 @@ export class DrawnVectorObject extends DrawnObject
     {
         super(drawHelper, pixiObject);
         this._pixiObject = pixiObject;   
+        this._nativeSize = [pixiObject.width, pixiObject.height];
     }
 }
 
@@ -93,33 +125,84 @@ export class DrawnSprite extends DrawnObject
     get y(): number { return this._pixiObject.y; }
     set y(value: number) { this._pixiObject.y = value; }
 
+    get width(): number { return this._pixiObject.width; }
+    set width(value: number) { this._pixiObject.width = value; }
+
+    get height(): number { return this._pixiObject.height; }
+    set height(value: number) { this._pixiObject.height = value; }
+
+    _nativeSize = [0,0];
+    get nativeWidth() {return this._nativeSize[0];}
+    get nativeHeight() {return this._nativeSize[1];}
+
+    get scale(): number[] { return [this._pixiObject.scale.x, this._pixiObject.scale.y]; }
+    set scale(value: number[]) { this._pixiObject.scale = new PIXI.Point(value[0], value[1]) ; }
+
     get rotation(): number { return this._pixiObject.rotation; }
     set rotation(value: number) { this._pixiObject.rotation = value; }
 
     private _textureFrame = 0;
-    private _textures: Array<PIXI.Texture>;
+    private _textures: Map<number,PIXI.Texture>;
     get textureFrame(): number { return this._textureFrame; }
     set textureFrame(value: number) { 
         this._textureFrame = value; 
-        this._pixiObject.texture = this._textures[this._textureFrame];
-     }
+        this._pixiObject.texture = this._textures.get(this._textureFrame) as PIXI.Texture;
+    }
 
-    constructor(drawHelper: DrawHelper, pixiObject : PIXI.Sprite, textures: Array<PIXI.Texture>, textureFrame: number)
+    constructor(drawHelper: DrawHelper, pixiObject : PIXI.Sprite, textures: Map<number,PIXI.Texture>, textureFrame: number)
     {
         super(drawHelper, pixiObject);
         this._pixiObject = pixiObject;  
         this._textureFrame = textureFrame;
         this._textures = textures; 
+        this._nativeSize = [pixiObject.width, pixiObject.height];
     }
 }
+
+export class DrawnImage extends DrawnObject 
+{
+    private _pixiObject: PIXI.Sprite;
+    get x(): number { return this._pixiObject.x; }
+    set x(value: number) { this._pixiObject.x = value; }
+    
+    get y(): number { return this._pixiObject.y; }
+    set y(value: number) { this._pixiObject.y = value; }
+
+    get width(): number { return this._pixiObject.width; }
+    set width(value: number) { this._pixiObject.width = value; }
+
+    get height(): number { return this._pixiObject.height; }
+    set height(value: number) { this._pixiObject.height = value; }
+
+    _nativeSize = [0,0];
+    get nativeWidth() {return this._nativeSize[0];}
+    get nativeHeight() {return this._nativeSize[1];}
+
+    get scale(): number[] { return [this._pixiObject.scale.x, this._pixiObject.scale.y]; }
+    set scale(value: number[]) { this._pixiObject.scale = new PIXI.Point(value[0], value[1]) ; }
+
+    get rotation(): number { return this._pixiObject.rotation; }
+    set rotation(value: number) { this._pixiObject.rotation = value; }
+
+    constructor(drawHelper: DrawHelper, pixiObject : PIXI.Sprite)
+    {
+        super(drawHelper, pixiObject);
+        this._pixiObject = pixiObject;  
+        this._nativeSize = [pixiObject.width, pixiObject.height];
+    }
+}
+
 
 
 export class DrawHelper {
 
     pixiRenderer: PIXI.Renderer;
     pixiStage: PIXI.Container;
-    indexedSprites = new Map<string, Array<PIXI.Texture>>();
+    pixiLoader: PIXI.Loader;
+    indexedSprites = new Map<string, Map<number, PIXI.Texture>>();
+    indexedImages = new Map<string, PIXI.Texture>();
     onWindowResized = new EventThing();
+    onLoaded = new EventThing();
 
     width = 0;
     height = 0;
@@ -133,19 +216,58 @@ export class DrawHelper {
         this.pixiRenderer.view.style.display = "block";
         this.pixiRenderer.resize(this.width, this.height);  
         this.pixiStage = new PIXI.Container();      
+        this.pixiLoader = new PIXI.Loader();
         document.body.appendChild(this.pixiRenderer.view);
         window.addEventListener("resize", this.resize_handler);
-        requestAnimationFrame(this.handleAnimationFrame);
     }
 
+    //-------------------------------------------------------------------------
+    // load
+    //-------------------------------------------------------------------------
+    load(callback: ()=>void)
+    {
+        this.pixiLoader.load((ldr,res) => {
+            this.onLoaded.invoke();
+            requestAnimationFrame(this.handleAnimationFrame);
+            callback();
+        }); 
+    }
+
+    //-------------------------------------------------------------------------
+    // addImageTexture
+    //-------------------------------------------------------------------------
+    addImageTexture(name: string)
+    {
+        this.pixiLoader.add(name);
+        this.onLoaded.subscribe(name,() => {
+            let resources = this.pixiLoader.resources as PIXI.IResourceDictionary;
+            let resource = resources[name];
+            let texture = resource.texture;
+            this.indexedImages.set(name, texture);
+        });
+    }
+
+    //-------------------------------------------------------------------------
+    // addIndexedSpriteTextures
+    //-------------------------------------------------------------------------
     addIndexedSpriteTextures(rootName: string, suffix: string, padSize: number, count: number)
     {
-        let textureArray = new Array<PIXI.Texture>();
+        let makeShortName = (index: number) => `${rootName}${String(index).padStart(padSize, '0')}`
         for(let i = 0; i < count; i++)
         {
-            textureArray.push(PIXI.Texture.from(`${rootName}${String(i).padStart(padSize, '0')}${suffix}`));
+            let shortName = makeShortName(i);
+            let name = `${shortName}${suffix}`;
+            this.pixiLoader.add(shortName, name);
         }
-        this.indexedSprites.set(rootName, textureArray);
+        this.onLoaded.subscribe(rootName, ()=>{
+            let textureMap = new Map<number, PIXI.Texture>();
+            for(let i = 0; i < count; i++)
+            {
+                let shortName = makeShortName(i);
+                textureMap.set(i, this.pixiLoader.resources[shortName].texture)
+            }
+            this.indexedSprites.set(rootName, textureMap);
+        });
     }
 
     //-------------------------------------------------------------------------
@@ -293,13 +415,30 @@ export class DrawHelper {
         if(!textures) {
             throw new Error(`Unknown sprite: ${name}`); 
         }
-        let sprite = new PIXI.Sprite(textures[index]);
+        let sprite = new PIXI.Sprite(textures.get(index));
         sprite.anchor.set(centering[0], centering[1]);
         sprite.x = x;
         sprite.y = y;
         sprite.alpha = alpha;
         this.pixiStage.addChild(sprite);
         return new DrawnSprite(this, sprite, textures, index);
+    }
+    
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
+    addImageObject(name: string, x: number, y: number, alpha: number = 1, centering: number[] = [0.5, 0.5], rgb: number[] = [1,1,1])
+    {
+        let texture = this.indexedImages.get(name);
+        if(!texture) throw new Error(`Cannot find image '${name}'`);
+        
+        let sprite = new PIXI.Sprite(texture);
+        sprite.anchor.set(centering[0], centering[1]);
+        sprite.x = x;
+        sprite.y = y;
+        sprite.alpha = alpha;
+        this.pixiStage.addChild(sprite);
+        return new DrawnImage(this, sprite);
     }
     
     //-------------------------------------------------------------------------
