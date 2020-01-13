@@ -2,10 +2,9 @@
 TODO
     [ ] Pregame mode
         [x] title graphic
-        [ ] no player picking, just a menu
-        [ ] some instructions and details
-        [ ] full screen mode option  https://www.w3schools.com/howto/howto_js_fullscreen.asp
-        [ ] "Change browser zoom for larger game characters"
+        [ ] Choices:
+            full screen mode option  https://www.w3schools.com/howto/howto_js_fullscreen.asp
+            PLAY
         [ ] Move to fullscreen when the game actually starts 
         [ ] Return to pregame when all players are dead
     [ ] Burst firing - build up a firing charge when not firing so that when the button is first pressed, you peel off a could of shots right away

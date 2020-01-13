@@ -14,6 +14,9 @@ export class Widget
     parent: Widget | null = null;
     destroyed = false;
 
+    relativeLocation: {x: number | null, y: number | null} | null = null;
+    relativeSize: {width: number | null, height: number | null} | null = null;
+
     _left = 0;
     _top = 0;
     _width = 100;
@@ -58,6 +61,48 @@ export class Widget
     // ParentResized
     //-------------------------------------------------------------------------
     ParentResized(){
+        // manage relative sizes and locations
+        if(!this.widgetSystem) return;
+            
+        let workingX = 0;
+        let workingY = 0;
+        let workingWidth = this.widgetSystem.drawing.width;
+        let workingHeight = this.widgetSystem.drawing.height;
+        if(this.parent) {
+            workingX = this.parent.left;
+            workingY = this.parent.top;
+            workingWidth = this.parent.width;
+            workingHeight = this.parent.height;
+        }
+
+        if(this.relativeSize) {
+            if(this.relativeSize.width)
+            {
+                this.width = workingWidth * this.relativeSize.width;
+            }
+            if(this.relativeSize.height)
+            {
+                this.height = workingHeight * this.relativeSize.height;
+            }
+        }
+
+        if(this.relativeLocation)
+        {
+            if(this.relativeLocation.x)
+            {
+                let centerX = workingX + workingWidth * this.relativeLocation.x;
+                this.left = centerX - this.width/2;
+            }
+            else this.left = workingX;
+
+            if(this.relativeLocation.y)
+            {
+                let centerY = workingY + workingHeight * this.relativeLocation.y;
+                this.top = centerY - this.height/2;
+            }
+            else this.top = workingY;
+        }
+
         this.onParentSizeChanged.invoke();
         this.children.forEach(child => child.ParentResized());
     } 
