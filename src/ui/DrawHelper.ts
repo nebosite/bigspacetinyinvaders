@@ -28,6 +28,10 @@ export abstract class DrawnObject
     abstract set scale(value: number[]);
     abstract get rotation(): number;
     abstract set rotation(value: number);
+    abstract get color(): number;
+    abstract set color(value: number);
+    abstract get strokeColor(): number;
+    abstract set strokeColor(value: number);
 
     constructor(drawHelper: DrawHelper, pixiObject: any)
     {
@@ -69,6 +73,18 @@ export class DrawnText extends DrawnObject
     get text(): string { return this._pixiObject.text; }
     set text(value: string) { this._pixiObject.text = value; }
 
+    get color(): number { return (this._pixiObject.style as PIXI.TextStyle).fill as number; }
+    set color(value: number) {
+        const style = this.pixiObject.style as PIXI.TextStyle;
+        style.fill = value;
+        this._pixiObject.style = style; }
+
+    get strokeColor(): number { return (this._pixiObject.style as PIXI.TextStyle).stroke as number; }
+    set strokeColor(value: number) {
+        const style = this._pixiObject.style as PIXI.TextStyle;
+        style.stroke = value;
+        this._pixiObject.style = style; }
+
     constructor(drawHelper: DrawHelper, pixiObject : PIXI.Text)
     {
         super(drawHelper, pixiObject);
@@ -107,6 +123,12 @@ export class DrawnVectorObject extends DrawnObject
 
     get rotation(): number { return this._pixiObject.rotation; }
     set rotation(value: number) { this._pixiObject.rotation = value; }
+
+    get color(): number { return this._pixiObject.fill.color; }
+    set color(value: number) {this._pixiObject.fill.color = value; }
+
+    get strokeColor(): number { return this._pixiObject.line.color; }
+    set strokeColor(value: number) { this._pixiObject.line.color = value;}
 
     constructor(drawHelper: DrawHelper, pixiObject : PIXI.Graphics)
     {
@@ -149,6 +171,12 @@ export class DrawnSprite extends DrawnObject
         this._pixiObject.texture = this._textures.get(this._textureFrame) as PIXI.Texture;
     }
 
+    get color(): number { return 0; }
+    set color(value: number) { }
+
+    get strokeColor(): number { return 0 }
+    set strokeColor(value: number) { }
+
     constructor(drawHelper: DrawHelper, pixiObject : PIXI.Sprite, textures: Map<number,PIXI.Texture>, textureFrame: number)
     {
         super(drawHelper, pixiObject);
@@ -184,6 +212,12 @@ export class DrawnImage extends DrawnObject
     get rotation(): number { return this._pixiObject.rotation; }
     set rotation(value: number) { this._pixiObject.rotation = value; }
 
+    get color(): number { return 0; }
+    set color(value: number) { }
+
+    get strokeColor(): number { return 0 }
+    set strokeColor(value: number) { }
+
     constructor(drawHelper: DrawHelper, pixiObject : PIXI.Sprite)
     {
         super(drawHelper, pixiObject);
@@ -201,8 +235,8 @@ export class DrawHelper {
     pixiLoader: PIXI.Loader;
     indexedSprites = new Map<string, Map<number, PIXI.Texture>>();
     indexedImages = new Map<string, PIXI.Texture>();
-    onWindowResized = new EventThing();
-    onLoaded = new EventThing();
+    onWindowResized = new EventThing("DrawHelper.onWindowResized");
+    onLoaded = new EventThing("DrawHelper.onLoaded");
 
     width = 0;
     height = 0;
@@ -300,8 +334,8 @@ export class DrawHelper {
     addTextObject (text: string,
         x: number, y:number, 
         size: number = 16, 
-        fillStyle: string = "#FFFFFF", 
-        strokeStyle: string = "",
+        fillColor: number = 0xFFFFFF, 
+        strokeColor: number = 0x000000,
         strokeWidth: number = 1,
         wrapWidth: number = 99999,
         centering: number[] = [0,0]) 
@@ -311,8 +345,8 @@ export class DrawHelper {
             fontSize: size,
             //fontStyle: 'italic',
             //fontWeight: 'bold',
-            fill: [fillStyle], // gradient
-            stroke: strokeStyle,
+            fill: [fillColor], // gradient
+            stroke: strokeColor,
             strokeThickness: strokeWidth,
             //dropShadow: true,
             //dropShadowColor: '#000000',

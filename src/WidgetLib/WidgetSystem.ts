@@ -22,9 +22,9 @@ export class WidgetSystem
         this._root.Init(this);
 
         this.drawing.onWindowResized.subscribe("Widget System Resize",
-            () => this._root.ParentResized());
+            () => this._root.ParentLayoutChanged());
         
-        this._root.ParentResized();
+        this._root.ParentLayoutChanged();
         requestAnimationFrame(this.animation_loop);
     }
 
@@ -33,5 +33,6 @@ export class WidgetSystem
     //-------------------------------------------------------------------------
     animation_loop = (event: unknown) => {
         this._root?.Render();
+        requestAnimationFrame(this.animation_loop);
     }
 }

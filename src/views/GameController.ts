@@ -98,9 +98,9 @@ export class GameController
 
         for(var i = 0; i < 50; i++) this.inputState.push(0);
 
-        this.versonText = drawing.addTextObject(`Version ${GLOBALS.version}`, 5, drawing.height, 15, "#800000", "", 0, 1000, [0,1]);
-        this.playerScoresText = drawing.addTextObject("P0:0000\nP1:0000\nP3:0000", 5, drawing.height-20, 10, "#FFFF00", "", 0, 1000, [0,1] );
-        this.mainScoreText = drawing.addTextObject("Score: 00000", drawing.width-10, 3, 15, "#FFFF00", "", 0, 1000, [1,0] );
+        this.versonText = drawing.addTextObject(`Version ${GLOBALS.version}`, 5, drawing.height, 15, 0x800000, 0x0, 0, 1000, [0,1]);
+        this.playerScoresText = drawing.addTextObject("P0:0000\nP1:0000\nP3:0000", 5, drawing.height-20, 10, 0xffff00, 0x0, 0, 1000, [0,1] );
+        this.mainScoreText = drawing.addTextObject("Score: 00000", drawing.width-10, 3, 15, 0xffff00, 0x0, 0, 1000, [1,0] );
     } 
 
     //-------------------------------------------------------------------------
@@ -165,7 +165,7 @@ export class GameController
         if(this.appModel.getPlayers().length == 0 && !this.inviteText)
         {
             this.inviteText = this.drawing.addTextObject("Use movement controls to add a new player...",
-                this.drawing.width/2, this.drawing.height - 100, 20,"#FFFFFF","",0,2000, [.5,.5]);
+                this.drawing.width/2, this.drawing.height - 100, 20,0xFFFFFF,0x0,0,2000, [.5,.5]);
         }
 
         if(this.appModel.getPlayers().length > 0 && this.inviteText)

@@ -38,7 +38,7 @@ export class PlayerObjectRenderer extends GameObjectRenderer
         super(gameObject,
             drawing.addSpriteObject("sprites/ship", gameObject.number % 10, gameObject.x, gameObject.y) as DrawnObject, sound);
 
-        this.playerName = drawing.addTextObject(gameObject.name, gameObject.x, gameObject.y + 10, 10, "#ffffff", "", 0, 300, [.5, 0]);
+        this.playerName = drawing.addTextObject(gameObject.name, gameObject.x, gameObject.y + 10, 10, 0xffffff, 0x0, 0, 300, [.5, 0]);
 
         gameObject.onShoot.subscribe("playShotSound", () => sound.play("sounds/player_shot.wav"));
         gameObject.onDeath.subscribe("playPlayerDeathSound", () => sound.play("sounds/player_death.wav"));

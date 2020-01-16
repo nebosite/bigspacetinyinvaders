@@ -1,15 +1,21 @@
 import { WidgetSystem } from "./WidgetSystem";
 import { DrawnVectorObject } from "../ui/DrawHelper";
 import { EventThing } from "../tools/EventThing";
+import { TilingSprite } from "pixi.js";
 
+var widgetId = 0;
 export class Widget
 {
+    id = widgetId++;
+    name: string;
     widgetSystem: WidgetSystem | null = null;
     backgroundRectangle: DrawnVectorObject | null = null;
-    onParentSizeChanged = new EventThing();
-    onRender = new EventThing();
-    onLoaded = new EventThing();
-    onDestroyed = new EventThing();
+    onParentLayoutChanged = new EventThing("Widget.onParentLayoutChanged");
+    onRender = new EventThing("Widget.onRender");
+    onLoaded = new EventThing("Widget.onLoaded");
+    onDestroyed = new EventThing("Widget.onDestroyed");
+    onLayoutChange = new EventThing("Widget.onLonLayoutChangeoaded");
+    onColorChange = new EventThing("Widget.onColorChange");
     children = new Array<Widget>();
     parent: Widget | null = null;
     destroyed = false;
@@ -22,26 +28,45 @@ export class Widget
     _width = 100;
     _height = 100;
     _backgroundColor = 0xFFFFFF;
+    _foregroundColor = 0x808080;
     _alpha = 0;
 
+    _layoutChanged = true;
+    _colorChanged = true;
+    _maintainAspectRatio = true;
+
     get left() { return this._left;}
-    set left(value: number) { this._left = value; if(this.backgroundRectangle) this.backgroundRectangle.x = value;}
+    set left(value: number) { if(this._left != value) { this._left = value; this._layoutChanged = true; }}
     
     get top()  { return this._top;}
-    set top(value: number) { this._top = value; if(this.backgroundRectangle) this.backgroundRectangle.y = value;}
+    set top(value: number) { if(this._top != value) { this._top = value; this._layoutChanged = true;}}
     
     get width()  { return this._width;}
-    set width(value: number) { this._width = value; if(this.backgroundRectangle) this.backgroundRectangle.width = value;}
+    set width(value: number) { if(this._width != value) { this._width = value; this._layoutChanged = true;}}
     
     get height()  { return this._height;}
-    set height(value: number) { this._height = value; if(this.backgroundRectangle) this.backgroundRectangle.height = value;}
+    set height(value: number) { if(this._height != value) { this._height = value; this._layoutChanged = true;}}
     
     get backgroundColor()  { return this._backgroundColor;}
-    set backgroundColor(value: number) { this._backgroundColor = value; if(this.backgroundRectangle) this.backgroundRectangle.fillColor = value;}
+    set backgroundColor(value: number) { if(this._backgroundColor != value) { this._backgroundColor = value; this._colorChanged = true;}}
+    
+    get foregroundColor()  { return this._foregroundColor;}
+    set foregroundColor(value: number) { if(this._foregroundColor != value) { this._foregroundColor = value; this._colorChanged = true;}}
     
     get alpha()  { return this._alpha;}
-    set alpha(value: number) {this._alpha = value;  if(this.backgroundRectangle) this.backgroundRectangle.alpha = value;}
+    set alpha(value: number) {if(this._alpha != value) { this._alpha = value;  this._colorChanged = true;}}
     
+    get maintainAspectRatio()  { return this._maintainAspectRatio;}
+    set maintainAspectRatio(value: boolean) {if(this.maintainAspectRatio != value) { this.maintainAspectRatio = value;  this._layoutChanged = true;}}
+    
+    //-------------------------------------------------------------------------
+    // ctor
+    //-------------------------------------------------------------------------
+    constructor(name: string)
+    {
+        this.name = name;
+    }
+
     //-------------------------------------------------------------------------
     // Init
     //-------------------------------------------------------------------------
@@ -58,9 +83,45 @@ export class Widget
     }
 
     //-------------------------------------------------------------------------
-    // ParentResized
+    // HandleChangedLayout
     //-------------------------------------------------------------------------
-    ParentResized(){
+    HandleChangedLayout()
+    {
+        //console.log(`HandleChangedLayout: ${this.name}`);
+
+        this._layoutChanged = false;
+        if(this.backgroundRectangle) 
+        {
+            this.backgroundRectangle.x = this.left;
+            this.backgroundRectangle.y = this.top;
+            this.backgroundRectangle.width = this.width;
+            this.backgroundRectangle.height = this.height;
+        }
+        this.onLayoutChange.invoke();
+        this.children.forEach(child => child.ParentLayoutChanged());
+
+    }
+
+    //-------------------------------------------------------------------------
+    // HandleChangedColor
+    //-------------------------------------------------------------------------
+    HandleChangedColor()
+    {
+        //console.log(`HandleChangedColor: ${this.name}`);
+        this._colorChanged = false;
+        if(this.backgroundRectangle) 
+        {
+            this.backgroundRectangle.fillColor = this.backgroundColor;
+            this.backgroundRectangle.alpha = this.alpha;
+        }
+        this.onColorChange.invoke();
+    }
+
+    //-------------------------------------------------------------------------
+    // ParentLayoutChanged
+    //-------------------------------------------------------------------------
+    ParentLayoutChanged(){
+        //console.log(`ParentLayoutChanged: ${this.name}`);
         // manage relative sizes and locations
         if(!this.widgetSystem) return;
             
@@ -76,14 +137,27 @@ export class Widget
         }
 
         if(this.relativeSize) {
+            var widthHeightRatio = this.width/this.height;
             if(this.relativeSize.width)
             {
                 this.width = workingWidth * this.relativeSize.width;
+                if(this.maintainAspectRatio)
+                {
+                    this.height = this.width / widthHeightRatio;
+                }
             }
             if(this.relativeSize.height)
             {
                 this.height = workingHeight * this.relativeSize.height;
-            }
+                if(this.maintainAspectRatio)
+                {
+                    this.width = this.height * widthHeightRatio;
+                }
+           }
+        }
+        else {
+            this.width = workingWidth;
+            this.height = workingHeight;
         }
 
         if(this.relativeLocation)
@@ -103,8 +177,8 @@ export class Widget
             else this.top = workingY;
         }
 
-        this.onParentSizeChanged.invoke();
-        this.children.forEach(child => child.ParentResized());
+        this.onParentLayoutChanged.invoke();
+        this.children.forEach(child => child.ParentLayoutChanged());
     } 
 
     //-------------------------------------------------------------------------
@@ -112,6 +186,14 @@ export class Widget
     //-------------------------------------------------------------------------
     Render(){
         if(this.destroyed) return;
+        if(this._layoutChanged) 
+        {
+            this.HandleChangedLayout();
+        }
+        if(this._colorChanged) 
+        {
+            this.HandleChangedColor();
+        }
         this.onRender.invoke();
         this.children.forEach(child => child.Render());
     } 
@@ -126,7 +208,7 @@ export class Widget
         this.children.push(child);
         child.parent = this;
         child.Init(this.widgetSystem);
-        child.ParentResized();
+        child.ParentLayoutChanged();
     }
 
     //-------------------------------------------------------------------------

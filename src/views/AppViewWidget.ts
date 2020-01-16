@@ -6,27 +6,23 @@ export class AppViewWidget extends Widget
 {
     theAppModel: AppModel; 
 
-    constructor(theAppModel: AppModel)
+    constructor(name: string, theAppModel: AppModel)
     {
-        super();
+        super(name);
         this.theAppModel = theAppModel;
         this.backgroundColor = 0x000000;
         this.alpha = 1;
 
-        this.onParentSizeChanged.subscribe("AppView Resize", ()=>
-        {
+        this.onLoaded.subscribe(`${this.name} Load`, ()=>{
             if(!this.widgetSystem) return;
+            this.ShowMainMenu();
             this.width = this.widgetSystem.drawing.width;
             this.height = this.widgetSystem.drawing.height;
-        })
-
-        this.onLoaded.subscribe("AppView Loading", ()=>{
-            this.ShowMainMenu();
         });
     }
 
     ShowMainMenu(){
-        let mainMenu = new MainMenuWidget(this.theAppModel);
+        let mainMenu = new MainMenuWidget("Main Menu", this.theAppModel);
         this.AddChild(mainMenu);
     }
 }

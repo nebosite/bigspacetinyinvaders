@@ -24,7 +24,7 @@ export class GameObject
     type: GameObjectType = GameObjectType.Unknown;
     appModel: IAppModel;
     isDeleted = false;
-    onCleanup = new EventThing();
+    onCleanup = new EventThing("GameObject.OnCleanup");
 
     constructor(appModel: IAppModel)
     {

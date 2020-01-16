@@ -5,23 +5,23 @@ export class ImageWidget extends Widget
 {
     theImage: DrawnImage | null = null;
 
-    constructor(imageName: string)
+    constructor(name: string, imageName: string)
     {
-        super();
+        super(name);
 
-        this.onLoaded.subscribe("Load ImageWidget", ()=>
+        this.onLoaded.subscribe(`${this.name} Load`, ()=>
         {
             this.theImage = this.widgetSystem?.drawing.addImageObject(imageName,0,0,1) as DrawnImage;
             this.width = this.theImage.nativeWidth;
             this.height = this.theImage.nativeHeight;     
         }); 
 
-        this.onDestroyed.subscribe("ImageWidget destroy", ()=> {
+        this.onDestroyed.subscribe(`${this.name} Destroy`, ()=> {
             this.theImage?.delete;
             this.theImage = null;
         });
 
-        this.onParentSizeChanged.subscribe("ImageWidget Resize", ()=>
+        this.onLayoutChange.subscribe(`${this.name} Layout`, ()=>
         {
             if(!this.widgetSystem || !this.theImage ) return;
             

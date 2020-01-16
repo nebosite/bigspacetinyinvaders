@@ -42,9 +42,9 @@ export class DiagnosticsControl
         this.timingText = drawing.addTextObject("T:", 5,25,this.fontSize);
         this.drawingObjects.push(this.timingText);
 
-        this.keyboardText = drawing.addTextObject("Keyboard:", 5,40, this.fontSize, "#ffff00");
-        this.gamepad1Text = drawing.addTextObject("GP1:", 5,140, this.fontSize, "#ffff00");
-        this.gamepad2Text = drawing.addTextObject("GP2:", 120,140, this.fontSize, "#ffff00");
+        this.keyboardText = drawing.addTextObject("Keyboard:", 5,40, this.fontSize, 0xffff00);
+        this.gamepad1Text = drawing.addTextObject("GP1:", 5,140, this.fontSize, 0xffff00);
+        this.gamepad2Text = drawing.addTextObject("GP2:", 120,140, this.fontSize, 0xffff00);
         this.drawingObjects.push(this.keyboardText);
         this.drawingObjects.push(this.gamepad1Text);
         this.drawingObjects.push(this.gamepad2Text);

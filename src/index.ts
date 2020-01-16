@@ -11,7 +11,7 @@ document.body.style.margin = "0";
 document.body.style.padding = "0";
 document.body.style.background = "Green";
 
-var appView = new AppViewWidget(theAppModel);
+var appView = new AppViewWidget("The App", theAppModel);
 var theWidgetSystem: WidgetSystem;
 
 let theSoundHelper = new SoundHelper();

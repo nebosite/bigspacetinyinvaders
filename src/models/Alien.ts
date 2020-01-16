@@ -13,7 +13,7 @@ export class Alien extends GameObject{
     hitPoints = 1;
     explosionEnd = 0;
     shootRate = 1;
-    onDeath = new EventThing();
+    onDeath = new EventThing("Alien.OnDeath");
     lastShotTime = 0;
     timeBetweenShots = 0;
     shotOrders = 0;

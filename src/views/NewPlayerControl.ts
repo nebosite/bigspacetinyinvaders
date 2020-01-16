@@ -40,13 +40,13 @@ export class NewPlayerControl implements IInputReceiver<PlayerAction>
         this.drawingObjects.push(
             this.drawing.addTextObject(
                 "New Player", 
-                this.left + size/2, this.top + size/2, this.height * .15, "#FFFF00"
+                this.left + size/2, this.top + size/2, this.height * .15, 0xFFFF00
             )
         );
         this.drawingObjects.push(
             this.drawing.addTextObject(
                 "press an action button to start", 
-                this.left + size/2, this.top + size * 1.5, this.height * .10, "#aaaa00"
+                this.left + size/2, this.top + size * 1.5, this.height * .10, 0xaaaa00
             )
         );
 

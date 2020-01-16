@@ -1,6 +1,12 @@
 export class EventThing
 {
     private subscribers = new Map<string, ()=>void>();
+    name: string;
+
+    constructor(name: string)
+    {
+        this.name = name;
+    }
 
     subscribe(name: string, callMe: ()=> void)
     {
@@ -14,9 +20,10 @@ export class EventThing
 
     invoke()
     {
-        for(let callMe of this.subscribers.values())
+        for(let callMe of this.subscribers)
         {
-            callMe();
+            //console.log(`Invoke: ${this.name}: ${callMe[0]}`)
+            callMe[1]();
         }
     }
 }
