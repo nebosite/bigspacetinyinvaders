@@ -8,7 +8,8 @@ export class MainMenuWidget extends Widget
 {
     theAppModel: AppModel; 
     logoWidget: ImageWidget | null = null;
-    choices = new Array<{widget: Widget}> ();
+    choices = new Array<{widget: Widget, action: ()=>void}> ();
+    currentChoice = 0;
 
     constructor(name: string, theAppModel: AppModel)
     {
@@ -27,6 +28,7 @@ export class MainMenuWidget extends Widget
         {
             if(!this.widgetSystem) return;
             if(!this.parent) return;
+
             this.width = this.parent.width;
             this.height = this.parent.height;
 
@@ -35,18 +37,31 @@ export class MainMenuWidget extends Widget
             this.logoWidget.relativeLocation = {x:.5, y: .4};
             this.AddChild(this.logoWidget);
 
-            let choice = {widget: new TextWidget("Play Choice", "PLAY!")}
+            let choice = {
+                widget: new TextWidget("Play Choice", "PLAY!"),
+                action: () => {}
+            }
             choice.widget.relativeSize = {width: null, height: 0.05};
-            choice.widget.relativeLocation = {x:.5, y: .8};
+            choice.widget.relativeLocation = {x:.5, y: .75};
             choice.widget.backgroundColor = 0xFF0000;
             choice.widget.fontSize = 80;
             choice.widget.foregroundColor = 0x00FF00;
-            // choice.widget.backgroundColor = 0x400000;
-            // choice.widget.alpha = 1;
-
-    
             this.AddChild(choice.widget);
             this.choices.push(choice);
+
+            choice = {
+                widget: new TextWidget("FullScreen Choice", "[X] FullScreen"),
+                action: () => {}
+            }
+            choice.widget.relativeSize = {width: null, height: 0.03};
+            choice.widget.relativeLocation = {x:.5, y: .85};
+            choice.widget.backgroundColor = 0xFF0000;
+            choice.widget.fontSize = 80;
+            choice.widget.foregroundColor = 0x00FFFF;
+            this.AddChild(choice.widget);
+            this.choices.push(choice);
+
+
         });
     }
 }
