@@ -1,6 +1,6 @@
-export class EventThing
+export class EventThing<T>
 {
-    private subscribers = new Map<string, ()=>void>();
+    private subscribers = new Map<string, (arg: T) => void>();
     name: string;
 
     constructor(name: string)
@@ -8,7 +8,7 @@ export class EventThing
         this.name = name;
     }
 
-    subscribe(name: string, callMe: ()=> void)
+    subscribe(name: string, callMe: (arg: T) => void)
     {
         this.subscribers.set(name, callMe);
     }
@@ -18,12 +18,12 @@ export class EventThing
         this.subscribers.delete(name);
     }
 
-    invoke()
+    invoke(arg: T)
     {
         for(let callMe of this.subscribers)
         {
             //console.log(`Invoke: ${this.name}: ${callMe[0]}`)
-            callMe[1]();
+            callMe[1](arg);
         }
     }
 }

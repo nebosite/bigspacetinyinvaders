@@ -235,8 +235,8 @@ export class DrawHelper {
     pixiLoader: PIXI.Loader;
     indexedSprites = new Map<string, Map<number, PIXI.Texture>>();
     indexedImages = new Map<string, PIXI.Texture>();
-    onWindowResized = new EventThing("DrawHelper.onWindowResized");
-    onLoaded = new EventThing("DrawHelper.onLoaded");
+    onWindowResized = new EventThing<void>("DrawHelper.onWindowResized");
+    onLoaded = new EventThing<void>("DrawHelper.onLoaded");
 
     width = 0;
     height = 0;

@@ -1,4 +1,5 @@
 import { IInputReceiver } from "./InputReceiver";
+import { EventThing } from "../tools/EventThing";
 
 // Javascript keycodes: https://keycode.info/
 var keyboardMap = [
@@ -346,7 +347,9 @@ export class KeycodeTranslator<T> implements IKeycodeTranslator {
 // ------------------------------------------------------------------------
 export class KeyboardManager {
     keyHandlerLookup = new Map<number, IKeycodeTranslator>();
-    onUnhandledKeyCode = (keyCode: number) => {};
+    onUnhandledKeyCode = new EventThing<number>("KB UnhandledCode"); 
+    onKeyDown = new EventThing<number>("KB UnhandledCode"); 
+    onKeyUp = new EventThing<number>("KB UnhandledCode"); 
     keyStates = new Map<number,boolean>();
 
     get keyboardStateText() {
@@ -393,8 +396,9 @@ export class KeyboardManager {
         }   
         else
         {
-            this.onUnhandledKeyCode(e.keyCode);
+            this.onUnhandledKeyCode.invoke(e.keyCode);
         }
+        this.onKeyDown.invoke(e.keyCode);
     }
 
     // ------------------------------------------------------------------------
@@ -407,6 +411,7 @@ export class KeyboardManager {
         {
             this.keyHandlerLookup.get(e.keyCode)?.handleKeyUp(e.keyCode);
         }   
+        this.onKeyUp.invoke(e.keyCode);
     }
 
     // ------------------------------------------------------------------------

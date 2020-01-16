@@ -10,7 +10,7 @@ import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienOb
 import { Bullet } from "../models/Bullet";
 import { DiagnosticsControl } from "./DiagnosticsControl";
 import { GLOBALS } from "../globals";
-import { SoundHelper } from "src/ui/SoundHelper";
+import { SoundHelper } from "../ui/SoundHelper";
 
 const PLAYER_SIZE = 16;
 
@@ -88,9 +88,9 @@ export class GameController
         appModel.onAddedGameObject = this.handleAddedGameObject;
         appModel.onRemovedGameObject = this.handleRemovedGameObject;
         this.keyboardManager = new KeyboardManager();
-        this.keyboardManager.onUnhandledKeyCode = this.handleUnhandledKey;
+        this.keyboardManager.onUnhandledKeyCode.subscribe("Game Controller unhandled Key", this.handleUnhandledKey);
         this.gamepadManager = new GamepadManager();
-        this.gamepadManager.onUnhandledInputCode = this.handleUnhandledGamepadCode;
+        //this.gamepadManager.onUnhandledInputCode.subscribe("Game Controller unhandled gamepad", this.handleUnhandledGamepadCode);
     
         requestAnimationFrame(this.animation_loop);
         window.addEventListener("click", this.handleCanvasClick);
@@ -104,7 +104,7 @@ export class GameController
     } 
 
     //-------------------------------------------------------------------------
-    // reset the game
+    // reset the game 
     //-------------------------------------------------------------------------
     reset()
     {

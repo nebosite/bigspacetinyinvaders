@@ -13,8 +13,8 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
     accelerationRate = 30;
     maxSpeed = 6;
     shootRate = 5;
-    onShoot = new EventThing("Player.OnShoot");
-    onDeath = new EventThing("Player.OnDeath");
+    onShoot = new EventThing<void>("Player.OnShoot");
+    onDeath = new EventThing<void>("Player.OnDeath");
     appModel: IAppModel;
     shooting = false;
     lastShotTime = 0;

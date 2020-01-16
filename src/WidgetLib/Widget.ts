@@ -1,4 +1,4 @@
-import { WidgetSystem } from "./WidgetSystem";
+import { WidgetSystem, ButtonEvent } from "./WidgetSystem";
 import { DrawnVectorObject } from "../ui/DrawHelper";
 import { EventThing } from "../tools/EventThing";
 import { TilingSprite } from "pixi.js";
@@ -10,12 +10,13 @@ export class Widget
     name: string;
     widgetSystem: WidgetSystem | null = null;
     backgroundRectangle: DrawnVectorObject | null = null;
-    onParentLayoutChanged = new EventThing("Widget.onParentLayoutChanged");
-    onRender = new EventThing("Widget.onRender");
-    onLoaded = new EventThing("Widget.onLoaded");
-    onDestroyed = new EventThing("Widget.onDestroyed");
-    onLayoutChange = new EventThing("Widget.onLonLayoutChangeoaded");
-    onColorChange = new EventThing("Widget.onColorChange");
+    onParentLayoutChanged = new EventThing<void>("Widget.onParentLayoutChanged");
+    onRender = new EventThing<void>("Widget.onRender");
+    onLoaded = new EventThing<void>("Widget.onLoaded");
+    onDestroyed = new EventThing<void>("Widget.onDestroyed");
+    onLayoutChange = new EventThing<void>("Widget.onLonLayoutChangeoaded");
+    onColorChange = new EventThing<void>("Widget.onColorChange");
+    onButtonEvent = new EventThing<ButtonEvent>("Widget.onButtonEvent");
     children = new Array<Widget>();
     parent: Widget | null = null;
     destroyed = false;
@@ -237,4 +238,14 @@ export class Widget
         }
     }
    
+    //-------------------------------------------------------------------------
+    // handleButtonEvent
+    //-------------------------------------------------------------------------
+    handleButtonEvent = (event: ButtonEvent) => {
+        this.onButtonEvent.invoke(event);   
+        if(event.handled) return;
+        this.children.forEach(child => {
+            if(!event.handled) child.handleButtonEvent(event);
+        })
+    }
 }
