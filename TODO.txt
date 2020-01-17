@@ -1,21 +1,13 @@
 
 TODO
-    [ ] Pregame mode
-        [x] title graphic
-        [x] Choices:
-            full screen mode option  https://www.w3schools.com/howto/howto_js_fullscreen.asp
-            PLAY
-        [x] Move to fullscreen when the game actually starts 
-        [x] Remember full screen setting in app model
-        [ ] Smaller main page logo
-        [ ] Version on menu
-        [ ] Actual size invaders on menu
-        [ ] Return to pregame when all players are dead
     [ ] Burst firing - build up a firing charge when not firing so that when the button is first pressed, you peel off a could of shots right away
     [ ] Replace exploding ship with magic debris
     [ ] Collect debris to increase shot rate
 
 NEW
+    [ ] Game over
+        [ ] Show intermediate game over screen when the game exists
+        [ ] Game should exit when all players are dead
     [ ] Use scaling to make fonts look better on large screens
     [ ] Remember controllers long-term (and assign names)
     [ ] highscores
@@ -61,6 +53,18 @@ PROBABLY NEVER
 
 
 DONE ================================================================================================================================
+
+    [x] Main menu
+        [x] title graphic
+        [x] Choices:
+            full screen mode option  https://www.w3schools.com/howto/howto_js_fullscreen.asp
+            PLAY
+        [x] Move to fullscreen when the game actually starts 
+        [x] Remember full screen setting in app model
+        [x] Smaller main page logo
+        [x] Version on menu
+        [x] Actual size invaders on menu
+
 Version 0.0.2.1
     [x] Esc key to quit game
     [x] Controller back buttons to quit

@@ -5,6 +5,7 @@ import { TextWidget } from "../WidgetLib/TextWidget";
 import { ButtonEvent } from "../WidgetLib/WidgetSystem";
 import { DrawnSprite } from "../ui/DrawHelper";
 import { GameWidget } from "./GameWidget";
+import { GLOBALS } from "../globals";
 
 
 //-------------------------------------------------------------------------
@@ -15,8 +16,10 @@ export class MainMenuWidget extends Widget
     theAppModel: IAppModel; 
     logoWidget: ImageWidget | null = null;
     choiceIndicator: DrawnSprite | null = null;
+    invaders = new Array<DrawnSprite>();
     choices = new Array<{widget: Widget, action: ()=>void}> ();
     currentChoice = 0;
+    invaderCount = 10;
 
     //-------------------------------------------------------------------------
     // ctor
@@ -39,6 +42,10 @@ export class MainMenuWidget extends Widget
     //-------------------------------------------------------------------------
     destroyMe = ()=>{
         this.choiceIndicator?.delete();
+        for(let x = 0; x < this.invaderCount; x++)
+        {
+            this.invaders[x].delete();
+        }
     }
     
     //-------------------------------------------------------------------------
@@ -53,8 +60,8 @@ export class MainMenuWidget extends Widget
         this.height = this.parent.height;
 
         this.logoWidget = new ImageWidget("Logo", "img/mainlogo.png");
-        this.logoWidget.relativeSize = {width: null, height: 0.6};
-        this.logoWidget.relativeLocation = {x:.5, y: .4};
+        this.logoWidget.relativeSize = {width: null, height: 0.5};
+        this.logoWidget.relativeLocation = {x:.5, y: .3};
         this.AddChild(this.logoWidget);
 
         let playChoiceWidget = new TextWidget("Play Choice", "PLAY!");
@@ -66,7 +73,7 @@ export class MainMenuWidget extends Widget
         choice.widget.relativeLocation = {x:.5, y: .75};
         choice.widget.backgroundColor = 0xFF0000;
         choice.widget.fontSize = 80;
-        choice.widget.foregroundColor = 0x00FF00;
+        choice.widget.foregroundColor = 0x009DFF;
         this.AddChild(choice.widget);
         this.choices.push(choice);
 
@@ -84,11 +91,24 @@ export class MainMenuWidget extends Widget
         choice.widget.relativeLocation = {x:.5, y: .85};
         choice.widget.backgroundColor = 0xFF0000;
         choice.widget.fontSize = 80;
-        choice.widget.foregroundColor = 0x00FFFF;
+        choice.widget.foregroundColor = 0x009DFF;
         this.AddChild(choice.widget);
         this.choices.push(choice);
 
+
+        let versionText = new TextWidget("Version", "v" + GLOBALS.version);
+        versionText.relativeLocation = {x:0, y:0};
+        versionText.fontSize = 40;
+        versionText.foregroundColor = 0x009DFF;
+        versionText.relativeSize = {width: null, height: .03}
+        this.AddChild(versionText);
+
         this.choiceIndicator = this.widgetSystem.drawing.addSpriteObject("sprites/alien",0,0,0);
+        for(let x = 0; x < this.invaderCount; x++)
+        {
+            this.invaders.push(this.widgetSystem.drawing.addSpriteObject("sprites/alien",2,0,0));
+        }
+   
     }
 
     //-------------------------------------------------------------------------
@@ -129,9 +149,22 @@ export class MainMenuWidget extends Widget
             let currentWidget = this.choices[this.currentChoice].widget;
             let scale =  playWidget.height / this.choiceIndicator.nativeHeight;
             this.choiceIndicator.scale =  [scale,scale];
-            this.choiceIndicator.x = playWidget.left - this.choiceIndicator.width*1.5;
+            this.choiceIndicator.x = playWidget.left - this.choiceIndicator.width;
             this.choiceIndicator.y = currentWidget.top + currentWidget.height/2;
         }
+
+        if(this.logoWidget)
+        {
+            let invaderSkip = (this.logoWidget.width * .5)/(this.invaderCount -1);
+            let invaderX = this.logoWidget.left + this.logoWidget.width/4;
+            for(let x = 0; x < this.invaderCount; x++)
+            {
+                this.invaders[x].x = invaderX + x * invaderSkip;
+                this.invaders[x].y = this.logoWidget.top + this.logoWidget.height * 1.1;
+            }
+
+        }
+      
     }    
 
     firstRender = false;

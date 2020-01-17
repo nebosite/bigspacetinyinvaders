@@ -84,18 +84,24 @@ export class GameWidget extends Widget implements IGameListener
         this.onLoaded.subscribe(`${this.name} Load`, this.loadMe);
         this.onParentLayoutChanged.subscribe(`${this.name} parentLayoutChanged`, () => {
             console.log(`Layout changed ${this.width},${this.height}`)
-            let screenIsReady = !this.theAppModel.settings.isFullScreen || document.fullscreen;
-            if(!hasSetSize && screenIsReady)
-            {
-                hasSetSize = true;
-                this.theAppModel.worldSize = {
-                    width: this.width,
-                    height: this.height};
-            }
             // if we exit fullscreen, just end the game
             if(hasSetSize && this.theAppModel.settings.isFullScreen && !document.fullscreen)
             {
                 this.theAppModel.endGame();
+            }
+
+            if(!hasSetSize || this.theAppModel.settings.isFullScreen)
+            {
+                let width = this.width;
+                let height = this.height;
+                if(this.theAppModel.settings.isFullScreen)
+                {
+                    width = this.widgetSystem?.drawing.width as number;
+                    height = this.widgetSystem?.drawing.height as number;
+                }
+                hasSetSize = true;
+                console.log(`Setting world size to ${width},${height}`);
+                this.theAppModel.worldSize = { width, height};
             }
         });
 
@@ -105,7 +111,7 @@ export class GameWidget extends Widget implements IGameListener
         this.theAppModel.onGameEnded = () =>
         {
             console.log("End game signalled");
-            if(document.fullscreen)  document.exitFullscreen();   
+            if(document.fullscreen && this.theAppModel.settings.isFullScreen)  document.exitFullscreen();   
             this.parent?.AddChild(new MainMenuWidget("Main Menu", this.theAppModel));
             this.parent?.RemoveChild(this);
         }
