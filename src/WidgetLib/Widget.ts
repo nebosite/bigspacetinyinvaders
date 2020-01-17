@@ -220,7 +220,9 @@ export class Widget
         let index = this.children.indexOf(child);
         if(index >= 0)
         {
+            let destroyMe = this.children[index];
             this.children.splice(index, 1);
+            destroyMe.Destroy();
         }
     }
 

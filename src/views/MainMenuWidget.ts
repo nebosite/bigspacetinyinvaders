@@ -4,6 +4,7 @@ import { ImageWidget } from "../WidgetLib/ImageWidget";
 import { TextWidget } from "../WidgetLib/TextWidget";
 import { ButtonEvent } from "../WidgetLib/WidgetSystem";
 import { DrawnSprite } from "../ui/DrawHelper";
+import { GameWidget } from "./GameWidget";
 
 
 //-------------------------------------------------------------------------
@@ -16,6 +17,7 @@ export class MainMenuWidget extends Widget
     choiceIndicator: DrawnSprite | null = null;
     choices = new Array<{widget: Widget, action: ()=>void}> ();
     currentChoice = 0;
+    fullScreen = true;
 
     //-------------------------------------------------------------------------
     // ctor
@@ -56,9 +58,10 @@ export class MainMenuWidget extends Widget
         this.logoWidget.relativeLocation = {x:.5, y: .4};
         this.AddChild(this.logoWidget);
 
+        let playChoiceWidget = new TextWidget("Play Choice", "PLAY!");
         let choice = {
-            widget: new TextWidget("Play Choice", "PLAY!"),
-            action: () => {}
+            widget: playChoiceWidget,
+            action: () => { this.startGame() }
         }
         choice.widget.relativeSize = {width: null, height: 0.05};
         choice.widget.relativeLocation = {x:.5, y: .75};
@@ -68,9 +71,15 @@ export class MainMenuWidget extends Widget
         this.AddChild(choice.widget);
         this.choices.push(choice);
 
+        let fullScreenText = ()=>{return `[${this.fullScreen ? "X" : "  "}] Fullscreen`}
+        let fullScreenChoiceWidget =  new TextWidget("FullScreen Choice", fullScreenText());
         choice = {
-            widget: new TextWidget("FullScreen Choice", "[X] FullScreen"),
-            action: () => {}
+            widget: fullScreenChoiceWidget,
+            action: () => {
+                this.fullScreen = !this.fullScreen;
+                fullScreenChoiceWidget.text = fullScreenText();
+                this._layoutChanged = true;
+            }
         }
         choice.widget.relativeSize = {width: null, height: 0.03};
         choice.widget.relativeLocation = {x:.5, y: .85};
@@ -81,6 +90,15 @@ export class MainMenuWidget extends Widget
         this.choices.push(choice);
 
         this.choiceIndicator = this.widgetSystem.drawing.addSpriteObject("sprites/alien",0,0,0);
+    }
+
+    //-------------------------------------------------------------------------
+    // respondToParentLayoutChange
+    //-------------------------------------------------------------------------
+    startGame()
+    {
+        this.parent?.AddChild(new GameWidget(this.theAppModel));
+        this.parent?.RemoveChild(this);
     }
 
     //-------------------------------------------------------------------------

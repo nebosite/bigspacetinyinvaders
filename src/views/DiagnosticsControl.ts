@@ -1,9 +1,7 @@
-import { IInputReceiver } from "../ui/InputReceiver";
-import { PlayerAction } from "./GameController";
-import { IKeycodeTranslator, KeycodeTranslator, KeyboardManager } from "../ui/KeyboardInput";
-import { DrawHelper, DrawnObject, DrawnVectorObject, DrawnText } from "../ui/DrawHelper";
+import {  KeyboardManager } from "../ui/KeyboardInput";
+import { DrawHelper, DrawnObject, DrawnText } from "../ui/DrawHelper";
 import { GamepadManager, GamepadState } from "../ui/GamepadInput";
-import { AppModel, AppDiagnostics } from "../models/AppModel";
+import { AppDiagnostics } from "../models/AppModel";
 
 export class DiagnosticsControl 
 {

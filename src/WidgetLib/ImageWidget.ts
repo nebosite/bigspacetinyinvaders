@@ -17,7 +17,7 @@ export class ImageWidget extends Widget
         }); 
 
         this.onDestroyed.subscribe(`${this.name} Destroy`, ()=> {
-            this.theImage?.delete;
+            this.theImage?.delete();
             this.theImage = null;
         });
 

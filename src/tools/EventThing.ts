@@ -13,7 +13,7 @@ export class EventThing<T>
         this.subscribers.set(name, callMe);
     }
 
-    unSubscribe(name: string)
+    unsubscribe(name: string)
     {
         this.subscribers.delete(name);
     }

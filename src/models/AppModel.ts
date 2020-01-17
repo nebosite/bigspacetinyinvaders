@@ -6,6 +6,17 @@ import { Hive } from "./Hive";
 import { Alien } from "./Alien";
 import { ShieldBlock } from "./ShieldBlock";
 
+
+//---------------------------------------------------------------------------
+// 
+//---------------------------------------------------------------------------
+export interface IGameListener
+{
+    onPlayerRemoved: (player: Player) => void;
+    onAddedGameObject: (gameObject: GameObject) => void;
+    onRemovedGameObject: (gameObject: GameObject) => void;
+}
+
 //---------------------------------------------------------------------------
 // 
 //---------------------------------------------------------------------------
@@ -34,12 +45,10 @@ export interface IAppModel
     think: (gameTime: number, elapsedMilliseconds: number) => void;
     removeGameObject: (gameObject: GameObject) => void; 
     addGameObject: (gameObject: GameObject) => void; 
-    onPlayerRemoved: (player: Player) => void;
-    onAddedGameObject: (gameObject: GameObject) => void;
-    onRemovedGameObject: (gameObject: GameObject) => void;
     hitTest: (gameObject: GameObject) => GameObject | null;
     reset: () => void;
     diagnostics: AppDiagnostics;
+    gameListener: IGameListener | null;
 
     worldSize: { width:number, height: number} ;
     playerSize: number;
@@ -56,16 +65,13 @@ export class AppModel implements IAppModel
     players = new Array<Player>();
     gameObjects = new Map<number,GameObject>();
     playerSize = 16;
-    onPlayerRemoved = (player: Player) => {};
-    onAddedGameObject = (gameObject: GameObject) => {};
-    onRemovedGameObject = (gameObject: GameObject) => {};
     shouldStartLevel = true;
     diagnostics = new AppDiagnostics();
     collisionCellSize = 50;
     hasShields = false;
     maxScore = 0;
     totalScore = 0;
-
+    gameListener: IGameListener | null = null;
 
     private _worldSize = {width: 10, height: 10};
     get worldSize(): { width:number, height: number} {return this._worldSize;}
@@ -257,9 +263,9 @@ export class AppModel implements IAppModel
         if(gameObject.type == GameObjectType.Player)
         {
             this.players.splice(this.players.indexOf(gameObject as Player), 1);
-            this.onPlayerRemoved(gameObject as Player);
+            this.gameListener?.onPlayerRemoved(gameObject as Player);
         }
-        this.onRemovedGameObject(gameObject);
+        this.gameListener?.onRemovedGameObject(gameObject);
     }
 
     //---------------------------------------------------------------------------
@@ -267,7 +273,7 @@ export class AppModel implements IAppModel
     //---------------------------------------------------------------------------
     addGameObject(gameObject: GameObject){
         this.gameObjects.set(gameObject.id, gameObject); 
-        this.onAddedGameObject(gameObject); 
+        this.gameListener?.onAddedGameObject(gameObject); 
     }
 
     //---------------------------------------------------------------------------

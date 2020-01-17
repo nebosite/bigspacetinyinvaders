@@ -3,7 +3,9 @@ import { DrawnText } from "../ui/DrawHelper";
 
 export class TextWidget extends Widget
 {
-    theText: DrawnText | null = null;
+    private _theText: DrawnText | null = null;
+    get text(){return this._theText ? this._theText.text: ""}
+    set text(value: string){ if(this._theText) this._theText.text = value}
     fontSize = 20;
     private _widthHeightRatio = 1;
 
@@ -13,44 +15,44 @@ export class TextWidget extends Widget
 
         this.onLoaded.subscribe(`${this.name} Load`, ()=>
         {
-            this.theText = this.widgetSystem?.drawing.addTextObject(
+            this._theText = this.widgetSystem?.drawing.addTextObject(
                 text,
                 0,0,
                 this.fontSize,
                 this.foregroundColor) as DrawnText;
-            this.width = this.theText.width;
-            this.height = this.theText.height;
+            this.width = this._theText.width;
+            this.height = this._theText.height;
             this._widthHeightRatio = this.width / this.height;
         }); 
 
         this.onDestroyed.subscribe(`${this.name} destroy`, ()=> {
-            this.theText?.delete;
-            this.theText = null;
+            this._theText?.delete();
+            this._theText = null;
         });
 
         this.onLayoutChange.subscribe(`${this.name} layout`, ()=>
         {
-            if(!this.widgetSystem || !this.theText ) return;
+            if(!this.widgetSystem || !this._theText ) return;
             if(this.relativeSize?.width)
             {
-                this.theText.width = this.width;
-                this.theText.height = this.width / this._widthHeightRatio;
+                this._theText.width = this.width;
+                this._theText.height = this.width / this._widthHeightRatio;
             }
             if(this.relativeSize?.height)
             {
-                this.theText.height = this.height;
-                this.theText.width = this.height * this._widthHeightRatio;
+                this._theText.height = this.height;
+                this._theText.width = this.height * this._widthHeightRatio;
             }
-            this.width = this.theText.width;
-            this.height = this.theText.height;
+            this.width = this._theText.width;
+            this.height = this._theText.height;
 
-            this.theText.x = this.left;
-            this.theText.y = this.top;
+            this._theText.x = this.left;
+            this._theText.y = this.top;
         });
 
         this.onColorChange.subscribe(`${this.name} coloring`, ()=>{
-            if(!this.widgetSystem || !this.theText ) return;
-            this.theText.color = this.foregroundColor;
+            if(!this.widgetSystem || !this._theText ) return;
+            this._theText.color = this.foregroundColor;
         });
 
     }

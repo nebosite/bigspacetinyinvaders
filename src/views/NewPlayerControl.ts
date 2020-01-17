@@ -1,6 +1,5 @@
 import { IInputReceiver } from "../ui/InputReceiver";
-import { PlayerAction } from "./GameController";
-import { IKeycodeTranslator, KeycodeTranslator } from "../ui/KeyboardInput";
+import { PlayerAction } from "./GameWidget";
 import { DrawHelper, DrawnObject, DrawnVectorObject } from "../ui/DrawHelper";
 
 export class NewPlayerControl implements IInputReceiver<PlayerAction>

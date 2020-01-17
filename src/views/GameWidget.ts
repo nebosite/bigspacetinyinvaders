@@ -1,4 +1,4 @@
-import { IAppModel, AppModel } from "../models/AppModel";
+import { IAppModel, AppModel, IGameListener } from "../models/AppModel";
 import { KeycodeTranslator, KeyboardManager } from "../ui/KeyboardInput";
 import { NewPlayerControl } from "./NewPlayerControl";
 import { Player } from "../models/Player";
@@ -11,6 +11,8 @@ import { Bullet } from "../models/Bullet";
 import { DiagnosticsControl } from "./DiagnosticsControl";
 import { GLOBALS } from "../globals";
 import { SoundHelper } from "../ui/SoundHelper";
+import { EventThing } from "../tools/EventThing";
+import { Widget } from "../WidgetLib/Widget";
 
 const PLAYER_SIZE = 16;
 
@@ -28,25 +30,20 @@ class PlayerIdentity{
     name = "";
 }
 
-export class GameController 
+export class GameWidget extends Widget implements IGameListener
 {
     appModel: IAppModel;
-    drawing: DrawHelper;
-    sound: SoundHelper;
-    gamepadThingX = 0;
-    keyboardManager: KeyboardManager;
-    gamepadManager: GamepadManager;
     newPlayerControl: NewPlayerControl | null = null;
     diagnosticsControl: DiagnosticsControl | null = null;
     lastFrameTime = Date.now();
-    inputState = new Array<number>();
     playerIdentities = new Map<string, PlayerIdentity>();
     seenPlayersCount = 0;
     inviteText: DrawnText | null = null;
     renderingControls = new Map<GameObject, GameObjectRenderer>();
-    versonText: DrawnText;
-    playerScoresText: DrawnText;
-    mainScoreText: DrawnText;
+    //versonText: DrawnText;
+    playerScoresText: DrawnText | null = null;
+    mainScoreText: DrawnText| null = null;
+    onGameOver = new EventThing<void>("Game Widget");
 
     CommonDirectionKeyLayouts = new Map([
         ["IJKL", [73,74,75,76]],
@@ -77,71 +74,82 @@ export class GameController
     //-------------------------------------------------------------------------
     // ctor
     //-------------------------------------------------------------------------
-    constructor(appModel: IAppModel, drawing: DrawHelper, sound: SoundHelper)
+    constructor(appModel: IAppModel)
     {
+        super("TheGame");
         this.appModel = appModel; 
-        this.drawing = drawing; 
-        this.sound = sound;
-        this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
-        this.drawing.onWindowResized.subscribe("gameController resized", this.handleResize);
-        appModel.onPlayerRemoved = player => {};
-        appModel.onAddedGameObject = this.handleAddedGameObject;
-        appModel.onRemovedGameObject = this.handleRemovedGameObject;
-        this.keyboardManager = new KeyboardManager();
-        this.keyboardManager.onUnhandledKeyCode.subscribe("Game Controller unhandled Key", this.handleUnhandledKey);
-        this.gamepadManager = new GamepadManager();
-        //this.gamepadManager.onUnhandledInputCode.subscribe("Game Controller unhandled gamepad", this.handleUnhandledGamepadCode);
-    
-        requestAnimationFrame(this.animation_loop);
-        window.addEventListener("click", this.handleCanvasClick);
-        window.addEventListener("mousemove", this.handleCanvasMouseMove);
+        this.appModel.reset(); 
 
-        for(var i = 0; i < 50; i++) this.inputState.push(0);
+        this.onLoaded.subscribe(`${this.name} Load`, this.loadMe);
+        this.onParentLayoutChanged.subscribe(`${this.name} parentLayoutChanged`, () => {
+            this.appModel.worldSize = {width: this.widgetSystem?.drawing.width as number, height: this.widgetSystem?.drawing.height as number};
+        });
 
-        this.versonText = drawing.addTextObject(`Version ${GLOBALS.version}`, 5, drawing.height, 15, 0x800000, 0x0, 0, 1000, [0,1]);
-        this.playerScoresText = drawing.addTextObject("P0:0000\nP1:0000\nP3:0000", 5, drawing.height-20, 10, 0xffff00, 0x0, 0, 1000, [0,1] );
-        this.mainScoreText = drawing.addTextObject("Score: 00000", drawing.width-10, 3, 15, 0xffff00, 0x0, 0, 1000, [1,0] );
+        this.onRender.subscribe(`${this.name} render`, this.renderMe);
+        this.onDestroyed.subscribe(`${this.name} destroy`, this.destroyMe);
     } 
 
     //-------------------------------------------------------------------------
-    // reset the game 
+    // destroyMe
     //-------------------------------------------------------------------------
-    reset()
+    destroyMe = () =>
     {
-        this.gamepadManager.reset();
-        this.keyboardManager.reset();
-        this.appModel.reset(); 
+        this.appModel.gameListener = null;
+        this.widgetSystem?.keyboardManager.onUnhandledKeyCode.unsubscribe("Game Controller unhandled Key");
+        this.playerScoresText?.delete();
+        this.mainScoreText?.delete();
         for(let control of this.renderingControls.values())
         {
             control.delete();
         }
         this.renderingControls.clear();
+        this.widgetSystem?.gamepadManager.reset();
+        this.widgetSystem?.keyboardManager.reset();
     }
 
     //-------------------------------------------------------------------------
-    // uhoh, the window resized
+    // loadMe
     //-------------------------------------------------------------------------
-    handleResize = () =>{
-        this.appModel.worldSize = {width: this.drawing.width, height: this.drawing.height};
+    loadMe = () =>
+    {
+        if(!this.widgetSystem) throw new Error("Widget System is not loaded!");
+
+        this.appModel.worldSize = {width: this.widgetSystem.drawing.width, height: this.widgetSystem.drawing.height};
+        this.appModel.gameListener = this;
+
+        this.widgetSystem.keyboardManager.onUnhandledKeyCode.subscribe("Game Controller unhandled Key", this.handleUnhandledKey);
+        //this.gamepadManager.onUnhandledInputCode.subscribe("Game Controller unhandled gamepad", this.handleUnhandledGamepadCode);
+    
+        //this.versonText = drawing.addTextObject(`Version ${GLOBALS.version}`, 5, drawing.height, 15, 0x800000, 0x0, 0, 1000, [0,1]);
+        this.playerScoresText = this.widgetSystem.drawing.addTextObject("P0:0000\nP1:0000\nP3:0000", 5, this.height-20, 10, 0xffff00, 0x0, 0, 1000, [0,1] );
+        this.mainScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 3, 15, 0xffff00, 0x0, 0, 1000, [1,0] );
+    }
+
+    //-------------------------------------------------------------------------
+    // When a player goes away
+    //-------------------------------------------------------------------------
+    onPlayerRemoved = (player: Player) => {
+
     }
 
     //-------------------------------------------------------------------------
     // Deal with added objects
     //-------------------------------------------------------------------------
-    handleAddedGameObject = (gameObject: GameObject) => {
+    onAddedGameObject = (gameObject: GameObject) => {
+        if(!this.widgetSystem) throw new Error("Shouldn't be adding game objects with no widget system!")
         switch(gameObject.type)
         {
-            case GameObjectType.Player: this.renderingControls.set(gameObject, new PlayerObjectRenderer(gameObject as Player, this.drawing, this.sound)); break;
-            case GameObjectType.Bullet: this.renderingControls.set(gameObject, new BulletObjectRenderer(gameObject as Bullet, this.drawing, this.sound)); break;
-            case GameObjectType.Alien: this.renderingControls.set(gameObject, new AlienObjectRenderer(gameObject as Alien, this.drawing, this.sound)); break;
-            case GameObjectType.ShieldBlock: this.renderingControls.set(gameObject, new ShieldBlockObjectRenderer(gameObject as Alien, this.drawing, this.sound)); break;
+            case GameObjectType.Player: this.renderingControls.set(gameObject, new PlayerObjectRenderer(gameObject as Player, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
+            case GameObjectType.Bullet: this.renderingControls.set(gameObject, new BulletObjectRenderer(gameObject as Bullet, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
+            case GameObjectType.Alien: this.renderingControls.set(gameObject, new AlienObjectRenderer(gameObject as Alien, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
+            case GameObjectType.ShieldBlock: this.renderingControls.set(gameObject, new ShieldBlockObjectRenderer(gameObject as Alien, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
         }
     }
 
     //-------------------------------------------------------------------------
     // Deal with removed objects
     //-------------------------------------------------------------------------
-    handleRemovedGameObject = (gameObject: GameObject) => {
+    onRemovedGameObject = (gameObject: GameObject) => {
         let renderer = this.renderingControls.get(gameObject);
         if(!renderer) return;
         renderer.delete();
@@ -151,10 +159,12 @@ export class GameController
     //-------------------------------------------------------------------------
     // Animation Loop
     //-------------------------------------------------------------------------
-    animation_loop = (event: unknown) => {
+    renderMe = () => {
         let gameTime = Date.now();
         let elapsed = gameTime - this.lastFrameTime;
         this.lastFrameTime = gameTime;
+
+        if(!this.widgetSystem) throw new Error("Lost the widget system somehouw");
 
         // Update rendered object
         this.appModel.think(gameTime, elapsed);
@@ -164,8 +174,8 @@ export class GameController
 
         if(this.appModel.getPlayers().length == 0 && !this.inviteText)
         {
-            this.inviteText = this.drawing.addTextObject("Use movement controls to add a new player...",
-                this.drawing.width/2, this.drawing.height - 100, 20,0xFFFFFF,0x0,0,2000, [.5,.5]);
+            this.inviteText = this.widgetSystem.drawing.addTextObject("Use movement controls to add a new player...",
+                this.width/2, this.height - 100, 20,0xFFFFFF,0x0,0,2000, [.5,.5]);
         }
 
         if(this.appModel.getPlayers().length > 0 && this.inviteText)
@@ -177,10 +187,9 @@ export class GameController
         if(this.newPlayerControl) this.newPlayerControl.render();
         if(this.diagnosticsControl) this.diagnosticsControl.render();
 
-        this.versonText.y = this.drawing.height - 5;
         if(this.inviteText)
         {
-            this.inviteText.x = this.drawing.width/2;
+            this.inviteText.x = this.width/2;
             this.inviteText.y = 100;
         }
 
@@ -188,13 +197,11 @@ export class GameController
         this.appModel.getPlayers().forEach(player => {
             scores += `${player.name}:${player.score.toString().padStart(5, '0')}\n`;
         });
-        this.playerScoresText.text = scores;
+        if(this.playerScoresText) this.playerScoresText.text = scores;
 
         let totalText = this.appModel.totalScore.toString().padStart(6, '0');
         let maxText = this.appModel.maxScore.toString().padStart(6, '0');
-        this.mainScoreText.text = `Score: ${totalText}  Max:${maxText}`;
-
-        requestAnimationFrame(this.animation_loop);
+        if(this.mainScoreText) this.mainScoreText.text = `Score: ${totalText}  Max:${maxText}`;
     }
 
     //-------------------------------------------------------------------------
@@ -223,10 +230,8 @@ export class GameController
     // handle gamepads
     //-------------------------------------------------------------------------
     handleUnhandledGamepadCode = (controllerIndex: number, code: GamepadInputCode, value: number) => {
-        this.inputState[code] = value;
         if(code == GamepadInputCode.Button_Back) {
             console.log("BACK");
-            this.reset();
             return;
         }
         if(this.newPlayerControl) 
@@ -254,8 +259,8 @@ export class GameController
                             let newPlayer = this.generatePlayer(translator.name);
                             translator.addSubscriber(newPlayer);
                             this.appModel.addPlayer(newPlayer);
-                            this.gamepadManager.addTranslator(translator);
-                            newPlayer.onCleanup.subscribe("removeTranslator", () => this.gamepadManager.removeTranslator(translator));
+                            this.widgetSystem?.gamepadManager.addTranslator(translator);
+                            newPlayer.onCleanup.subscribe("removeTranslator", () => this.widgetSystem?.gamepadManager.removeTranslator(translator));
                         }
                         this.newPlayerControl = null;
                         return;
@@ -273,16 +278,16 @@ export class GameController
                     if(value[i] == code)
                     {
                         var newTranslator = new GamepadTranslator<PlayerAction>(`${key}:${controllerIndex}`, controllerIndex);
-                        this.newPlayerControl = new NewPlayerControl(controllerIndex.toString(), this.drawing, () =>
+                        this.newPlayerControl = new NewPlayerControl(controllerIndex.toString(), this.widgetSystem?.drawing as DrawHelper, () =>
                         {
-                            this.gamepadManager.removeTranslator(newTranslator);
+                            this.widgetSystem?.gamepadManager.removeTranslator(newTranslator);
                             this.newPlayerControl = null;
                         });
 
                         newTranslator.mapAxis(value[0], PlayerAction.Left, PlayerAction.Right);
                         newTranslator.mapAxis(value[1], PlayerAction.Up, PlayerAction.Down);
 
-                        this.gamepadManager.addTranslator(newTranslator);
+                        this.widgetSystem?.gamepadManager.addTranslator(newTranslator);
                         newTranslator.addSubscriber(this.newPlayerControl);
                         this.newPlayerControl.translator = newTranslator;
                     }
@@ -301,13 +306,16 @@ export class GameController
                 this.diagnosticsControl = null;
             }
             else {
-                this.diagnosticsControl = new DiagnosticsControl(this.drawing, this.gamepadManager, this.keyboardManager, this.appModel.diagnostics)
+                this.diagnosticsControl = new DiagnosticsControl(
+                    this.widgetSystem?.drawing as DrawHelper, 
+                    this.widgetSystem?.gamepadManager as GamepadManager, 
+                    this.widgetSystem?.keyboardManager as KeyboardManager, 
+                    this.appModel.diagnostics)
             }
             return;
         }
 
         if(keyCode == 27) {  // Esc to reset the game
-            this.reset();
         }
 
         if(this.newPlayerControl) 
@@ -334,8 +342,8 @@ export class GameController
                             let newPlayer = this.generatePlayer(translator.name);
                             translator.addSubscriber(newPlayer);
                             this.appModel.addPlayer(newPlayer);
-                            this.keyboardManager.addTranslator(translator);
-                            newPlayer.onCleanup.subscribe("removeKeyTranslator",() =>  this.keyboardManager.removeTranslator(translator));
+                            this.widgetSystem?.keyboardManager.addTranslator(translator);
+                            newPlayer.onCleanup.subscribe("removeKeyTranslator",() =>  this.widgetSystem?.keyboardManager.removeTranslator(translator));
                         }
                         this.newPlayerControl = null;
                         return;
@@ -353,16 +361,16 @@ export class GameController
                     if(value[i] == keyCode)
                     {
                         var newTranslator = new KeycodeTranslator<PlayerAction>(key);
-                        this.newPlayerControl = new NewPlayerControl('keyboard', this.drawing, () =>
+                        this.newPlayerControl = new NewPlayerControl('keyboard', this.widgetSystem?.drawing as DrawHelper, () =>
                         {
-                            this.keyboardManager.removeTranslator(newTranslator);
+                            this.widgetSystem?.keyboardManager.removeTranslator(newTranslator);
                             this.newPlayerControl = null;
                         });
                         newTranslator.mapKey(value[0], PlayerAction.Up);
                         newTranslator.mapKey(value[1], PlayerAction.Left);
                         newTranslator.mapKey(value[2], PlayerAction.Down);
                         newTranslator.mapKey(value[3], PlayerAction.Right);
-                        this.keyboardManager.addTranslator(newTranslator);
+                        this.widgetSystem?.keyboardManager.addTranslator(newTranslator);
                         newTranslator.addSubscriber(this.newPlayerControl);
                         this.newPlayerControl.translator = newTranslator;
                     }
