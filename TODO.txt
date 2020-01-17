@@ -2,10 +2,14 @@
 TODO
     [ ] Pregame mode
         [x] title graphic
-        [ ] Choices:
+        [x] Choices:
             full screen mode option  https://www.w3schools.com/howto/howto_js_fullscreen.asp
             PLAY
-        [ ] Move to fullscreen when the game actually starts 
+        [x] Move to fullscreen when the game actually starts 
+        [x] Remember full screen setting in app model
+        [ ] Smaller main page logo
+        [ ] Version on menu
+        [ ] Actual size invaders on menu
         [ ] Return to pregame when all players are dead
     [ ] Burst firing - build up a firing charge when not firing so that when the button is first pressed, you peel off a could of shots right away
     [ ] Replace exploding ship with magic debris

@@ -34,6 +34,11 @@ export class AppDiagnostics
     }
 }
 
+export class GameSettings
+{
+    isFullScreen = true;
+}
+
 //---------------------------------------------------------------------------
 // 
 //---------------------------------------------------------------------------
@@ -49,6 +54,9 @@ export interface IAppModel
     reset: () => void;
     diagnostics: AppDiagnostics;
     gameListener: IGameListener | null;
+    onGameEnded: ()=>void;
+    endGame: ()=>void;
+    settings: GameSettings;
 
     worldSize: { width:number, height: number} ;
     playerSize: number;
@@ -72,6 +80,10 @@ export class AppModel implements IAppModel
     maxScore = 0;
     totalScore = 0;
     gameListener: IGameListener | null = null;
+    onGameEnded = ()=>{};
+    private _gameIsRunning = false;
+    private _isEnding = false;
+    settings = new GameSettings();
 
     private _worldSize = {width: 10, height: 10};
     get worldSize(): { width:number, height: number} {return this._worldSize;}
@@ -93,6 +105,21 @@ export class AppModel implements IAppModel
         this.maxScore = 0;
         this.totalScore = 0;
         this.hasShields = false;
+        this._gameIsRunning = false;
+    }
+
+    //---------------------------------------------------------------------------
+    // 
+    //---------------------------------------------------------------------------
+    endGame(){
+        console.log("endGame()");
+        if(this._gameIsRunning) this.reset();
+        if(!this._isEnding)
+        {
+            this._isEnding = true;
+            this.onGameEnded();
+            this._isEnding = false;
+        }
     }
 
     //---------------------------------------------------------------------------
@@ -100,6 +127,12 @@ export class AppModel implements IAppModel
     //---------------------------------------------------------------------------
     addPlayer = (player: Player) =>
     {
+        if(!this.hasShields)
+        {
+            this.hasShields = true;
+            this.createShields();
+        }
+
         this.players.push(player);
         player.x = this.worldSize.width/2;
         player.y = this.worldSize.height - 50 + 1 * player.number;
@@ -116,12 +149,6 @@ export class AppModel implements IAppModel
     think (gameTime: number, elapsedMilliseconds: number) {
         this.diagnostics.addFrame(elapsedMilliseconds);
         let startTime = Date.now();
-
-        if(!this.hasShields)
-        {
-            this.hasShields = true;
-            this.createShields();
-        }
 
         // Create a lookup Table to speed up collision tests
         let xCellCount = Math.ceil(this.worldSize.width / this.collisionCellSize);
@@ -252,7 +279,7 @@ export class AppModel implements IAppModel
                 hive.addMember(newAlien);
             }
         }
-
+        this._gameIsRunning = true;
     }
 
     //---------------------------------------------------------------------------

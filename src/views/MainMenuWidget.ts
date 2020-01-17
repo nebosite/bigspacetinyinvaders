@@ -1,5 +1,5 @@
 import { Widget } from "../WidgetLib/Widget";
-import { AppModel } from "../models/AppModel";
+import { IAppModel } from "../models/AppModel";
 import { ImageWidget } from "../WidgetLib/ImageWidget";
 import { TextWidget } from "../WidgetLib/TextWidget";
 import { ButtonEvent } from "../WidgetLib/WidgetSystem";
@@ -12,17 +12,16 @@ import { GameWidget } from "./GameWidget";
 //-------------------------------------------------------------------------
 export class MainMenuWidget extends Widget
 {
-    theAppModel: AppModel; 
+    theAppModel: IAppModel; 
     logoWidget: ImageWidget | null = null;
     choiceIndicator: DrawnSprite | null = null;
     choices = new Array<{widget: Widget, action: ()=>void}> ();
     currentChoice = 0;
-    fullScreen = true;
 
     //-------------------------------------------------------------------------
     // ctor
     //-------------------------------------------------------------------------
-    constructor(name: string, theAppModel: AppModel)
+    constructor(name: string, theAppModel: IAppModel)
     {
         super(name);
         this.theAppModel = theAppModel;
@@ -71,12 +70,12 @@ export class MainMenuWidget extends Widget
         this.AddChild(choice.widget);
         this.choices.push(choice);
 
-        let fullScreenText = ()=>{return `[${this.fullScreen ? "X" : "  "}] Fullscreen`}
+        let fullScreenText = ()=>{return `[${this.theAppModel.settings.isFullScreen ? "X" : "  "}] Fullscreen`}
         let fullScreenChoiceWidget =  new TextWidget("FullScreen Choice", fullScreenText());
         choice = {
             widget: fullScreenChoiceWidget,
             action: () => {
-                this.fullScreen = !this.fullScreen;
+                this.theAppModel.settings.isFullScreen = !this.theAppModel.settings.isFullScreen;
                 fullScreenChoiceWidget.text = fullScreenText();
                 this._layoutChanged = true;
             }
@@ -97,7 +96,14 @@ export class MainMenuWidget extends Widget
     //-------------------------------------------------------------------------
     startGame()
     {
-        this.parent?.AddChild(new GameWidget(this.theAppModel));
+        var documentElement = document.documentElement;
+        if(this.theAppModel.settings.isFullScreen)
+        {
+            documentElement.requestFullscreen();
+        }
+
+        let theGame = new GameWidget(this.theAppModel);
+        this.parent?.AddChild(theGame);
         this.parent?.RemoveChild(this);
     }
 
@@ -119,13 +125,12 @@ export class MainMenuWidget extends Widget
     {
         if(this.choiceIndicator)
         {
-            //this.choiceIndicator.height = 
-            let currentWidget = this.choices[this.currentChoice].widget;
             let playWidget = this.choices[0].widget;
-            this.choiceIndicator.x = playWidget.left - this.choiceIndicator.width*1.5;
-            this.choiceIndicator.y = currentWidget.top + currentWidget.height/2;
+            let currentWidget = this.choices[this.currentChoice].widget;
             let scale =  playWidget.height / this.choiceIndicator.nativeHeight;
             this.choiceIndicator.scale =  [scale,scale];
+            this.choiceIndicator.x = playWidget.left - this.choiceIndicator.width*1.5;
+            this.choiceIndicator.y = currentWidget.top + currentWidget.height/2;
         }
     }    
 

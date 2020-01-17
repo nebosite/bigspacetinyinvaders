@@ -13,6 +13,7 @@ import { GLOBALS } from "../globals";
 import { SoundHelper } from "../ui/SoundHelper";
 import { EventThing } from "../tools/EventThing";
 import { Widget } from "../WidgetLib/Widget";
+import { MainMenuWidget } from "./MainMenuWidget";
 
 const PLAYER_SIZE = 16;
 
@@ -32,15 +33,14 @@ class PlayerIdentity{
 
 export class GameWidget extends Widget implements IGameListener
 {
-    appModel: IAppModel;
+    theAppModel: IAppModel;
     newPlayerControl: NewPlayerControl | null = null;
     diagnosticsControl: DiagnosticsControl | null = null;
     lastFrameTime = Date.now();
     playerIdentities = new Map<string, PlayerIdentity>();
     seenPlayersCount = 0;
-    inviteText: DrawnText | null = null;
     renderingControls = new Map<GameObject, GameObjectRenderer>();
-    //versonText: DrawnText;
+    inviteText: DrawnText | null = null;
     playerScoresText: DrawnText | null = null;
     mainScoreText: DrawnText| null = null;
     onGameOver = new EventThing<void>("Game Widget");
@@ -77,16 +77,38 @@ export class GameWidget extends Widget implements IGameListener
     constructor(appModel: IAppModel)
     {
         super("TheGame");
-        this.appModel = appModel; 
-        this.appModel.reset(); 
+        this.theAppModel = appModel; 
+        this.theAppModel.reset(); 
+        let hasSetSize = false;
 
         this.onLoaded.subscribe(`${this.name} Load`, this.loadMe);
         this.onParentLayoutChanged.subscribe(`${this.name} parentLayoutChanged`, () => {
-            this.appModel.worldSize = {width: this.widgetSystem?.drawing.width as number, height: this.widgetSystem?.drawing.height as number};
+            console.log(`Layout changed ${this.width},${this.height}`)
+            let screenIsReady = !this.theAppModel.settings.isFullScreen || document.fullscreen;
+            if(!hasSetSize && screenIsReady)
+            {
+                hasSetSize = true;
+                this.theAppModel.worldSize = {
+                    width: this.width,
+                    height: this.height};
+            }
+            // if we exit fullscreen, just end the game
+            if(hasSetSize && this.theAppModel.settings.isFullScreen && !document.fullscreen)
+            {
+                this.theAppModel.endGame();
+            }
         });
 
         this.onRender.subscribe(`${this.name} render`, this.renderMe);
         this.onDestroyed.subscribe(`${this.name} destroy`, this.destroyMe);
+
+        this.theAppModel.onGameEnded = () =>
+        {
+            console.log("End game signalled");
+            if(document.fullscreen)  document.exitFullscreen();   
+            this.parent?.AddChild(new MainMenuWidget("Main Menu", this.theAppModel));
+            this.parent?.RemoveChild(this);
+        }
     } 
 
     //-------------------------------------------------------------------------
@@ -94,7 +116,11 @@ export class GameWidget extends Widget implements IGameListener
     //-------------------------------------------------------------------------
     destroyMe = () =>
     {
-        this.appModel.gameListener = null;
+        if(this.diagnosticsControl) {
+            this.diagnosticsControl.cancelMe();
+            this.diagnosticsControl = null;
+        }
+        this.theAppModel.gameListener = null;
         this.widgetSystem?.keyboardManager.onUnhandledKeyCode.unsubscribe("Game Controller unhandled Key");
         this.playerScoresText?.delete();
         this.mainScoreText?.delete();
@@ -105,6 +131,8 @@ export class GameWidget extends Widget implements IGameListener
         this.renderingControls.clear();
         this.widgetSystem?.gamepadManager.reset();
         this.widgetSystem?.keyboardManager.reset();
+        this.inviteText?.delete();
+
     }
 
     //-------------------------------------------------------------------------
@@ -114,8 +142,8 @@ export class GameWidget extends Widget implements IGameListener
     {
         if(!this.widgetSystem) throw new Error("Widget System is not loaded!");
 
-        this.appModel.worldSize = {width: this.widgetSystem.drawing.width, height: this.widgetSystem.drawing.height};
-        this.appModel.gameListener = this;
+        this.theAppModel.worldSize = {width: this.widgetSystem.drawing.width, height: this.widgetSystem.drawing.height};
+        this.theAppModel.gameListener = this;
 
         this.widgetSystem.keyboardManager.onUnhandledKeyCode.subscribe("Game Controller unhandled Key", this.handleUnhandledKey);
         //this.gamepadManager.onUnhandledInputCode.subscribe("Game Controller unhandled gamepad", this.handleUnhandledGamepadCode);
@@ -167,18 +195,18 @@ export class GameWidget extends Widget implements IGameListener
         if(!this.widgetSystem) throw new Error("Lost the widget system somehouw");
 
         // Update rendered object
-        this.appModel.think(gameTime, elapsed);
+        this.theAppModel.think(gameTime, elapsed);
         for(let renderer of this.renderingControls.values()) {
             renderer.render();
         };
 
-        if(this.appModel.getPlayers().length == 0 && !this.inviteText)
+        if(this.theAppModel.getPlayers().length == 0 && !this.inviteText)
         {
             this.inviteText = this.widgetSystem.drawing.addTextObject("Use movement controls to add a new player...",
                 this.width/2, this.height - 100, 20,0xFFFFFF,0x0,0,2000, [.5,.5]);
         }
 
-        if(this.appModel.getPlayers().length > 0 && this.inviteText)
+        if(this.theAppModel.getPlayers().length > 0 && this.inviteText)
         {
             this.inviteText.delete();
             this.inviteText = null;
@@ -194,22 +222,30 @@ export class GameWidget extends Widget implements IGameListener
         }
 
         let scores = "";
-        this.appModel.getPlayers().forEach(player => {
+        this.theAppModel.getPlayers().forEach(player => {
             scores += `${player.name}:${player.score.toString().padStart(5, '0')}\n`;
         });
-        if(this.playerScoresText) this.playerScoresText.text = scores;
+        if(this.playerScoresText) 
+        {
+            this.playerScoresText.text = scores;
+            this.playerScoresText.x = 0;
+            this.playerScoresText.y = 100;
+        }
 
-        let totalText = this.appModel.totalScore.toString().padStart(6, '0');
-        let maxText = this.appModel.maxScore.toString().padStart(6, '0');
-        if(this.mainScoreText) this.mainScoreText.text = `Score: ${totalText}  Max:${maxText}`;
+        let totalText = this.theAppModel.totalScore.toString().padStart(6, '0');
+        let maxText = this.theAppModel.maxScore.toString().padStart(6, '0');
+        if(this.mainScoreText) {
+            this.mainScoreText.text = `Score: ${totalText}  Max:${maxText}`;
+            this.mainScoreText.x = this.width -this.mainScoreText.width;
+        }
     }
 
     //-------------------------------------------------------------------------
-    // showGamepadStates
+    // generatePlayer
     //-------------------------------------------------------------------------
     generatePlayer(controlId: string)
     {
-        let newPlayer = new Player(this.appModel);
+        let newPlayer = new Player(this.theAppModel);
         var playerInfo = new PlayerIdentity();
         if(this.playerIdentities.has(controlId))
         {
@@ -225,7 +261,7 @@ export class GameWidget extends Widget implements IGameListener
         newPlayer.name = playerInfo.name;
         return newPlayer;
     }
-
+    
     //-------------------------------------------------------------------------
     // handle gamepads
     //-------------------------------------------------------------------------
@@ -258,7 +294,7 @@ export class GameWidget extends Widget implements IGameListener
                             }
                             let newPlayer = this.generatePlayer(translator.name);
                             translator.addSubscriber(newPlayer);
-                            this.appModel.addPlayer(newPlayer);
+                            this.theAppModel.addPlayer(newPlayer);
                             this.widgetSystem?.gamepadManager.addTranslator(translator);
                             newPlayer.onCleanup.subscribe("removeTranslator", () => this.widgetSystem?.gamepadManager.removeTranslator(translator));
                         }
@@ -310,12 +346,14 @@ export class GameWidget extends Widget implements IGameListener
                     this.widgetSystem?.drawing as DrawHelper, 
                     this.widgetSystem?.gamepadManager as GamepadManager, 
                     this.widgetSystem?.keyboardManager as KeyboardManager, 
-                    this.appModel.diagnostics)
+                    this.theAppModel.diagnostics)
             }
             return;
         }
 
         if(keyCode == 27) {  // Esc to reset the game
+            this.theAppModel.endGame();
+            return;
         }
 
         if(this.newPlayerControl) 
@@ -341,7 +379,7 @@ export class GameWidget extends Widget implements IGameListener
                             }
                             let newPlayer = this.generatePlayer(translator.name);
                             translator.addSubscriber(newPlayer);
-                            this.appModel.addPlayer(newPlayer);
+                            this.theAppModel.addPlayer(newPlayer);
                             this.widgetSystem?.keyboardManager.addTranslator(translator);
                             newPlayer.onCleanup.subscribe("removeKeyTranslator",() =>  this.widgetSystem?.keyboardManager.removeTranslator(translator));
                         }
@@ -378,21 +416,4 @@ export class GameWidget extends Widget implements IGameListener
             });
         }
     }
-
-    //-------------------------------------------------------------------------
-    // handle mouse clicks
-    //-------------------------------------------------------------------------
-    handleCanvasClick = (e: MouseEvent) => {
-        // this.mouseX = e.clientX;
-        // this.mouseY = e.clientY;
-    }
-
-    //-------------------------------------------------------------------------
-    // handle mouse movement
-    //-------------------------------------------------------------------------
-    handleCanvasMouseMove = (e: MouseEvent) => {
-        // this.mouseX = e.clientX;
-        // this.mouseY = e.clientY;
-    }
-
 }
