@@ -7,14 +7,14 @@ import { EventThing } from "../tools/EventThing";
 
 class Gun {
     heat = 0;
-    coolRate = .25;
+    coolRate = .6;
     overheatLevel = 100;
     shotHeat = 10;
     shotCost = 10;
-    shotStageTime_ms = 50;
+    shotStageTime_ms = 40;
     charge = 0;
-    chargeRate = 200;
-    chargeCapacity = 100;
+    chargeRate = 25;
+    chargeCapacity = 200;
     parent: Player;
     appModel: IAppModel;
     lastShotTime = 0;
@@ -41,9 +41,11 @@ class Gun {
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
-        let shortRate = this.coolRate * elapsedMilliseconds/1000.0;
-        this.heat -= this.heat * shortRate;
-        this.charge += this.chargeRate * shortRate;
+
+        let shortRatio = elapsedMilliseconds/1000.0;
+        this.heat -= this.heat * this.coolRate * shortRatio;
+        
+        this.charge += this.chargeRate * shortRatio;
         if(this.charge > this.chargeCapacity) this.charge = this.chargeCapacity;
     }
 
