@@ -13,7 +13,13 @@ NEW
     [ ] highscores
     [ ] Better player status displays
     [ ] "Use Movement controls..." should be framed somehow. 
+        and should scale with the screen
+        and give hints for keyboard and game controller settings
+        bigger font so it looks good
     [ ] Powerup: Nuke - like a big firework creates pandemonium with falling debris
+    [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
+    [ ] Powerup: Crazy bear.  Cute teddy bear gets madder and madder as it takes hits.  Release for havoc.  
+        Too many hits and it attacks players.
 
 EASY/URGENT
 

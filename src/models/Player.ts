@@ -5,6 +5,50 @@ import { IAppModel } from "./AppModel";
 import { Bullet } from "./Bullet";
 import { EventThing } from "../tools/EventThing";
 
+class Gun {
+    heat = 0;
+    coolRate = .25;
+    overheatLevel = 100;
+    shotHeat = 10;
+    shotCost = 10;
+    shotStageTime_ms = 50;
+    charge = 0;
+    chargeRate = 200;
+    chargeCapacity = 100;
+    parent: Player;
+    appModel: IAppModel;
+    lastShotTime = 0;
+    
+    constructor(appModel: IAppModel, parent: Player){
+        this.appModel = appModel;
+        this.parent = parent;
+    }
+
+    canShoot(gameTime: number)
+    {
+        return this.heat < this.overheatLevel // Gun heat limit
+            && (gameTime - this.lastShotTime) > this.shotStageTime_ms   // reloading limit
+            && this.charge > this.shotCost; // charge limit
+    }
+
+    getBullet(gameTime: number)
+    {
+        this.heat += this.shotHeat;
+        this.charge -= this.shotCost;
+        this.lastShotTime = gameTime;
+        return new Bullet(this.appModel, this.parent);
+    }
+
+    think(gameTime: number, elapsedMilliseconds: number) 
+    {
+        let shortRate = this.coolRate * elapsedMilliseconds/1000.0;
+        this.heat -= this.heat * shortRate;
+        this.charge += this.chargeRate * shortRate;
+        if(this.charge > this.chargeCapacity) this.charge = this.chargeCapacity;
+    }
+
+}
+
 export class Player extends GameObject implements IInputReceiver<PlayerAction>
 {
     hitPoints = 1;
@@ -12,12 +56,12 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
     xTargetVelocity = 0;
     accelerationRate = 30;
     maxSpeed = 6;
-    shootRate = 5;
     onShoot = new EventThing<void>("Player.OnShoot");
     onDeath = new EventThing<void>("Player.OnDeath");
     appModel: IAppModel;
     shooting = false;
-    lastShotTime = 0;
+    gun: Gun;
+
     lastActivityTime = Date.now();
     name: string = "dude";
     number = 0;
@@ -30,6 +74,7 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         super(appModel);
         this.appModel = appModel;
         this.type = GameObjectType.Player;
+        this.gun = new Gun(appModel, this);
     }
 
     actionChanged = (action: PlayerAction, value: number) => {
@@ -68,7 +113,8 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
             this.x = this.appModel.worldSize.width - this.width/2;
         }
 
-        if(this.shooting) this.maybeShoot();
+        this.gun.think(gameTime, elapsedMilliseconds); 
+        if(this.shooting) this.maybeShoot(gameTime);
         if(Date.now() - this.lastActivityTime > 25000 && !this.shooting)
         {
             this.delete();
@@ -81,12 +127,10 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         }
     }
 
-    maybeShoot(){
-        let millisecondsSinceLastShot = Date.now() - this.lastShotTime;
-        let timeBetweenShots = 1000/this.shootRate;
-        if(millisecondsSinceLastShot < timeBetweenShots) return;
-        this.lastShotTime= Date.now();
-        var bullet = new Bullet(this.appModel, this);
+    maybeShoot(gameTime: number){
+        if(!this.gun.canShoot(gameTime)) return;
+
+        var bullet = this.gun.getBullet(gameTime);
         bullet.x = this.x;
         bullet.y = this.y - this.height;
         this.appModel.addGameObject(bullet);
