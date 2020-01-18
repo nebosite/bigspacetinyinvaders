@@ -1,7 +1,5 @@
 
 TODO
-    [x] Burst firing - build up a firing charge when not firing so that when the button is first pressed, you peel off a could of shots right away
-    [x] Player Detail control
     [ ] Replace exploding ship with magic debris
     [ ] Collect debris to increase shot rate
 
@@ -64,6 +62,11 @@ PROBABLY NEVER
 
 
 DONE ================================================================================================================================
+
+version 0.0.3.1
+    [x] Burst firing - build up a firing charge when not firing so that when the button is first pressed, you peel off a could of shots right away
+    [x] Player Detail control
+
 version 0.0.3.0
     [x] Main menu
         [x] title graphic
