@@ -14,6 +14,7 @@ import { SoundHelper } from "../ui/SoundHelper";
 import { EventThing } from "../tools/EventThing";
 import { Widget } from "../WidgetLib/Widget";
 import { MainMenuWidget } from "./MainMenuWidget";
+import { PlayerDetailControl } from "./PlayerDetailControl";
 
 const PLAYER_SIZE = 16;
 
@@ -40,8 +41,8 @@ export class GameWidget extends Widget implements IGameListener
     playerIdentities = new Map<string, PlayerIdentity>();
     seenPlayersCount = 0;
     renderingControls = new Map<GameObject, GameObjectRenderer>();
+    playerDetailControls = new Map<number, PlayerDetailControl>();
     inviteText: DrawnText | null = null;
-    playerScoresText: DrawnText | null = null;
     mainScoreText: DrawnText| null = null;
     onGameOver = new EventThing<void>("Game Widget");
 
@@ -126,19 +127,29 @@ export class GameWidget extends Widget implements IGameListener
             this.diagnosticsControl.cancelMe();
             this.diagnosticsControl = null;
         }
+        if(this.newPlayerControl) {
+            this.newPlayerControl.cancelMe();
+            this.newPlayerControl = null;
+        }
         this.theAppModel.gameListener = null;
         this.widgetSystem?.keyboardManager.onUnhandledKeyCode.unsubscribe("Game Controller unhandled Key");
-        this.playerScoresText?.delete();
         this.mainScoreText?.delete();
+
         for(let control of this.renderingControls.values())
         {
             control.delete();
         }
         this.renderingControls.clear();
+        
+        for(let control of this.playerDetailControls.values())
+        {
+            control.cancelMe();
+        }
+        this.playerDetailControls.clear();
+        
         this.widgetSystem?.gamepadManager.reset();
         this.widgetSystem?.keyboardManager.reset();
         this.inviteText?.delete();
-
     }
 
     //-------------------------------------------------------------------------
@@ -154,8 +165,6 @@ export class GameWidget extends Widget implements IGameListener
         this.widgetSystem.keyboardManager.onUnhandledKeyCode.subscribe("Game Controller unhandled Key", this.handleUnhandledKey);
         //this.gamepadManager.onUnhandledInputCode.subscribe("Game Controller unhandled gamepad", this.handleUnhandledGamepadCode);
     
-        //this.versonText = drawing.addTextObject(`Version ${GLOBALS.version}`, 5, drawing.height, 15, 0x800000, 0x0, 0, 1000, [0,1]);
-        this.playerScoresText = this.widgetSystem.drawing.addTextObject("P0:0000\nP1:0000\nP3:0000", 5, this.height-20, 10, 0xffff00, 0x0, 0, 1000, [0,1] );
         this.mainScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 3, 15, 0xffff00, 0x0, 0, 1000, [1,0] );
     }
 
@@ -173,7 +182,23 @@ export class GameWidget extends Widget implements IGameListener
         if(!this.widgetSystem) throw new Error("Shouldn't be adding game objects with no widget system!")
         switch(gameObject.type)
         {
-            case GameObjectType.Player: this.renderingControls.set(gameObject, new PlayerObjectRenderer(gameObject as Player, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
+            case GameObjectType.Player: 
+                let player = gameObject as Player;
+                this.renderingControls.set(gameObject, new PlayerObjectRenderer(gameObject as Player, this.widgetSystem.drawing, this.widgetSystem.sound)); 
+                if(!this.playerDetailControls.has(player.number))
+                {
+                    let size = GLOBALS.INFO_Y_AREA;
+                    let control = new PlayerDetailControl(this.widgetSystem?.drawing as DrawHelper, player, size, size);
+                    control.x = player.number * size + size * .2;
+                    this.playerDetailControls.set(player.number, control);
+                }
+                let playerControl = this.playerDetailControls.get(player.number);
+                if(playerControl)
+                {
+                    playerControl.player = player;    
+                }
+
+                break;
             case GameObjectType.Bullet: this.renderingControls.set(gameObject, new BulletObjectRenderer(gameObject as Bullet, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
             case GameObjectType.Alien: this.renderingControls.set(gameObject, new AlienObjectRenderer(gameObject as Alien, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
             case GameObjectType.ShieldBlock: this.renderingControls.set(gameObject, new ShieldBlockObjectRenderer(gameObject as Alien, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
@@ -206,6 +231,10 @@ export class GameWidget extends Widget implements IGameListener
             renderer.render();
         };
 
+        for(let renderer of this.playerDetailControls.values()) {
+            renderer.render();
+        };
+
         if(this.theAppModel.getPlayers().length == 0 && !this.inviteText)
         {
             this.inviteText = this.widgetSystem.drawing.addTextObject("Use movement controls to add a new player...",
@@ -231,12 +260,7 @@ export class GameWidget extends Widget implements IGameListener
         this.theAppModel.getPlayers().forEach(player => {
             scores += `${player.name}:${player.score.toString().padStart(5, '0')}\n`;
         });
-        if(this.playerScoresText) 
-        {
-            this.playerScoresText.text = scores;
-            this.playerScoresText.x = 0;
-            this.playerScoresText.y = 100;
-        }
+
 
         let totalText = this.theAppModel.totalScore.toString().padStart(6, '0');
         let maxText = this.theAppModel.maxScore.toString().padStart(6, '0');

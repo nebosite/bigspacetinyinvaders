@@ -5,6 +5,7 @@ import { Bullet } from "./Bullet";
 import { Hive } from "./Hive";
 import { Alien } from "./Alien";
 import { ShieldBlock } from "./ShieldBlock";
+import { GLOBALS } from "../globals";
 
 
 //---------------------------------------------------------------------------
@@ -196,10 +197,6 @@ export class AppModel implements IAppModel
         this.diagnostics.lastThinkTime = Date.now() - startTime;
     }
 
-
-
-    readonly PLAYER_Y_AREA = 80;
-    readonly SHIELD_Y_AREA = 60;
     readonly shieldMap = [
         [0,0,1,1,1,1,1,1,1,0,0],
         [0,1,1,1,1,1,1,1,1,1,0],
@@ -215,6 +212,7 @@ export class AppModel implements IAppModel
         [1,1,1,1,0,0,0,1,1,1,1],
         [1,1,1,1,0,0,0,1,1,1,1],
     ]
+
     //---------------------------------------------------------------------------
     // 
     //---------------------------------------------------------------------------
@@ -229,7 +227,7 @@ export class AppModel implements IAppModel
         let padding = xForSpace / 2 / shieldCount;
 
         let x = padding;
-        let y = this.worldSize.height - this.PLAYER_Y_AREA - this.SHIELD_Y_AREA;
+        let y = this.worldSize.height - GLOBALS.PLAYER_Y_AREA - GLOBALS.SHIELD_Y_AREA;
         for(let q = 0; q < shieldCount; q++)
         {
             for(let i = 0; i < this.shieldMap[0].length; i++)
@@ -256,10 +254,11 @@ export class AppModel implements IAppModel
         let alienSize = 11;
         let alienSpacing = alienSize + 4;
         let ufoArea = alienSize * 5;
-        let yForAliens = this.worldSize.height - ufoArea - this.PLAYER_Y_AREA - this.SHIELD_Y_AREA;
+        let yForAliens = this.worldSize.height - ufoArea 
+            - GLOBALS.INFO_Y_AREA - GLOBALS.PLAYER_Y_AREA - GLOBALS.SHIELD_Y_AREA;
         let xForAliens = this.worldSize.width - alienSpacing * 4;
         let columns = Math.ceil((xForAliens * .9) / alienSpacing);
-        let rows = Math.ceil((yForAliens * .7) / alienSpacing);
+        let rows = Math.ceil((yForAliens * .8) / alienSpacing);
         let hive = new Hive(this, columns * rows);
         let topRowCount = Math.ceil(rows * .05);
         let nextRowCount = Math.ceil(rows * .2) + topRowCount;
@@ -274,7 +273,7 @@ export class AppModel implements IAppModel
                 else if (j < nextRowCount) newType = 1;
                 let newAlien = new Alien(this, newType);
                 newAlien.x = alienSpacing * 3 + i * alienSpacing;
-                newAlien.y = alienSpacing * 3 + j * alienSpacing;
+                newAlien.y = ufoArea + GLOBALS.INFO_Y_AREA + j * alienSpacing;
                 this.addGameObject(newAlien);
                 hive.addMember(newAlien);
             }

@@ -98,7 +98,7 @@ export class MainMenuWidget extends Widget
 
         let versionText = new TextWidget("Version", "v" + GLOBALS.version);
         versionText.relativeLocation = {x:0, y:0};
-        versionText.fontSize = 40;
+        versionText.fontSize = 15;
         versionText.foregroundColor = 0x009DFF;
         versionText.relativeSize = {width: null, height: .03}
         this.AddChild(versionText);
