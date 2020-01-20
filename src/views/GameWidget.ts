@@ -211,8 +211,10 @@ export class GameWidget extends Widget implements IGameListener
     // Deal with removed objects
     //-------------------------------------------------------------------------
     onRemovedGameObject = (gameObject: GameObject) => {
+        if(gameObject.type == GameObjectType.Debris) console.log(`Removing ${gameObject.type}`)
         let renderer = this.renderingControls.get(gameObject);
         if(!renderer) return;
+        if(gameObject.type == GameObjectType.Debris) console.log(`Removing renderer`)
         renderer.delete();
         this.renderingControls.delete(gameObject);
     }

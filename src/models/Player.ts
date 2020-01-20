@@ -4,6 +4,7 @@ import { GameObject, GameObjectType } from "./GameObject";
 import { IAppModel } from "./AppModel";
 import { Bullet } from "./Bullet";
 import { EventThing } from "../tools/EventThing";
+import { Debris, DebrisType } from "./Debris";
 
 class Gun {
     heat = 0;
@@ -45,8 +46,10 @@ class Gun {
         let shortRatio = elapsedMilliseconds/1000.0;
         this.heat -= this.heat * this.coolRate * shortRatio;
         
-        this.charge += this.chargeRate * shortRatio;
-        if(this.charge > this.chargeCapacity) this.charge = this.chargeCapacity;
+        if(this.charge < this.chargeCapacity){
+            this.charge += this.chargeRate * shortRatio;
+
+        }
     }
 
 }
@@ -67,7 +70,6 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
     lastActivityTime = Date.now();
     name: string = "dude";
     number = 0;
-    dyingTime = 0;
     score = 0;
     leftImperativeVelocity = 0;
     rightImperativeVelocity = 0;
@@ -77,10 +79,11 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         this.appModel = appModel;
         this.type = GameObjectType.Player;
         this.gun = new Gun(appModel, this);
+        this.width = 16;
+        this.height = 16;
     }
 
     actionChanged = (action: PlayerAction, value: number) => {
-        if(this.dyingTime > 0) return;
         switch(action)
         {
             case PlayerAction.Left: this.leftImperativeVelocity = value;   break;
@@ -122,11 +125,23 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
             this.delete();
         }
 
-        if(this.dyingTime > 0) 
+        let collisionTarget = this.appModel.hitTest(this);
+        if(collisionTarget)
         {
-            this.dyingTime -= elapsedMilliseconds;
-            if(this.dyingTime <= 0) this.delete();
+            if(collisionTarget.type == GameObjectType.Debris)
+            {
+                let debris = collisionTarget as Debris;
+                switch(debris.debrisType)
+                {
+                    case DebrisType.DeadShip: this.gun.charge += 100; break;
+                    case DebrisType.Big: this.gun.charge += 20; break;
+                    case DebrisType.DeadShip: this.gun.charge += 5; break;
+                }
+                debris.delete();
+                console.log("DDebris");
+            }
         }
+
     }
 
     maybeShoot(gameTime: number){
@@ -143,9 +158,20 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
         this.hitPoints -= damageAmount;
         if(this.hitPoints <= 0)
         {
-            this.dyingTime = 1000;
+            for(let i = 0; i < 40; i++)
+            {
+                let type = Math.floor(Math.random() * 2) + 1
+                let debris = new Debris(this.appModel, type);
+                debris.x = this.x + Math.random() * this.width - this.width/2;
+                debris.y = this.y-this.height/4;
+                debris.velocity[0] *= 4;
+                debris.velocity[1] *= 1.5;
+                this.appModel.addGameObject(debris);
+            }
+
             this.shooting = false;
             this.onDeath.invoke();
+            this.delete();
         }
     };
 }

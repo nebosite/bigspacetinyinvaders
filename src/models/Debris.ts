@@ -53,6 +53,7 @@ export class Debris extends GameObject{
         {
             let timeFraction = elapsedMilliseconds/1000.0;
             this.velocity[1] += GLOBALS.gravity * timeFraction;
+            this.velocity[0] *= 1 - (0.02 * timeFraction);
             this.x += this.velocity[0] * timeFraction;
             this.y += this.velocity[1] * timeFraction;
 

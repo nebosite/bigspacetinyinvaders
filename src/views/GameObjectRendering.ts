@@ -50,14 +50,6 @@ export class PlayerObjectRenderer extends GameObjectRenderer
         if(!this.playerName) return;
         this.playerName.x = this.gameObject.x;
         this.playerName.y = this.gameObject.y + 10;
-        let player = this.gameObject as Player;
-        if(player)
-        {
-            if(player.dyingTime > 0)
-            {
-                this.drawnObject.rotation += .4;
-            }
-        }
     };
 
     delete() {

@@ -317,24 +317,25 @@ export class AppModel implements IAppModel
         if(yCell < 0) yCell = 0;
         if(yCell >= gridYSize) yCell = gridYSize - 1;
     
-        if(gameObject.type == GameObjectType.Bullet)
+        for(let x = -1; x < 2; x++) 
         {
-            let bullet = gameObject as Bullet;
-            for(let x = -1; x < 2; x++) 
+            let xRead = xCell + x;
+            if(xRead < 0 || xRead >= gridXSize) continue;
+            for(let y = -1; y < 2; y++)
             {
-                let xRead = xCell + x;
-                if(xRead < 0 || xRead >= gridXSize) continue;
-                for(let y = -1; y < 2; y++)
-                {
-                    let yRead = yCell + y;
-                    if(yRead < 0 || yRead >= gridYSize) continue;
+                let yRead = yCell + y;
+                if(yRead < 0 || yRead >= gridYSize) continue;
 
-                    for(let i = 0; i < this.collisionLookup[xRead][yRead].length; i++)
+                for(let i = 0; i < this.collisionLookup[xRead][yRead].length; i++)
+                {
+                    let target = this.collisionLookup[xRead][yRead][i];
+                    if(gameObject.type == GameObjectType.Bullet)
                     {
-                        let target = this.collisionLookup[xRead][yRead][i];
+                        let bullet = gameObject as Bullet;
                         if(bullet.source.type == GameObjectType.Player)
                         {
                             if(target.type != GameObjectType.Alien
+                                && target.type != GameObjectType.Debris
                                 && target.type != GameObjectType.ShieldBlock) continue;
                         }
                         if(bullet.source.type == GameObjectType.Alien)
@@ -342,15 +343,20 @@ export class AppModel implements IAppModel
                             if(target.type != GameObjectType.Player
                                 && target.type != GameObjectType.ShieldBlock) continue;
                         }
-
-                        let dx = Math.abs(bullet.x - target.x);
-                        if(dx > target.width/2) continue;
-                        let dy = Math.abs(bullet.y - target.y);
-                        if(dy > target.height/2) continue;
-                        return target;                    
                     }
+
+                    if(gameObject.type == GameObjectType.Player)
+                    {
+                        if(target.type != GameObjectType.Debris) continue;
+                    }
+
+                    let dx = Math.abs(gameObject.x - target.x);
+                    if(dx > (gameObject.width + target.width)/2) continue;
+                    let dy = Math.abs(gameObject.y - target.y);
+                    if(dy > (gameObject.height + target.height)/2) continue;
+                    return target;                    
                 }
-            }      
+            } 
         }
         return null;
     }
