@@ -1,11 +1,14 @@
 
 TODO
-    [ ] Add publishing script to easily push it up
     
     [ ] Replace exploding ship with magic debris
     [ ] Collect debris to increase shot rate
+    [ ] Start game with a controller
+    [ ] Add player with either fire or movement
+    
 
 NEW
+    [ ] Add publishing script to easily push it up
     [ ] Dynamic: UFO's loiter over the aliens.  You need a way to punch through to get them.
     [ ] Dynamic: Shields protect charging stations.  Weapons charge slower when they are damaged.  
         - Weapons won't charge at all if the are all damaged
