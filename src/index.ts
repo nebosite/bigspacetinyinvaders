@@ -6,6 +6,9 @@ import { MainMenuWidget } from "./views/MainMenuWidget";
 import { AppViewWidget } from "./views/AppViewWidget";
 import { Widget } from "./WidgetLib/Widget";
 
+
+require(".")
+
 var theAppModel = new AppModel();
 document.body.style.margin = "0";
 document.body.style.padding = "0";

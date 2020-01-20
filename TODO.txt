@@ -1,5 +1,7 @@
 
 TODO
+    [ ] Add publishing script to easily push it up
+    
     [ ] Replace exploding ship with magic debris
     [ ] Collect debris to increase shot rate
 
