@@ -164,7 +164,7 @@ export class GameWidget extends Widget implements IGameListener
         this.theAppModel.gameListener = this;
 
         this.widgetSystem.keyboardManager.onUnhandledKeyCode.subscribe("Game Controller unhandled Key", this.handleUnhandledKey);
-        //this.gamepadManager.onUnhandledInputCode.subscribe("Game Controller unhandled gamepad", this.handleUnhandledGamepadCode);
+        this.widgetSystem.gamepadManager.onUnhandledInputCode.subscribe("Game Controller unhandled gamepad", this.handleUnhandledGamepadCode);
     
         this.mainScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 3, 15, 0xffff00, 0x0, 0, 1000, [1,0] );
     }
@@ -299,20 +299,20 @@ export class GameWidget extends Widget implements IGameListener
     //-------------------------------------------------------------------------
     // handle gamepads
     //-------------------------------------------------------------------------
-    handleUnhandledGamepadCode = (controllerIndex: number, code: GamepadInputCode, value: number) => {
-        if(code == GamepadInputCode.Button_Back) {
+    handleUnhandledGamepadCode = (eventArgs: {gamePadIndex: number, code: GamepadInputCode, value: number}) => {
+        if(eventArgs.code == GamepadInputCode.Button_Back) {
             console.log("BACK");
             return;
         }
         if(this.newPlayerControl) 
         {
-            if(this.newPlayerControl.controllerId != controllerIndex.toString()) return;
+            if(this.newPlayerControl.controllerId != eventArgs.gamePadIndex.toString()) return;
             // Let's see if the staged player has pressed a fire key
             this.CommonGamepadActionButtonLayouts.forEach((value, key) =>
             {
                 for(let i = 0; i < value.length; i++)
                 {
-                    if(value[i] == code)
+                    if(value[i] == eventArgs.code)
                     {
                         const translator = this.newPlayerControl?.translator as GamepadTranslator<PlayerAction>;
                         this.newPlayerControl?.cancelMe();
@@ -345,10 +345,10 @@ export class GameWidget extends Widget implements IGameListener
             {
                 for(let i = 0; i < value.length; i++)
                 {
-                    if(value[i] == code)
+                    if(value[i] == eventArgs.code)
                     {
-                        var newTranslator = new GamepadTranslator<PlayerAction>(`${key}:${controllerIndex}`, controllerIndex);
-                        this.newPlayerControl = new NewPlayerControl(controllerIndex.toString(), this.widgetSystem?.drawing as DrawHelper, () =>
+                        var newTranslator = new GamepadTranslator<PlayerAction>(`${key}:${eventArgs.gamePadIndex}`, eventArgs.gamePadIndex);
+                        this.newPlayerControl = new NewPlayerControl(eventArgs.gamePadIndex.toString(), this.widgetSystem?.drawing as DrawHelper, () =>
                         {
                             this.widgetSystem?.gamepadManager.removeTranslator(newTranslator);
                             this.newPlayerControl = null;

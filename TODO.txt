@@ -1,9 +1,9 @@
 
 TODO
     
-    [ ] Replace exploding ship with magic debris
-    [ ] Collect debris to increase shot rate
     [ ] Start game with a controller
+    [ ] Show control options on game screen
+    [ ] Bigger score
     [ ] Add player with either fire or movement
     
 
@@ -67,6 +67,10 @@ PROBABLY NEVER
 
 
 DONE ================================================================================================================================
+
+version 0.0.3.2
+    [x] Replace exploding ship with magic debris
+    [x] Collect debris to increase shot rate
 
 version 0.0.3.1
     [x] Burst firing - build up a firing charge when not firing so that when the button is first pressed, you peel off a could of shots right away

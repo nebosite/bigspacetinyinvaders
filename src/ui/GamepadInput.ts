@@ -1,5 +1,6 @@
 import { IInputReceiver } from "./InputReceiver";
 import { accessibility } from "pixi.js";
+import { EventThing } from "../tools/EventThing";
 
 export class GamepadState
 {
@@ -282,7 +283,7 @@ export class GamepadTranslator<T> implements IGamepadInputCodeTranslator {
 
 export class GamepadManager {
     handlerLookup = new Map<number, IGamepadInputCodeTranslator>();
-    onUnhandledInputCode = (controllerIndex: number, code: GamepadInputCode, value: number) => {};
+    onUnhandledInputCode = new EventThing<{gamePadIndex: number, code: number, value: number}>("KB UnhandledCode"); 
     gamePadStates = new Map<number, GamepadState>();
     deadZone = 0.02;
 
@@ -337,7 +338,7 @@ export class GamepadManager {
                             this.handlerLookup.get(key)?.handleInputChange(code, theGamePad.index, axisState, state.axes[i]);
                         }
                         else {
-                            this.onUnhandledInputCode(theGamePad.index, code, axisState);
+                            this.onUnhandledInputCode.invoke({gamePadIndex: theGamePad.index, code, value: axisState});
                         }
                     }
                     state.axes[i] = axisState;
@@ -356,7 +357,7 @@ export class GamepadManager {
                             this.handlerLookup.get(key)?.handleInputChange(code, theGamePad.index, newValue, state.buttons[i]);
                         }
                         else {
-                            this.onUnhandledInputCode(theGamePad.index, code, newValue);
+                            this.onUnhandledInputCode.invoke({gamePadIndex: theGamePad.index, code, value: newValue});
                         }
                     }
                     state.buttons[i] = newValue;
@@ -383,13 +384,6 @@ export class GamepadManager {
             newState.lastTimeStamp = gp.timestamp;
             this.gamePadStates.set(gp.index, newState);
         }
-
-        // XBox layout
-        // buttons: [
-        //     'DPad-Up','DPad-Down','DPad-Left','DPad-Right',
-        //     'Start','Back','Axis-Left','Axis-Right',
-        //     'LB','RB','Power','A','B','X','Y',
-        //   ],
     }
 
     

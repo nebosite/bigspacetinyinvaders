@@ -32,7 +32,3 @@ theDrawHelper.load(()=>
 {
     theWidgetSystem = new WidgetSystem(theDrawHelper, theSoundHelper, appView);
 });
-
-
-//var theGameController = new GameController(theAppModel, theDrawHelper, theSoundHelper);
-
