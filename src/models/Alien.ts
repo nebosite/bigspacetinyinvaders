@@ -4,6 +4,7 @@ import { Bullet } from "./Bullet";
 import { BulletObjectRenderer } from "../views/GameObjectRendering";
 import { Player } from "./Player";
 import { EventThing } from "../tools/EventThing";
+import { Debris, DebrisType } from "./Debris";
 
 
 export class Alien extends GameObject{
@@ -41,17 +42,6 @@ export class Alien extends GameObject{
             bullet.y = this.y;
             this.appModel.addGameObject(bullet);
         }
-
-        if(this.hitPoints <= 0 && this.explosionEnd == 0)
-        {
-            this.explosionEnd = gameTime + 200;
-            this.onDeath.invoke();
-        }
-
-        if(this.explosionEnd > 0 && this.explosionEnd < gameTime)
-        {
-            this.delete();
-        }
     }
 
     shoot()
@@ -71,6 +61,36 @@ export class Alien extends GameObject{
         if(this.hitPoints <= 0)
         {
             player.score+= 10; // Kill points
+            if(Math.random() < .05) 
+            {
+                let deadAlien = new Debris(this.appModel, DebrisType.DeadShip);
+                deadAlien.x = this.x;
+                deadAlien.y = this.y;
+                this.appModel.addGameObject(deadAlien);
+            }
+            for(let i = 0; i < 3; i++)
+            {
+                if(Math.random() < .1)
+                {
+                    let bigDebris = new Debris(this.appModel, DebrisType.Big);
+                    bigDebris.x = this.x;
+                    bigDebris.y = this.y;
+                    this.appModel.addGameObject(bigDebris);
+                }
+            }
+            for(let i = 0; i < 10; i++)
+            {
+                if(Math.random() < .3)
+                {
+                    let smallDebris = new Debris(this.appModel, DebrisType.Small);
+                    smallDebris.x = this.x;
+                    smallDebris.y = this.y;
+                    this.appModel.addGameObject(smallDebris);
+                }
+            }
+           
+            this.onDeath.invoke();
+            this.delete();
         }
         else{
             player.score ++; // Assist points

@@ -6,7 +6,7 @@ import { DrawHelper, DrawnObject, DrawnText } from "../ui/DrawHelper";
 import { GamepadManager, GamepadInputCode, GamepadTranslator } from "../ui/GamepadInput";
 import { GameObjectType, GameObject } from "../models/GameObject";
 import { Alien } from "../models/Alien";
-import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienObjectRenderer, ShieldBlockObjectRenderer } from "./GameObjectRendering";
+import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienObjectRenderer, ShieldBlockObjectRenderer, DebrisObjectRenderer } from "./GameObjectRendering";
 import { Bullet } from "../models/Bullet";
 import { DiagnosticsControl } from "./DiagnosticsControl";
 import { GLOBALS } from "../globals";
@@ -15,6 +15,7 @@ import { EventThing } from "../tools/EventThing";
 import { Widget } from "../WidgetLib/Widget";
 import { MainMenuWidget } from "./MainMenuWidget";
 import { PlayerDetailControl } from "./PlayerDetailControl";
+import { Debris } from "../models/Debris";
 
 const PLAYER_SIZE = 16;
 
@@ -202,6 +203,7 @@ export class GameWidget extends Widget implements IGameListener
             case GameObjectType.Bullet: this.renderingControls.set(gameObject, new BulletObjectRenderer(gameObject as Bullet, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
             case GameObjectType.Alien: this.renderingControls.set(gameObject, new AlienObjectRenderer(gameObject as Alien, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
             case GameObjectType.ShieldBlock: this.renderingControls.set(gameObject, new ShieldBlockObjectRenderer(gameObject as Alien, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
+            case GameObjectType.Debris: this.renderingControls.set(gameObject, new DebrisObjectRenderer(gameObject as Debris, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
         }
     }
 

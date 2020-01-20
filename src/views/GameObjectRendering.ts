@@ -5,6 +5,7 @@ import { Bullet } from "../models/Bullet";
 import { Alien } from "../models/Alien";
 import { ShieldBlock } from "../models/ShieldBlock";
 import { SoundHelper } from "../ui/SoundHelper";
+import { Debris } from "../models/Debris";
 
 export class GameObjectRenderer
 {
@@ -106,6 +107,36 @@ export class AlienObjectRenderer extends GameObjectRenderer
     };
 
 }
+
+export class DebrisObjectRenderer extends GameObjectRenderer
+{
+    flashRate = Math.random()/100 + 1;
+
+    static spriteNames = [
+        "sprites/deadship",
+        "sprites/bigdebris",
+        "sprites/smalldebris",
+    ]
+    constructor(gameObject: Debris, drawing: DrawHelper, sound: SoundHelper)
+    { 
+        super(
+            gameObject,
+            drawing.addSpriteObject(
+                DebrisObjectRenderer.spriteNames[gameObject.debrisType],0, gameObject.x, gameObject.y) as DrawnObject, 
+            sound);
+
+        //gameObject.onDeath.subscribe("playDeathSound", ()=> sound.play("sounds/alien_die.wav"));
+    }
+
+    render(){
+        super.render();
+        if(!this.drawnObject) return;
+        let debris = this.gameObject as Debris;
+        let textureFrame =  Math.floor((Date.now() / 100 / this.flashRate) % 5);
+        (this.drawnObject as DrawnSprite).textureFrame = textureFrame;
+    };
+}
+
 
 export class ShieldBlockObjectRenderer extends GameObjectRenderer
 {

@@ -5,5 +5,7 @@ export class GLOBALS
     static INFO_Y_AREA = 100;
     static PLAYER_Y_AREA = 80;
     static SHIELD_Y_AREA = 60;
+    static DEBRIS_Y = 45;
+    static gravity = 100;
 
 }

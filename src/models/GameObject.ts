@@ -9,7 +9,8 @@ export enum GameObjectType
     Bullet,
     Hive,
     Alien,
-    ShieldBlock
+    ShieldBlock,
+    Debris,
 };
 
 let GameObjectCount = 0;
