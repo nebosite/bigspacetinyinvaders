@@ -1,13 +1,15 @@
 
 TODO
     
-    [ ] Start game with a controller
+    [x] Start game with a controller
+    [ ] Bug: starting with a controller creates player too soon
     [ ] Show control options on game screen
     [ ] Bigger score
     [ ] Add player with either fire or movement
     
 
 NEW
+    [ ] BUG: Debris is hard to distinquish from bullets
     [ ] BUG: Fast-moving players skip over debris
     [ ] Bullets should be able to bust through debris
     [ ] Add publishing script to easily push it up

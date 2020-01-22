@@ -281,9 +281,15 @@ export class GamepadTranslator<T> implements IGamepadInputCodeTranslator {
 }
 
 
+// ------------------------------------------------------------------------
+//
+// GamepadManager
+//
+// ------------------------------------------------------------------------
 export class GamepadManager {
     handlerLookup = new Map<number, IGamepadInputCodeTranslator>();
     onUnhandledInputCode = new EventThing<{gamePadIndex: number, code: number, value: number}>("KB UnhandledCode"); 
+    onInputChange = new EventThing<{gamePadIndex: number, code: number, value: number}>("KB UnhandledCode"); 
     gamePadStates = new Map<number, GamepadState>();
     deadZone = 0.02;
 
@@ -334,6 +340,7 @@ export class GamepadManager {
                     let axisState = theGamePad.axes[i];
                     if(Math.abs(axisState) < this.deadZone) axisState = 0;
                     if(state.axes[i] != axisState) {
+                        this.onInputChange.invoke({gamePadIndex: theGamePad.index, code, value: axisState});
                         if(this.handlerLookup.has(key)) {
                             this.handlerLookup.get(key)?.handleInputChange(code, theGamePad.index, axisState, state.axes[i]);
                         }
@@ -353,6 +360,7 @@ export class GamepadManager {
                     if(newValue == 1 && !theGamePad.buttons[i].pressed) newValue = 0;
                     if(newValue < this.deadZone) newValue = 0;
                     if(state.buttons[i] != newValue) {
+                        this.onInputChange.invoke({gamePadIndex: theGamePad.index, code, value: newValue});
                         if(this.handlerLookup.has(key)) {
                             this.handlerLookup.get(key)?.handleInputChange(code, theGamePad.index, newValue, state.buttons[i]);
                         }

@@ -2,7 +2,7 @@ import { Widget } from "../WidgetLib/Widget";
 import { IAppModel } from "../models/AppModel";
 import { ImageWidget } from "../WidgetLib/ImageWidget";
 import { TextWidget } from "../WidgetLib/TextWidget";
-import { ButtonEvent } from "../WidgetLib/WidgetSystem";
+import { ButtonEvent, WidgetButtonCode } from "../WidgetLib/WidgetSystem";
 import { DrawnSprite } from "../ui/DrawHelper";
 import { GameWidget } from "./GameWidget";
 import { GLOBALS } from "../globals";
@@ -197,18 +197,35 @@ export class MainMenuWidget extends Widget
             {
                 case 37: // left
                 case 38: // up
+                case WidgetButtonCode.Button_DPadUp:
+                case WidgetButtonCode.Button_DiamondUp:
+                case WidgetButtonCode.Button_ShoulderLeft:
+                case WidgetButtonCode.Stick0Left:
+                case WidgetButtonCode.Stick0Up:
+                case WidgetButtonCode.Stick1Left:
+                case WidgetButtonCode.Stick1Up:
                     this.currentChoice--;
                     if(this.currentChoice < 0) this.currentChoice = this.choices.length-1;
                     this._layoutChanged = true;
                     break;
                 case 39: // right
                 case 40: // down
+                case WidgetButtonCode.Button_DPadDown:
+                case WidgetButtonCode.Button_DiamondDown:
+                case WidgetButtonCode.Button_ShoulderRight:
+                case WidgetButtonCode.Stick0Right:
+                case WidgetButtonCode.Stick0Down:
+                case WidgetButtonCode.Stick1Right:
+                case WidgetButtonCode.Stick1Down:
                     this.currentChoice++;
                     if(this.currentChoice >= this.choices.length ) this.currentChoice =0;
                     this._layoutChanged = true;
                     break;
                 case 13: // Enter
                 case 32: // Space
+                case WidgetButtonCode.Button_TriggerLeft:
+                case WidgetButtonCode.Button_TriggerRight:
+                case WidgetButtonCode.Button_DiamondRight:
                     this.choices[this.currentChoice].action();
             }
         }
