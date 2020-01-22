@@ -8,6 +8,8 @@ TODO
     
 
 NEW
+    [ ] BUG: Fast-moving players skip over debris
+    [ ] Bullets should be able to bust through debris
     [ ] Add publishing script to easily push it up
     [ ] Dynamic: UFO's loiter over the aliens.  You need a way to punch through to get them.
     [ ] Dynamic: Shields protect charging stations.  Weapons charge slower when they are damaged.  
