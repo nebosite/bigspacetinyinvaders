@@ -1,44 +1,36 @@
 
 TODO
     
-    [x] Start game with a controller
-    [ ] Bug: starting with a controller creates player too soon
-    [ ] Show control options on game screen
     [ ] Bigger score
-    [ ] Add player with either fire or movement
-    
-
-NEW
-    [ ] BUG: Debris is hard to distinquish from bullets
-    [ ] BUG: Fast-moving players skip over debris
-    [ ] Bullets should be able to bust through debris
-    [ ] Add publishing script to easily push it up
-    [ ] Dynamic: UFO's loiter over the aliens.  You need a way to punch through to get them.
-    [ ] Dynamic: Shields protect charging stations.  Weapons charge slower when they are damaged.  
-        - Weapons won't charge at all if the are all damaged
-    [ ] Game over
-        [ ] Show intermediate game over screen when the game exists
-        [ ] Game should exit when all players are dead
-    [ ] Use scaling to make fonts look better on large screens
-    [ ] Remember controllers long-term (and assign names)
-    [ ] highscores
-    [ ] Better player status displays
     [ ] "Use Movement controls..." should be framed somehow. 
         and should scale with the screen
         and give hints for keyboard and game controller settings
         bigger font so it looks good
-    [ ] Powerup: Nuke - like a big firework creates pandemonium with falling debris
-    [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
-    [ ] Powerup: Crazy bear.  Cute teddy bear gets madder and madder as it takes hits.  Release for havoc.  
-        Too many hits and it attacks players.
+    [ ] Mouse operation of main menu
+    [ ] BUG: Debris is hard to distinquish from bullets
+    [ ] BUG: Fast-moving players skip over debris
     
+
+NEW
 
 EASY/URGENT
 
 
 NEXT
+    [ ] Bullets should be able to bust through debris
+    [ ] Game over
+        [ ] Show intermediate game over screen when the game exists
+        [ ] Game should exit when all players are dead
 
 SOON
+    [ ] Dynamic: UFO's loiter over the aliens.  You need a way to punch through to get them.
+    [ ] Dynamic: Shields protect charging stations.  Weapons charge slower when they are damaged.  
+        - Weapons won't charge at all if the are all damaged
+    [ ] Powerup: Nuke - like a big firework creates pandemonium with falling debris
+    [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
+    [ ] Powerup: Crazy bear.  Cute teddy bear gets madder and madder as it takes hits.  Release for havoc.  
+        Too many hits and it attacks players.
+    [ ] Add player with either fire or movement
     [ ] Aliens can win
     [ ] When Hive dies, kick off next level
     [ ] Generate alien rows gradually in waves (add animation)
@@ -47,6 +39,9 @@ SOON
     [ ] Give ships more hit points and make bullets stronger
 
 LATER
+    [ ] Remember controllers long-term (and assign names)
+    [ ] highscores
+    [ ] Use scaling to make fonts look better on large screens
     [ ] Bug: Sometimes can't get back into game when two people are on the same controller and one dies
     [ ] Score graph
     [ ] Powerup: Homing shots
@@ -68,9 +63,14 @@ PROBABLY NEVER
     [ ] Alert when using IE    
 
 
+    
 
 
 DONE ================================================================================================================================
+
+    [x] Add publishing script to easily push it up
+    [x] Start game with a controller
+    [x] Bug: starting with a controller creates player too soon
 
 version 0.0.3.2
     [x] Replace exploding ship with magic debris

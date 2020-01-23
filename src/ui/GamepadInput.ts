@@ -291,7 +291,7 @@ export class GamepadManager {
     onUnhandledInputCode = new EventThing<{gamePadIndex: number, code: number, value: number}>("KB UnhandledCode"); 
     onInputChange = new EventThing<{gamePadIndex: number, code: number, value: number}>("KB UnhandledCode"); 
     gamePadStates = new Map<number, GamepadState>();
-    deadZone = 0.02;
+    deadZone = 0.05;
 
     constructor()
     {

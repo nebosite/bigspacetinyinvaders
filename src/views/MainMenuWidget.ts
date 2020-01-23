@@ -16,10 +16,12 @@ export class MainMenuWidget extends Widget
     theAppModel: IAppModel; 
     logoWidget: ImageWidget | null = null;
     choiceIndicator: DrawnSprite | null = null;
+    theGame: GameWidget | null = null;
     invaders = new Array<DrawnSprite>();
     choices = new Array<{widget: Widget, action: ()=>void}> ();
     currentChoice = 0;
     invaderCount = 10;
+    startingGame = false;
 
     //-------------------------------------------------------------------------
     // ctor
@@ -122,9 +124,9 @@ export class MainMenuWidget extends Widget
             documentElement.requestFullscreen();
         }
 
-        let theGame = new GameWidget(this.theAppModel);
-        this.parent?.AddChild(theGame);
-        this.parent?.RemoveChild(this);
+        this.theGame = new GameWidget(this.theAppModel);
+        this.parent?.AddChild(this.theGame);
+        this.startingGame = true;
     }
 
     //-------------------------------------------------------------------------
@@ -182,6 +184,19 @@ export class MainMenuWidget extends Widget
         {
             this.choiceIndicator.rotation = now/1000.0;
             this.choiceIndicator.textureFrame = 2 + Math.floor(now/1000) % 2;
+        }
+
+        if(this.startingGame && this.theGame)
+        {
+            this.left -= this.width/100;
+            this.theGame.left = this.left + this.width;
+            if(this.theGame.left < 0)
+            {
+                this.theGame.left = 0;
+                this.parent?.RemoveChild(this);
+                this.theGame.Start();
+                this.startingGame = false;
+            }
         }
     }
 

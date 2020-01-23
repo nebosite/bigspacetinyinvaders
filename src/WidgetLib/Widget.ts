@@ -206,6 +206,7 @@ export class Widget
     {
         if(this.destroyed) throw new Error("Tried to add a child to a destroyed widget");
         if(!this.widgetSystem) throw new Error("Children cannot be added until after the widget is loaded (initialized)");
+        if(this.children.lastIndexOf(child) >= 0) throw new Error(`Child ${child.name} is already added!`);
         this.children.push(child);
         child.parent = this;
         child.Init(this.widgetSystem);

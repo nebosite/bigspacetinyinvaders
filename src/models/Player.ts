@@ -138,7 +138,6 @@ export class Player extends GameObject implements IInputReceiver<PlayerAction>
                     case DebrisType.DeadShip: this.gun.charge += 5; break;
                 }
                 debris.delete();
-                console.log("DDebris");
             }
         }
 

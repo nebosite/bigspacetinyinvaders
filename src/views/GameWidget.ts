@@ -134,6 +134,7 @@ export class GameWidget extends Widget implements IGameListener
         }
         this.theAppModel.gameListener = null;
         this.widgetSystem?.keyboardManager.onUnhandledKeyCode.unsubscribe("Game Controller unhandled Key");
+        this.widgetSystem?.gamepadManager.onUnhandledInputCode.unsubscribe("Game Controller unhandled gamepad");
         this.mainScoreText?.delete();
 
         for(let control of this.renderingControls.values())
@@ -163,9 +164,6 @@ export class GameWidget extends Widget implements IGameListener
         this.theAppModel.worldSize = {width: this.widgetSystem.drawing.width, height: this.widgetSystem.drawing.height};
         this.theAppModel.gameListener = this;
 
-        this.widgetSystem.keyboardManager.onUnhandledKeyCode.subscribe("Game Controller unhandled Key", this.handleUnhandledKey);
-        this.widgetSystem.gamepadManager.onUnhandledInputCode.subscribe("Game Controller unhandled gamepad", this.handleUnhandledGamepadCode);
-    
         this.mainScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 3, 15, 0xffff00, 0x0, 0, 1000, [1,0] );
     }
 
@@ -211,12 +209,20 @@ export class GameWidget extends Widget implements IGameListener
     // Deal with removed objects
     //-------------------------------------------------------------------------
     onRemovedGameObject = (gameObject: GameObject) => {
-        if(gameObject.type == GameObjectType.Debris) console.log(`Removing ${gameObject.type}`)
         let renderer = this.renderingControls.get(gameObject);
         if(!renderer) return;
-        if(gameObject.type == GameObjectType.Debris) console.log(`Removing renderer`)
         renderer.delete();
         this.renderingControls.delete(gameObject);
+    }
+
+    //-------------------------------------------------------------------------
+    // Signal that we can start actively managing the game
+    //-------------------------------------------------------------------------
+    Start()
+    {
+        if(!this.widgetSystem) throw Error("Missing Widget System!");
+        this.widgetSystem.keyboardManager.onUnhandledKeyCode.subscribe("Game Controller unhandled Key", this.handleUnhandledKey);
+        this.widgetSystem.gamepadManager.onUnhandledInputCode.subscribe("Game Controller unhandled gamepad", this.handleUnhandledGamepadCode);  
     }
 
     //-------------------------------------------------------------------------
@@ -256,21 +262,16 @@ export class GameWidget extends Widget implements IGameListener
 
         if(this.inviteText)
         {
-            this.inviteText.x = this.width/2;
-            this.inviteText.y = 100;
+            this.inviteText.x = this.left + this.width/2;
+            this.inviteText.y = this.top + 100;
         }
-
-        let scores = "";
-        this.theAppModel.getPlayers().forEach(player => {
-            scores += `${player.name}:${player.score.toString().padStart(5, '0')}\n`;
-        });
-
 
         let totalText = this.theAppModel.totalScore.toString().padStart(6, '0');
         let maxText = this.theAppModel.maxScore.toString().padStart(6, '0');
         if(this.mainScoreText) {
             this.mainScoreText.text = `Score: ${totalText}  Max:${maxText}`;
-            this.mainScoreText.x = this.width -this.mainScoreText.width;
+            this.mainScoreText.x = this.left + this.width -this.mainScoreText.width;
+            this.mainScoreText.y = this.top;
         }
     }
 
@@ -300,6 +301,7 @@ export class GameWidget extends Widget implements IGameListener
     // handle gamepads
     //-------------------------------------------------------------------------
     handleUnhandledGamepadCode = (eventArgs: {gamePadIndex: number, code: GamepadInputCode, value: number}) => {
+        if(this.destroyed) throw new Error("Should not be getting input on destroyed game")
         if(eventArgs.code == GamepadInputCode.Button_Back) {
             console.log("BACK");
             return;
@@ -338,7 +340,7 @@ export class GameWidget extends Widget implements IGameListener
                 }
             });
         }
-        else
+        else if (eventArgs.value > .6)
         {      
             // Look for direction keys that are not bound yet
             this.CommonGamepadDirectionLayouts.forEach((value, key) =>
@@ -370,6 +372,7 @@ export class GameWidget extends Widget implements IGameListener
     // handle keyboard
     //-------------------------------------------------------------------------
     handleUnhandledKey = (keyCode: number) => {
+        if(this.destroyed) throw new Error("Should not be getting input on destroyed game")
         if(keyCode == 192){ // ` turns diagnostics on/off
             if(this.diagnosticsControl) {
                 this.diagnosticsControl.cancelMe();
