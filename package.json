@@ -8,7 +8,7 @@
     "builddev": "webpack --config webpack.dev.js &&  xcopy /VERIFYK .\\public\\* dist",
     "buildprod": "webpack --config webpack.prod.js &&  xcopy /VERIFYK .\\public\\* dist",
     "upload": "powershell -Command ./upload.ps1",
-    "start": "webpack-dev-server --open --config webpack.dev.js --host 0.0.0.0"
+    "start": "webpack-dev-server --open --config webpack.dev.js --host localhost"
   },
   "repository": {
     "type": "git",

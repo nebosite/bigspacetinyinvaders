@@ -45,6 +45,7 @@ export class GameWidget extends Widget implements IGameListener
     playerDetailControls = new Map<number, PlayerDetailControl>();
     inviteText: DrawnText | null = null;
     mainScoreText: DrawnText| null = null;
+    maxScoreText: DrawnText| null = null;
     onGameOver = new EventThing<void>("Game Widget");
 
     CommonDirectionKeyLayouts = new Map([
@@ -136,6 +137,7 @@ export class GameWidget extends Widget implements IGameListener
         this.widgetSystem?.keyboardManager.onUnhandledKeyCode.unsubscribe("Game Controller unhandled Key");
         this.widgetSystem?.gamepadManager.onUnhandledInputCode.unsubscribe("Game Controller unhandled gamepad");
         this.mainScoreText?.delete();
+        this.maxScoreText?.delete();
 
         for(let control of this.renderingControls.values())
         {
@@ -164,7 +166,8 @@ export class GameWidget extends Widget implements IGameListener
         this.theAppModel.worldSize = {width: this.widgetSystem.drawing.width, height: this.widgetSystem.drawing.height};
         this.theAppModel.gameListener = this;
 
-        this.mainScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 3, 15, 0xffff00, 0x0, 0, 1000, [1,0] );
+        this.mainScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 3, 30, 0xffff00, 0x0, 0, 1000, [1,0] );
+        this.maxScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 40, 30, 0xffff00, 0x0, 0, 1000, [1,0] );
     }
 
     //-------------------------------------------------------------------------
@@ -269,9 +272,14 @@ export class GameWidget extends Widget implements IGameListener
         let totalText = this.theAppModel.totalScore.toString().padStart(6, '0');
         let maxText = this.theAppModel.maxScore.toString().padStart(6, '0');
         if(this.mainScoreText) {
-            this.mainScoreText.text = `Score: ${totalText}  Max:${maxText}`;
-            this.mainScoreText.x = this.left + this.width -this.mainScoreText.width;
-            this.mainScoreText.y = this.top;
+            this.mainScoreText.text = `Score: ${totalText}`;
+            this.mainScoreText.x = this.left + this.width - 10;
+            this.mainScoreText.y = this.top + 3;
+        }
+        if(this.maxScoreText) {
+            this.maxScoreText.text = `Max: ${maxText}`;
+            this.maxScoreText.x = this.mainScoreText?.x as number;
+            this.maxScoreText.y = (this.mainScoreText?.y as number) + (this.mainScoreText?.height as number);
         }
     }
 

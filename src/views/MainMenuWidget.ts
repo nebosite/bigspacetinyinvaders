@@ -188,7 +188,7 @@ export class MainMenuWidget extends Widget
 
         if(this.startingGame && this.theGame)
         {
-            this.left -= this.width/100;
+            this.left -= this.width/30;
             this.theGame.left = this.left + this.width;
             if(this.theGame.left < 0)
             {
