@@ -104,6 +104,7 @@ export class WidgetSystem
     //-------------------------------------------------------------------------
     handleGamePadInput = (input: {gamePadIndex: number, code: number, value: number}) => {
         if(Math.abs(input.value) < .05) input.value = 0;
+        let controllerId = `GP${input.gamePadIndex}`
         if(input.code < GamepadInputCode.Button00)
         {
             let axisCode = (input.code - GamepadInputCode.Axis0) * 2 + WidgetButtonCode.Stick0;
@@ -111,13 +112,13 @@ export class WidgetSystem
             let high = 0;
             if(input.value < 0) low = -input.value;
             if(input.value > 0) high = input.value;
-            this._root?.handleButtonEvent(new  ButtonEvent("GP", axisCode, low));
-            this._root?.handleButtonEvent(new  ButtonEvent("GP", axisCode + 1, high));            
+            this._root?.DoButtonEvent(new  ButtonEvent(controllerId, axisCode, low));
+            this._root?.DoButtonEvent(new  ButtonEvent(controllerId, axisCode + 1, high));            
         }
         else
         {
             let buttonCode = input.code - GamepadInputCode.Button00 + WidgetButtonCode.Button00;
-            this._root?.handleButtonEvent(new  ButtonEvent("GP", buttonCode, input.value));      
+            this._root?.DoButtonEvent(new  ButtonEvent(controllerId, buttonCode, input.value));      
         }
     }
 
@@ -126,14 +127,14 @@ export class WidgetSystem
     // handleKeyDown
     //-------------------------------------------------------------------------
     handleKeyDown = (keyCode: number) => {
-        this._root?.handleButtonEvent(new  ButtonEvent("KB", keyCode, 1));      
+        this._root?.DoButtonEvent(new  ButtonEvent("KB", keyCode, 1));      
     }
 
     //-------------------------------------------------------------------------
     // handleKeyUp
     //-------------------------------------------------------------------------
     handleKeyUp = (keyCode: number) => {
-        this._root?.handleButtonEvent(new  ButtonEvent("KB", keyCode, 0));      
+        this._root?.DoButtonEvent(new  ButtonEvent("KB", keyCode, 0));      
     }
 
     //-------------------------------------------------------------------------

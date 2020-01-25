@@ -3,8 +3,11 @@ import { PlayerAction } from "./GameWidget";
 import { DrawHelper, DrawnObject, DrawnVectorObject } from "../ui/DrawHelper";
 import { Widget } from "../WidgetLib/Widget";
 import { TextWidget } from "../WidgetLib/TextWidget";
+import { WidgetButtonCode, ButtonEvent } from "../WidgetLib/WidgetSystem";
+import { ButtonEventTranslator, IPlayerActionReceiver } from "../tools/ButtonEventTranslator";
+import { Player } from "src/models/Player";
 
-export class NewPlayerWidget extends Widget implements IInputReceiver<PlayerAction>
+export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
 {
     width = 500;
     height = 500;
@@ -14,21 +17,50 @@ export class NewPlayerWidget extends Widget implements IInputReceiver<PlayerActi
     xLeft = 0;
     xRight = 0;
     onCancel: () => void;
+    onComplete: () => void;
     lastActionTime: number = Date.now();
-    cancelled = false;
     translator: any = null;
     drawingObjects = new Array<DrawnObject>();
     playerShip: DrawnVectorObject | null = null;
     controllerId = "";
-    
+    buttonTranslator: ButtonEventTranslator;
+    actionButtonCluster = "";
+    movementButtonCluster = "";
+
+    static  CommonDirectionButtonLayouts = new Map([
+        ["IJKL", [73,74,75,76]],
+        ["WASD", [87,65,83,68]],
+        ["Arrows", [38,37,40,39]],
+        ["Numpad 8456", [104,100,101,102]],
+        ["Left Stick", [WidgetButtonCode.Stick0Up, WidgetButtonCode.Stick0Left, WidgetButtonCode.Stick0Down, WidgetButtonCode.Stick0Right]],
+        ["Right Stick",  [WidgetButtonCode.Stick1Up, WidgetButtonCode.Stick1Left, WidgetButtonCode.Stick1Down, WidgetButtonCode.Stick1Right]],
+    ]);
+
+    static CommonActionButtonLayouts = new Map([
+        ["ShiftZXC", [16,90,88,67]],
+        ["SpcBNM", [32,66,78,77]],
+        ["0.Enter+", [96,110,13,107]],
+        ["DelEndPgdwnPgup", [46,35,24,33]],
+        ["DPad", [WidgetButtonCode.Button_DPadDown,WidgetButtonCode.Button_DPadLeft,WidgetButtonCode.Button_DPadRight,WidgetButtonCode.Button_DPadUp]],
+        ["Diamond", [WidgetButtonCode.Button_DiamondDown,WidgetButtonCode.Button_DiamondLeft,WidgetButtonCode.Button_DiamondRight,WidgetButtonCode.Button_DiamondUp]],
+        ["Right Trigger", [WidgetButtonCode.Button_ShoulderRight,WidgetButtonCode.Button_TriggerRight]],
+        ["Left Trigger", [WidgetButtonCode.Button_ShoulderLeft,WidgetButtonCode.Button_TriggerLeft]],
+    ]);
+  
     //-------------------------------------------------------------------------
     // 
     //-------------------------------------------------------------------------
-    constructor(controllerId: string, onCancel: () => void)
+    constructor(controllerId: string, onCancel: () => void, onComplete: () => void)
     {
         super("New Player");
         this.controllerId = controllerId;
         this.onCancel = onCancel;
+        this.onComplete = onComplete;
+        this.controllerId = controllerId;
+
+        this.buttonTranslator = new ButtonEventTranslator(controllerId);
+        this.buttonTranslator.addSubscriber(this)
+
         this.backgroundColor = 0x777777;
         this.alpha = 0.5
 
@@ -36,6 +68,83 @@ export class NewPlayerWidget extends Widget implements IInputReceiver<PlayerActi
         this.onParentLayoutChanged.subscribe(`${this.name} parentLayoutChanged`, this.updateBasedOnParent);
         this.onRender.subscribe(`${this.name} render`, this.renderMe);
         this.onDestroyed.subscribe(`${this.name} destroy`, this.destroyMe);
+        this.onButtonEvent.subscribe(`${this.name} button`, this.handleButtonEvent);
+    }
+
+    //-------------------------------------------------------------------------
+    // Try to set up buttons.  When both movement and fire buttons are 
+    // picked, then we are done.
+    //-------------------------------------------------------------------------
+    handleButtonEvent = (event: ButtonEvent) => {
+        this.buttonTranslator.handleButtonEvent(event);
+        if(this.actionButtonCluster == "")
+        {
+            for(let clusterName of NewPlayerWidget.CommonActionButtonLayouts.keys())
+            {
+                let codes = NewPlayerWidget.CommonActionButtonLayouts.get(clusterName) as number[];
+                for(let i = 0; i < codes.length; i++)
+                {
+                    if(codes[i] == event.buttonId)
+                    {
+                        this.buttonTranslator.controllerId = event.controllerId;
+                        this.buttonTranslator.mapButton(codes[0], PlayerAction.Fire);  
+                        this.buttonTranslator.mapButton(codes[1], PlayerAction.Fire);  
+                        this.buttonTranslator.mapButton(codes[2], PlayerAction.Fire);  
+                        this.buttonTranslator.mapButton(codes[3], PlayerAction.Fire);  
+                        this.actionButtonCluster = clusterName;
+                    }
+                }   
+            }
+        }
+
+        if(this.movementButtonCluster == "")
+        {
+            for(let clusterName of NewPlayerWidget.CommonDirectionButtonLayouts.keys())
+            {
+                let codes = NewPlayerWidget.CommonDirectionButtonLayouts.get(clusterName) as number[];
+                for(let i = 0; i < codes.length; i++)
+                {
+                    if(codes[i] == event.buttonId)
+                    {
+                        this.buttonTranslator.controllerId = event.controllerId;
+                        this.buttonTranslator.mapButton(codes[0], PlayerAction.Up);  
+                        this.buttonTranslator.mapButton(codes[1], PlayerAction.Left);  
+                        this.buttonTranslator.mapButton(codes[2], PlayerAction.Down);  
+                        this.buttonTranslator.mapButton(codes[3], PlayerAction.Right);  
+                        this.movementButtonCluster = clusterName;
+                    }
+                }   
+            }
+        }
+
+        if(this.actionButtonCluster != "" && this.movementButtonCluster != "")
+        {
+            this.onComplete();
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    // Return true if the buttons is part of our controller map
+    //-------------------------------------------------------------------------
+    static isContollerButton(buttonId: number): boolean
+    {
+        for(let codes of this.CommonDirectionButtonLayouts.values())
+        {
+            for(let i = 0; i < codes.length; i++)
+            {
+                if(codes[i] == buttonId) return true;
+            }   
+        }
+
+        for(let codes of this.CommonActionButtonLayouts.values())
+        {
+            for(let i = 0; i < codes.length; i++)
+            {
+                if(codes[i] == buttonId) return true;
+            }   
+        }
+
+        return false;
     }
 
     //-------------------------------------------------------------------------
@@ -75,8 +184,6 @@ export class NewPlayerWidget extends Widget implements IInputReceiver<PlayerActi
     //-------------------------------------------------------------------------
     renderMe = () =>
     {
-        if(this.cancelled) return;
-
         let size = this.width * .1;
         let x = this.playerX * this.width * .8 + this.width * .1 + this.left;
         if(this.playerShip) this.playerShip.x = x;
@@ -107,7 +214,6 @@ export class NewPlayerWidget extends Widget implements IInputReceiver<PlayerActi
     {
         this.drawingObjects.forEach(thing => thing.delete());
         this.drawingObjects.length = 0;
-        this.cancelled = true;
         this.onCancel();
     }
 

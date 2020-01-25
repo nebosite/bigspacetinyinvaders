@@ -17,6 +17,7 @@ import { MainMenuWidget } from "./MainMenuWidget";
 import { PlayerDetailControl } from "./PlayerDetailControl";
 import { Debris } from "../models/Debris";
 import { WidgetButtonCode, ButtonEvent } from "../WidgetLib/WidgetSystem";
+import { ButtonEventTranslator } from "../tools/ButtonEventTranslator";
 
 const PLAYER_SIZE = 16;
 
@@ -32,6 +33,9 @@ export enum PlayerAction {
 class PlayerIdentity{
     id = 0;
     name = "";
+    controllerId = "";
+    actionControl = "";
+    movementControl = "";
 }
 
 export class GameWidget extends Widget implements IGameListener
@@ -44,11 +48,13 @@ export class GameWidget extends Widget implements IGameListener
     seenPlayersCount = 0;
     renderingControls = new Map<GameObject, GameObjectRenderer>();
     playerDetailControls = new Map<number, PlayerDetailControl>();
+    buttonTranslationMap = new Map<string, ButtonEventTranslator>();
     inviteText: DrawnText | null = null;
     mainScoreText: DrawnText| null = null;
     maxScoreText: DrawnText| null = null;
     onGameOver = new EventThing<void>("Game Widget");
     hasSetSize = false;
+    started = false;
 
     CommonDirectionKeyLayouts = new Map([
         ["IJKL", [73,74,75,76]],
@@ -75,6 +81,8 @@ export class GameWidget extends Widget implements IGameListener
         ["Right Trigger", [GamepadInputCode.Button_ShoulderRight,GamepadInputCode.Button_TriggerRight]],
         ["Left Trigger", [GamepadInputCode.Button_ShoulderLeft,GamepadInputCode.Button_TriggerLeft]],
     ]); 
+
+
 
     //-------------------------------------------------------------------------
     // ctor
@@ -137,8 +145,8 @@ export class GameWidget extends Widget implements IGameListener
             this.diagnosticsControl = null;
         }
         this.theAppModel.gameListener = null;
-        this.widgetSystem?.keyboardManager.onUnhandledKeyCode.unsubscribe("Game Controller unhandled Key");
-        this.widgetSystem?.gamepadManager.onUnhandledInputCode.unsubscribe("Game Controller unhandled gamepad");
+        // this.widgetSystem?.keyboardManager.onUnhandledKeyCode.unsubscribe("Game Controller unhandled Key");
+        // this.widgetSystem?.gamepadManager.onUnhandledInputCode.unsubscribe("Game Controller unhandled gamepad");
         this.mainScoreText?.delete();
         this.maxScoreText?.delete();
 
@@ -226,9 +234,7 @@ export class GameWidget extends Widget implements IGameListener
     //-------------------------------------------------------------------------
     Start()
     {
-        if(!this.widgetSystem) throw Error("Missing Widget System!");
-        this.widgetSystem.keyboardManager.onUnhandledKeyCode.subscribe("Game Controller unhandled Key", this.handleUnhandledKey);
-        this.widgetSystem.gamepadManager.onUnhandledInputCode.subscribe("Game Controller unhandled gamepad", this.handleUnhandledGamepadCode);  
+        this.started = true;
     }
 
     //-------------------------------------------------------------------------
@@ -288,19 +294,23 @@ export class GameWidget extends Widget implements IGameListener
     //-------------------------------------------------------------------------
     // generatePlayer
     //-------------------------------------------------------------------------
-    generatePlayer(controlId: string)
+    generatePlayer(controlId: string, actionControl: string, movementControl: string)
     {
+        let key = `${controlId}:${actionControl}:${movementControl}`;
         let newPlayer = new Player(this.theAppModel);
         var playerInfo = new PlayerIdentity();
-        if(this.playerIdentities.has(controlId))
+        if(this.playerIdentities.has(key))
         {
-            playerInfo = this.playerIdentities.get(controlId) as PlayerIdentity;
+            playerInfo = this.playerIdentities.get(key) as PlayerIdentity;
         }
         else
         {
             playerInfo.id = this.seenPlayersCount++;
             playerInfo.name = `P:${playerInfo.id}`;
-            this.playerIdentities.set(controlId, playerInfo);
+            playerInfo.actionControl = actionControl;
+            playerInfo.movementControl = movementControl;
+            playerInfo.controllerId = controlId;
+            this.playerIdentities.set(key, playerInfo);
         }
         newPlayer.number = playerInfo.id;
         newPlayer.name = playerInfo.name;
@@ -310,129 +320,32 @@ export class GameWidget extends Widget implements IGameListener
     //-------------------------------------------------------------------------
     // handleButtons
     //-------------------------------------------------------------------------
-    handleButtons = (event: ButtonEvent)=>
+    handleButtons = (event: ButtonEvent) =>
     {
-        // if(!event.isPressed)
-        // {
-        //     switch(event.buttonId)
-        //     {
-        //         case 37: // left
-        //         case 38: // up
-        //         case WidgetButtonCode.Button_DPadUp:
-        //         case WidgetButtonCode.Button_DiamondUp:
-        //         case WidgetButtonCode.Button_ShoulderLeft:
-        //         case WidgetButtonCode.Stick0Left:
-        //         case WidgetButtonCode.Stick0Up:
-        //         case WidgetButtonCode.Stick1Left:
-        //         case WidgetButtonCode.Stick1Up:
-        //             this.currentChoice--;
-        //             if(this.currentChoice < 0) this.currentChoice = this.choices.length-1;
-        //             this._layoutChanged = true;
-        //             break;
-        //         case 39: // right
-        //         case 40: // down
-        //         case WidgetButtonCode.Button_DPadDown:
-        //         case WidgetButtonCode.Button_DiamondDown:
-        //         case WidgetButtonCode.Button_ShoulderRight:
-        //         case WidgetButtonCode.Stick0Right:
-        //         case WidgetButtonCode.Stick0Down:
-        //         case WidgetButtonCode.Stick1Right:
-        //         case WidgetButtonCode.Stick1Down:
-        //             this.currentChoice++;
-        //             if(this.currentChoice >= this.choices.length ) this.currentChoice =0;
-        //             this._layoutChanged = true;
-        //             break;
-        //         case 13: // Enter
-        //         case 32: // Space
-        //         case WidgetButtonCode.Button_TriggerLeft:
-        //         case WidgetButtonCode.Button_TriggerRight:
-        //         case WidgetButtonCode.Button_DiamondRight:
-        //             this.choices[this.currentChoice].action();
-        //     }
-        // }
-    }
-    
-    //-------------------------------------------------------------------------
-    // handle gamepads
-    //-------------------------------------------------------------------------
-    handleUnhandledGamepadCode = (eventArgs: {gamePadIndex: number, code: GamepadInputCode, value: number}) => {
-        if(this.destroyed) throw new Error("Should not be getting input on destroyed game")
-        if(eventArgs.code == GamepadInputCode.Button_Back) {
-            console.log("BACK");
+        if(!this.started) return;
+        if(this.destroyed) throw new Error("Should not be getting input on destroyed game");
+
+        let key = `${event.controllerId}:${event.buttonId}`;
+        if(this.buttonTranslationMap.has(key))
+        {
+            this.buttonTranslationMap.get(key)?.handleButtonEvent(event);
+            event.handled = true;
             return;
         }
-        if(this.newPlayerWidget) 
+        
+        if(event.isPressed && (
+            event.buttonId == WidgetButtonCode.Button_Back
+            || event.buttonValue == 27 // esc key
+            )) 
         {
-            if(this.newPlayerWidget.controllerId != eventArgs.gamePadIndex.toString()) return;
-            // Let's see if the staged player has pressed a fire key
-            this.CommonGamepadActionButtonLayouts.forEach((value, key) =>
-            {
-                for(let i = 0; i < value.length; i++)
-                {
-                    if(value[i] == eventArgs.code)
-                    {
-                        const translator = this.newPlayerWidget?.translator as GamepadTranslator<PlayerAction>;
-                        this.newPlayerWidget?.Destroy();
-                        if(translator)
-                        {
-                            translator.mapButton(value[0], PlayerAction.Fire);
-                            translator.mapButton(value[1], PlayerAction.Fire);
-                            translator.mapButton(value[2], PlayerAction.Fire);
-                            translator.mapButton(value[3], PlayerAction.Fire);
-                            if(this.newPlayerWidget)
-                            {
-                                translator.removeSubscriber(this.newPlayerWidget);
-                            }
-                            let newPlayer = this.generatePlayer(translator.name);
-                            translator.addSubscriber(newPlayer);
-                            this.theAppModel.addPlayer(newPlayer);
-                            this.widgetSystem?.gamepadManager.addTranslator(translator);
-                            newPlayer.onCleanup.subscribe("removeTranslator", () => this.widgetSystem?.gamepadManager.removeTranslator(translator));
-                        }
-                        this.newPlayerWidget = null;
-                        return;
-                    }
-                }
-            });
+            this.theAppModel.endGame();
+            event.handled = true;
+            return;
         }
-        else if (eventArgs.value > .6)
-        {      
-            // Look for direction keys that are not bound yet
-            this.CommonGamepadDirectionLayouts.forEach((value, key) =>
-            {
-                for(let i = 0; i < value.length; i++)
-                {
-                    if(value[i] == eventArgs.code)
-                    {
-                        var newTranslator = new GamepadTranslator<PlayerAction>(`${key}:${eventArgs.gamePadIndex}`, eventArgs.gamePadIndex);
-                        this.newPlayerWidget = new NewPlayerWidget(eventArgs.gamePadIndex.toString(), () =>
-                        {
-                            this.widgetSystem?.gamepadManager.removeTranslator(newTranslator);
-                            this.newPlayerWidget?.Destroy();
-                            this.newPlayerWidget = null;
-                        });
 
-                        this.newPlayerWidget.relativeLocation = {x:.2, y:.3};
-                        this.newPlayerWidget.relativeSize = {width:.3, height: null};
-
-                        newTranslator.mapAxis(value[0], PlayerAction.Left, PlayerAction.Right);
-                        newTranslator.mapAxis(value[1], PlayerAction.Up, PlayerAction.Down);
-
-                        this.widgetSystem?.gamepadManager.addTranslator(newTranslator);
-                        newTranslator.addSubscriber(this.newPlayerWidget);
-                        this.newPlayerWidget.translator = newTranslator;
-                    }
-                }
-            });
-        }
-    }
-
-    //-------------------------------------------------------------------------
-    // handle keyboard
-    //-------------------------------------------------------------------------
-    handleUnhandledKey = (keyCode: number) => {
-        if(this.destroyed) throw new Error("Should not be getting input on destroyed game")
-        if(keyCode == 192){ // ` turns diagnostics on/off
+        // press tick (`) for diagnostics
+        if(event.isPressed && event.buttonId ==  192) 
+        {
             if(this.diagnosticsControl) {
                 this.diagnosticsControl.cancelMe();
                 this.diagnosticsControl = null;
@@ -444,77 +357,57 @@ export class GameWidget extends Widget implements IGameListener
                     this.widgetSystem?.keyboardManager as KeyboardManager, 
                     this.theAppModel.diagnostics)
             }
+            event.handled = true;
             return;
         }
 
-        if(keyCode == 27) {  // Esc to reset the game
-            this.theAppModel.endGame();
-            return;
-        }
-
-        if(this.newPlayerWidget) 
+        // THis is an unhandled button.  If there is no New Player widget and the
+        // button is a control button, we need to show the new player widget
+        if(!this.newPlayerWidget && NewPlayerWidget.isContollerButton( event.buttonId)) 
         {
-            if(this.newPlayerWidget.controllerId != 'keyboard') return;
-            // Let's see if the staged player has pressed a fire key
-            this.CommonActionKeyLayouts.forEach((value, key) =>
-            {
-                for(let i = 0; i < value.length; i++)
-                {
-                    if(value[i] == keyCode)
-                    {
-                        const translator = this.newPlayerWidget?.translator as KeycodeTranslator<PlayerAction>;
-                        if(translator)
-                        {
-                            translator.mapKey(value[0], PlayerAction.Fire);
-                            translator.mapKey(value[1], PlayerAction.Fire);
-                            translator.mapKey(value[2], PlayerAction.Fire);
-                            if(this.newPlayerWidget)
-                            {
-                                translator.removeSubscriber(this.newPlayerWidget);
-                            }
-                            let newPlayer = this.generatePlayer(translator.name);
-                            translator.addSubscriber(newPlayer);
-                            this.theAppModel.addPlayer(newPlayer);
-                            this.widgetSystem?.keyboardManager.addTranslator(translator);
-                            newPlayer.onCleanup.subscribe("removeKeyTranslator",() =>  this.widgetSystem?.keyboardManager.removeTranslator(translator));
-                        }
-                        this.RemoveChild(this.newPlayerWidget as Widget);
-                        this.newPlayerWidget = null;
-                        return;
-                    }
-                }
-            });
+            this.CreateNewPlayerWidget(event.controllerId);
         }
-        else
-        {      
-            // Look for direction keys that are not bound yet
-            this.CommonDirectionKeyLayouts.forEach((value, key) =>
+    }
+
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
+    CreateNewPlayerWidget(controllerId: string)
+    {
+        this.newPlayerWidget = new NewPlayerWidget(controllerId, 
+            () => // OnCancel
             {
-                for(let i = 0; i < value.length; i++)
+                this.RemoveChild(this.newPlayerWidget as Widget)
+                this.newPlayerWidget = null;
+            },
+            () => // OnComplete;
+            {
+                let newPlayer = this.generatePlayer(
+                    this.newPlayerWidget?.controllerId as string,
+                    this.newPlayerWidget?.actionButtonCluster as string, 
+                    this.newPlayerWidget?.movementButtonCluster as string);
+                let buttonTranslator = this.newPlayerWidget?.buttonTranslator as ButtonEventTranslator;
+                buttonTranslator.addSubscriber(newPlayer);
+                for(let key of buttonTranslator.getHandledCodes())
                 {
-                    if(value[i] == keyCode)
-                    {
-                        var newTranslator = new KeycodeTranslator<PlayerAction>(key);
-                        this.newPlayerWidget = new NewPlayerWidget('keyboard', () =>
-                        {
-                            this.widgetSystem?.keyboardManager.removeTranslator(newTranslator);
-                            this.RemoveChild(this.newPlayerWidget as Widget);
-                        });
-
-                        this.newPlayerWidget.relativeLocation = {x:.2, y:.3};
-                        this.newPlayerWidget.relativeSize = {width:.3, height: null};
-
-                        newTranslator.mapKey(value[0], PlayerAction.Up);
-                        newTranslator.mapKey(value[1], PlayerAction.Left);
-                        newTranslator.mapKey(value[2], PlayerAction.Down);
-                        newTranslator.mapKey(value[3], PlayerAction.Right);
-                        this.widgetSystem?.keyboardManager.addTranslator(newTranslator);
-                        newTranslator.addSubscriber(this.newPlayerWidget);
-                        this.newPlayerWidget.translator = newTranslator;
-                        this.AddChild(this.newPlayerWidget);
-                    }
+                    this.buttonTranslationMap.set(key, buttonTranslator);
                 }
-            });
-        }
+                this.theAppModel.addPlayer(newPlayer);
+                newPlayer.onCleanup.subscribe("removeTranslator", () => 
+                {
+                    for(let key of buttonTranslator.getHandledCodes())
+                    {
+                        this.buttonTranslationMap.delete(key);
+                    }
+                });
+                
+                this.RemoveChild(this.newPlayerWidget as Widget);
+                this.newPlayerWidget = null;
+            }
+        );
+
+        this.newPlayerWidget.relativeLocation = {x:.2, y:.3};
+        this.newPlayerWidget.relativeSize = {width:.3, height: null};
+        this.AddChild(this.newPlayerWidget);
     }
 }

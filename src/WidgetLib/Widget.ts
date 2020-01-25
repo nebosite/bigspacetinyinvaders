@@ -242,13 +242,13 @@ export class Widget
     }
    
     //-------------------------------------------------------------------------
-    // handleButtonEvent
+    // DoButtonEvent
     //-------------------------------------------------------------------------
-    handleButtonEvent = (event: ButtonEvent) => {
+    DoButtonEvent(event: ButtonEvent) {
         this.onButtonEvent.invoke(event);   
         if(event.handled) return;
         this.children.forEach(child => {
-            if(!event.handled) child.handleButtonEvent(event);
+            if(!event.handled) child.DoButtonEvent(event);
         })
     }
 }
