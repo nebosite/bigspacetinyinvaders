@@ -1,5 +1,3 @@
-import { IInputReceiver } from "./InputReceiver";
-import { accessibility } from "pixi.js";
 import { EventThing } from "../tools/EventThing";
 
 export class GamepadState
@@ -26,12 +24,6 @@ export class GamepadState
         }
         return output;
     }
-}
-
-export interface IGamepadInputCodeTranslator {
-    handleInputChange: (code: GamepadInputCode, controllerIndex: number, value: number, lastValue: number) => boolean;
-    getHandledCodes: () => IterableIterator<GamepadInputCode>;
-    controllerIndex: number;
 }
 
 export enum GamepadInputCode {
@@ -172,114 +164,6 @@ const buttonTranslations = new Map<string, Array<GamepadInputCode>>(
         ]
     ]);
 
-    
-// ------------------------------------------------------------------------
-//
-// GamepadTranslator
-//
-// ------------------------------------------------------------------------
-export class GamepadTranslator<T> implements IGamepadInputCodeTranslator {
-    private subscribers = new Array<IInputReceiver<T>>();
-    private inputActions = new Map<GamepadInputCode, T[]>();
-    name: string;
-    controllerIndex : number;
-
-    // ------------------------------------------------------------------------
-    // ctor
-    // ------------------------------------------------------------------------
-    constructor(name: string, controllerIndex: number)
-    {
-        this.name = name;
-        this.controllerIndex = controllerIndex;
-    }
-
-    // ------------------------------------------------------------------------
-    // getHandledCodes
-    // ------------------------------------------------------------------------
-    getHandledCodes = () =>
-    {
-        return this.inputActions.keys();
-    };
-
-    // ------------------------------------------------------------------------
-    // handleKeyDown
-    // ------------------------------------------------------------------------
-    handleInputChange = (code: GamepadInputCode, controllerIndex: number, value: number, lastValue: number): boolean => {
-        if(this.inputActions.has(code))
-        {
-            var outputs = this.inputActions.get(code) as T[];
-            var outTranslation = outputs[0];
-            var outValue = value;
-            if(outputs.length > 1)
-            {
-                if(value < 0)
-                {
-                    outValue = -value;
-                    if(lastValue > 0)
-                    {
-                        this.subscribers.forEach(subscriber => {
-                            subscriber.actionChanged(outputs[1] as T, 0);
-                        });
-                    }
-                }
-                else if(value > 0)
-                {
-                    outTranslation = outputs[1];
-                    if(lastValue < 0)
-                    {
-                        this.subscribers.forEach(subscriber => {
-                            subscriber.actionChanged(outputs[0] as T, 0);
-                        });
-                    }
-                }
-                else
-                {
-                    this.subscribers.forEach(subscriber => {
-                        subscriber.actionChanged(outputs[0] as T, value);
-                        subscriber.actionChanged(outputs[1] as T, value);
-                    });
-                }
-            }
-
-            this.subscribers.forEach(subscriber => {
-                subscriber.actionChanged(outTranslation, outValue);
-            });
-            return true;
-        }   
-        return false;
-    }
-
-    // ------------------------------------------------------------------------
-    // Add a subscriber to the key events from this translator
-    // ------------------------------------------------------------------------
-    addSubscriber = (subscriber: IInputReceiver<T>) => {
-        this.subscribers.push(subscriber);
-    }
-
-    // ------------------------------------------------------------------------
-    // Add a subscriber to the key events from this translator
-    // ------------------------------------------------------------------------
-    removeSubscriber = (subscriber: IInputReceiver<T>) => {
-        this.subscribers.splice(this.subscribers.indexOf(subscriber),1);
-    }
-
-    // ------------------------------------------------------------------------
-    // Decide on a game input axis to translate
-    // ------------------------------------------------------------------------
-    mapAxis(code: GamepadInputCode, lowMapping: T, highMapping: T)
-    {
-        this.inputActions.set(code, [lowMapping, highMapping]);
-    }
-
-    // ------------------------------------------------------------------------
-    // Decide on a game input axis to translate
-    // ------------------------------------------------------------------------
-    mapButton(code: GamepadInputCode, mapping: T)
-    {
-        this.inputActions.set(code, [mapping]);
-    }
-}
-
 
 // ------------------------------------------------------------------------
 //
@@ -287,7 +171,6 @@ export class GamepadTranslator<T> implements IGamepadInputCodeTranslator {
 //
 // ------------------------------------------------------------------------
 export class GamepadManager {
-    handlerLookup = new Map<number, IGamepadInputCodeTranslator>();
     onUnhandledInputCode = new EventThing<{gamePadIndex: number, code: number, value: number}>("KB UnhandledCode"); 
     onInputChange = new EventThing<{gamePadIndex: number, code: number, value: number}>("KB UnhandledCode"); 
     gamePadStates = new Map<number, GamepadState>();
@@ -299,14 +182,6 @@ export class GamepadManager {
         window.addEventListener('gamepaddisconnected',  e => this.handleGamepadConnect(e, false));
         setInterval(this.pollInput, 16);
     }  
-
-    // ------------------------------------------------------------------------
-    // reset
-    // ------------------------------------------------------------------------
-    reset()
-    {
-        this.handlerLookup.clear();
-    }
 
     //-------------------------------------------------------------------------
     // Look at connected controllers and see if there is anything happening
@@ -341,12 +216,6 @@ export class GamepadManager {
                     if(Math.abs(axisState) < this.deadZone) axisState = 0;
                     if(state.axes[i] != axisState) {
                         this.onInputChange.invoke({gamePadIndex: theGamePad.index, code, value: axisState});
-                        if(this.handlerLookup.has(key)) {
-                            this.handlerLookup.get(key)?.handleInputChange(code, theGamePad.index, axisState, state.axes[i]);
-                        }
-                        else {
-                            this.onUnhandledInputCode.invoke({gamePadIndex: theGamePad.index, code, value: axisState});
-                        }
                     }
                     state.axes[i] = axisState;
                 }
@@ -361,12 +230,6 @@ export class GamepadManager {
                     if(newValue < this.deadZone) newValue = 0;
                     if(state.buttons[i] != newValue) {
                         this.onInputChange.invoke({gamePadIndex: theGamePad.index, code, value: newValue});
-                        if(this.handlerLookup.has(key)) {
-                            this.handlerLookup.get(key)?.handleInputChange(code, theGamePad.index, newValue, state.buttons[i]);
-                        }
-                        else {
-                            this.onUnhandledInputCode.invoke({gamePadIndex: theGamePad.index, code, value: newValue});
-                        }
                     }
                     state.buttons[i] = newValue;
                 }
@@ -393,31 +256,4 @@ export class GamepadManager {
             this.gamePadStates.set(gp.index, newState);
         }
     }
-
-    
-    // ------------------------------------------------------------------------
-    // addTranslator
-    // ------------------------------------------------------------------------
-    addTranslator = (translator: IGamepadInputCodeTranslator) =>
-    {
-        for(let code of translator.getHandledCodes())
-        {
-            this.handlerLookup.set(code + translator.controllerIndex * 1000, translator);
-        }
-    }
-
-    // ------------------------------------------------------------------------
-    // removeTranslator
-    // ------------------------------------------------------------------------
-    removeTranslator = (translator: IGamepadInputCodeTranslator) =>
-    {
-        for(let partialKey of Array.from( this.handlerLookup.keys()) ) {
-            let key = partialKey + translator.controllerIndex * 1000;
-            if(this.handlerLookup.get(key) === translator)
-            {
-                this.handlerLookup.delete(key);
-            }
-         }            
-    }
-
 }

@@ -208,7 +208,7 @@ export class MainMenuWidget extends Widget
     {
         if(!event.isPressed)
         {
-            switch(event.buttonId)
+            switch(event.buttonCode)
             {
                 case 37: // left
                 case 38: // up

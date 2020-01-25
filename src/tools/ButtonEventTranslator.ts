@@ -1,6 +1,5 @@
-import { IInputReceiver } from "../ui/InputReceiver";
-import { PlayerAction } from "../views/GameWidget";
 import { ButtonEvent } from "../WidgetLib/WidgetSystem";
+import { PlayerAction } from "../models/Player";
 
 export interface IPlayerActionReceiver {
     actionChanged: (action: PlayerAction, value: number)=> void;
@@ -62,10 +61,10 @@ export class ButtonEventTranslator {
     // ------------------------------------------------------------------------
     handleButtonEvent = (event: ButtonEvent) => 
     {
-        let key = `${this.controllerId}:${event.buttonId}`
-        if(this.inputActions.has(event.buttonId))
+        let key = `${this.controllerId}:${event.buttonCode}`
+        if(this.inputActions.has(event.buttonCode))
         {
-            var output = this.inputActions.get(event.buttonId);
+            var output = this.inputActions.get(event.buttonCode);
             this.subscribers.forEach(subscriber => {
                 subscriber.actionChanged(output as PlayerAction, event.buttonValue);
             });

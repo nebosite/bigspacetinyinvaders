@@ -3,9 +3,9 @@ TODO
     
     [x] Bigger score
     [ ] "Use Movement controls..." should be framed somehow. 
-        and should scale with the screen
-        and give hints for keyboard and game controller settings
-        bigger font so it looks good
+        [ ] bigger font should scale with the screen
+        [ ] and give hints for keyboard and game controller settings
+        [ ] Should not be able to mix controls from two controllers for a single player
     [ ] Mouse operation of main menu
     [ ] BUG: Debris is hard to distinquish from bullets
     [ ] BUG: Fast-moving players skip over debris

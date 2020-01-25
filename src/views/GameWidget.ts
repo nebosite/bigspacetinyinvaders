@@ -1,34 +1,22 @@
-import { IAppModel, AppModel, IGameListener } from "../models/AppModel";
-import { KeycodeTranslator, KeyboardManager } from "../ui/KeyboardInput";
+import { IAppModel, IGameListener } from "../models/AppModel";
 import { NewPlayerWidget } from "./NewPlayerWidget";
 import { Player } from "../models/Player";
-import { DrawHelper, DrawnObject, DrawnText } from "../ui/DrawHelper";
-import { GamepadManager, GamepadInputCode, GamepadTranslator } from "../ui/GamepadInput";
+import { DrawHelper, DrawnText } from "../ui/DrawHelper";
 import { GameObjectType, GameObject } from "../models/GameObject";
 import { Alien } from "../models/Alien";
 import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienObjectRenderer, ShieldBlockObjectRenderer, DebrisObjectRenderer } from "./GameObjectRendering";
 import { Bullet } from "../models/Bullet";
 import { DiagnosticsControl } from "./DiagnosticsControl";
 import { GLOBALS } from "../globals";
-import { SoundHelper } from "../ui/SoundHelper";
 import { EventThing } from "../tools/EventThing";
 import { Widget } from "../WidgetLib/Widget";
 import { MainMenuWidget } from "./MainMenuWidget";
 import { PlayerDetailControl } from "./PlayerDetailControl";
 import { Debris } from "../models/Debris";
-import { WidgetButtonCode, ButtonEvent } from "../WidgetLib/WidgetSystem";
+import { WidgetButtonCode, ButtonEvent, WidgetSystem } from "../WidgetLib/WidgetSystem";
 import { ButtonEventTranslator } from "../tools/ButtonEventTranslator";
 
 const PLAYER_SIZE = 16;
-
-export enum PlayerAction {
-    None,
-    Up,
-    Left,
-    Right,
-    Down,
-    Fire
-}
 
 class PlayerIdentity{
     id = 0;
@@ -55,34 +43,6 @@ export class GameWidget extends Widget implements IGameListener
     onGameOver = new EventThing<void>("Game Widget");
     hasSetSize = false;
     started = false;
-
-    CommonDirectionKeyLayouts = new Map([
-        ["IJKL", [73,74,75,76]],
-        ["WASD", [87,65,83,68]],
-        ["Arrows", [38,37,40,39]],
-        ["Numpad 8456", [104,100,101,102]]
-    ]);
-
-    CommonActionKeyLayouts = new Map([
-        ["ShiftZX", [16,90,88]],
-        ["SpcNM", [32,78,77]],
-        ["0.Enter", [96,110,13]],
-        ["DelEndPgdwn", [46,35,24]]
-    ]);
-
-    CommonGamepadDirectionLayouts  = new Map([
-        ["Left Stick", [GamepadInputCode.Axis_Stick0X, GamepadInputCode.Axis_Stick0Y]],
-        ["Right Stick", [GamepadInputCode.Axis_Stick1X, GamepadInputCode.Axis_Stick1Y]],
-    ]); 
-
-    CommonGamepadActionButtonLayouts  = new Map([
-        ["DPad", [GamepadInputCode.Button_DPadDown,GamepadInputCode.Button_DPadLeft,GamepadInputCode.Button_DPadRight,GamepadInputCode.Button_DPadUp]],
-        ["Diamond", [GamepadInputCode.Button_DiamondDown,GamepadInputCode.Button_DiamondLeft,GamepadInputCode.Button_DiamondRight,GamepadInputCode.Button_DiamondUp]],
-        ["Right Trigger", [GamepadInputCode.Button_ShoulderRight,GamepadInputCode.Button_TriggerRight]],
-        ["Left Trigger", [GamepadInputCode.Button_ShoulderLeft,GamepadInputCode.Button_TriggerLeft]],
-    ]); 
-
-
 
     //-------------------------------------------------------------------------
     // ctor
@@ -145,8 +105,6 @@ export class GameWidget extends Widget implements IGameListener
             this.diagnosticsControl = null;
         }
         this.theAppModel.gameListener = null;
-        // this.widgetSystem?.keyboardManager.onUnhandledKeyCode.unsubscribe("Game Controller unhandled Key");
-        // this.widgetSystem?.gamepadManager.onUnhandledInputCode.unsubscribe("Game Controller unhandled gamepad");
         this.mainScoreText?.delete();
         this.maxScoreText?.delete();
 
@@ -162,8 +120,6 @@ export class GameWidget extends Widget implements IGameListener
         }
         this.playerDetailControls.clear();
         
-        this.widgetSystem?.gamepadManager.reset();
-        this.widgetSystem?.keyboardManager.reset();
         this.inviteText?.delete();
     }
 
@@ -325,7 +281,7 @@ export class GameWidget extends Widget implements IGameListener
         if(!this.started) return;
         if(this.destroyed) throw new Error("Should not be getting input on destroyed game");
 
-        let key = `${event.controllerId}:${event.buttonId}`;
+        let key = `${event.controllerId}:${event.buttonCode}`;
         if(this.buttonTranslationMap.has(key))
         {
             this.buttonTranslationMap.get(key)?.handleButtonEvent(event);
@@ -334,8 +290,8 @@ export class GameWidget extends Widget implements IGameListener
         }
         
         if(event.isPressed && (
-            event.buttonId == WidgetButtonCode.Button_Back
-            || event.buttonValue == 27 // esc key
+            event.buttonCode == WidgetButtonCode.Button_Back
+            || event.buttonCode == 27 // esc key
             )) 
         {
             this.theAppModel.endGame();
@@ -344,7 +300,7 @@ export class GameWidget extends Widget implements IGameListener
         }
 
         // press tick (`) for diagnostics
-        if(event.isPressed && event.buttonId ==  192) 
+        if(event.isPressed && event.buttonCode ==  192) 
         {
             if(this.diagnosticsControl) {
                 this.diagnosticsControl.cancelMe();
@@ -352,9 +308,7 @@ export class GameWidget extends Widget implements IGameListener
             }
             else {
                 this.diagnosticsControl = new DiagnosticsControl(
-                    this.widgetSystem?.drawing as DrawHelper, 
-                    this.widgetSystem?.gamepadManager as GamepadManager, 
-                    this.widgetSystem?.keyboardManager as KeyboardManager, 
+                    this.widgetSystem as WidgetSystem,
                     this.theAppModel.diagnostics)
             }
             event.handled = true;
@@ -363,7 +317,7 @@ export class GameWidget extends Widget implements IGameListener
 
         // THis is an unhandled button.  If there is no New Player widget and the
         // button is a control button, we need to show the new player widget
-        if(!this.newPlayerWidget && NewPlayerWidget.isContollerButton( event.buttonId)) 
+        if(!this.newPlayerWidget && NewPlayerWidget.isContollerButton( event.buttonCode)) 
         {
             this.CreateNewPlayerWidget(event.controllerId);
         }

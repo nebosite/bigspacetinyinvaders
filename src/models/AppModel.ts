@@ -1,5 +1,4 @@
 import { Player } from "./Player";
-import { IGamepadInputCodeTranslator } from "../ui/GamepadInput";
 import { GameObject, GameObjectType } from "./GameObject";
 import { Bullet } from "./Bullet";
 import { Hive } from "./Hive";

@@ -2,6 +2,7 @@ import {  KeyboardManager } from "../ui/KeyboardInput";
 import { DrawHelper, DrawnObject, DrawnText } from "../ui/DrawHelper";
 import { GamepadManager, GamepadState } from "../ui/GamepadInput";
 import { AppDiagnostics } from "../models/AppModel";
+import { WidgetSystem } from "src/WidgetLib/WidgetSystem";
 
 export class DiagnosticsControl 
 {
@@ -24,25 +25,25 @@ export class DiagnosticsControl
     //-------------------------------------------------------------------------
     // ctor
     //-------------------------------------------------------------------------
-    constructor(drawing: DrawHelper, gamePad: GamepadManager, keyboard: KeyboardManager, appDiagnostics: AppDiagnostics)
+    constructor(widgetSystem: WidgetSystem, appDiagnostics: AppDiagnostics)
     {
-        this.gamePad = gamePad;
-        this.keyboard = keyboard;
-        this.drawing = drawing;
+        this.gamePad = widgetSystem.gamepadManager;
+        this.keyboard = widgetSystem.keyboardManager;
+        this.drawing = widgetSystem.drawing;
         this.appDiagnostics = appDiagnostics;
         
-        this.fontSize = drawing.height / 80;
-        this.drawingObjects.push(drawing.addRectangleObject(0,0, 300,550,0x444444, .7));
+        this.fontSize = this.drawing.height / 80;
+        this.drawingObjects.push(this.drawing.addRectangleObject(0,0, 300,550,0x444444, .7));
 
-        this.frameRateText = drawing.addTextObject("F:", 5,5,this.fontSize);
+        this.frameRateText = this.drawing.addTextObject("F:", 5,5,this.fontSize);
         this.drawingObjects.push(this.frameRateText);
 
-        this.timingText = drawing.addTextObject("T:", 5,25,this.fontSize);
+        this.timingText = this.drawing.addTextObject("T:", 5,25,this.fontSize);
         this.drawingObjects.push(this.timingText);
 
-        this.keyboardText = drawing.addTextObject("Keyboard:", 5,40, this.fontSize, 0xffff00);
-        this.gamepad1Text = drawing.addTextObject("GP1:", 5,140, this.fontSize, 0xffff00);
-        this.gamepad2Text = drawing.addTextObject("GP2:", 120,140, this.fontSize, 0xffff00);
+        this.keyboardText = this.drawing.addTextObject("Keyboard:", 5,40, this.fontSize, 0xffff00);
+        this.gamepad1Text = this.drawing.addTextObject("GP1:", 5,140, this.fontSize, 0xffff00);
+        this.gamepad2Text = this.drawing.addTextObject("GP2:", 120,140, this.fontSize, 0xffff00);
         this.drawingObjects.push(this.keyboardText);
         this.drawingObjects.push(this.gamepad1Text);
         this.drawingObjects.push(this.gamepad2Text);

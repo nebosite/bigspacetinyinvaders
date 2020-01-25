@@ -1,11 +1,9 @@
-import { IInputReceiver } from "../ui/InputReceiver";
-import { PlayerAction } from "./GameWidget";
-import { DrawHelper, DrawnObject, DrawnVectorObject } from "../ui/DrawHelper";
+import { DrawnObject, DrawnVectorObject } from "../ui/DrawHelper";
 import { Widget } from "../WidgetLib/Widget";
 import { TextWidget } from "../WidgetLib/TextWidget";
 import { WidgetButtonCode, ButtonEvent } from "../WidgetLib/WidgetSystem";
 import { ButtonEventTranslator, IPlayerActionReceiver } from "../tools/ButtonEventTranslator";
-import { Player } from "src/models/Player";
+import { PlayerAction } from "../models/Player";
 
 export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
 {
@@ -84,7 +82,7 @@ export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
                 let codes = NewPlayerWidget.CommonActionButtonLayouts.get(clusterName) as number[];
                 for(let i = 0; i < codes.length; i++)
                 {
-                    if(codes[i] == event.buttonId)
+                    if(codes[i] == event.buttonCode)
                     {
                         this.buttonTranslator.controllerId = event.controllerId;
                         this.buttonTranslator.mapButton(codes[0], PlayerAction.Fire);  
@@ -104,7 +102,7 @@ export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
                 let codes = NewPlayerWidget.CommonDirectionButtonLayouts.get(clusterName) as number[];
                 for(let i = 0; i < codes.length; i++)
                 {
-                    if(codes[i] == event.buttonId)
+                    if(codes[i] == event.buttonCode)
                     {
                         this.buttonTranslator.controllerId = event.controllerId;
                         this.buttonTranslator.mapButton(codes[0], PlayerAction.Up);  
@@ -166,7 +164,6 @@ export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
         titleText.foregroundColor = 0xffff00;
         titleText.relativeLocation = {x:0.5, y:0.1}
         titleText.fontSize = 50;
-        titleText.alpha = 1;
         
         this.AddChild(titleText);
     }

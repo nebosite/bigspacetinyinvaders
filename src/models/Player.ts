@@ -1,10 +1,18 @@
-import { IInputReceiver } from "../ui/InputReceiver";
-import { PlayerAction } from "../views/GameWidget";
 import { GameObject, GameObjectType } from "./GameObject";
 import { IAppModel } from "./AppModel";
 import { Bullet } from "./Bullet";
 import { EventThing } from "../tools/EventThing";
 import { Debris, DebrisType } from "./Debris";
+import { IPlayerActionReceiver } from "../tools/ButtonEventTranslator";
+
+export enum PlayerAction {
+    None,
+    Up,
+    Left,
+    Right,
+    Down,
+    Fire
+}
 
 class Gun {
     heat = 0;
@@ -54,7 +62,7 @@ class Gun {
 
 }
 
-export class Player extends GameObject implements IInputReceiver<PlayerAction>
+export class Player extends GameObject implements IPlayerActionReceiver
 {
     hitPoints = 1;
     xVelocity = 0;

@@ -50,7 +50,7 @@ export enum WidgetButtonCode {
 
 
 export class ButtonEvent {
-    buttonId : number;
+    buttonCode : number;
     buttonValue: number;
     get isPressed() {return this.buttonValue == 1}
     controllerId: string;
@@ -59,7 +59,7 @@ export class ButtonEvent {
     constructor(controllerId: string, buttonId: number, buttonValue: number)
     {
         this.controllerId = controllerId;
-        this.buttonId = buttonId;
+        this.buttonCode = buttonId;
         this.buttonValue = buttonValue;
     }
 }
