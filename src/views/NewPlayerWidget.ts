@@ -74,6 +74,7 @@ export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
     // picked, then we are done.
     //-------------------------------------------------------------------------
     handleButtonEvent = (event: ButtonEvent) => {
+        if(event.controllerId != this.controllerId) return;
         this.buttonTranslator.handleButtonEvent(event);
         if(this.actionButtonCluster == "")
         {

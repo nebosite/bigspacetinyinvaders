@@ -15,6 +15,7 @@ import { PlayerDetailControl } from "./PlayerDetailControl";
 import { Debris } from "../models/Debris";
 import { WidgetButtonCode, ButtonEvent, WidgetSystem } from "../WidgetLib/WidgetSystem";
 import { ButtonEventTranslator } from "../tools/ButtonEventTranslator";
+import { TextWidget } from "../WidgetLib/TextWidget";
 
 const PLAYER_SIZE = 16;
 
@@ -24,6 +25,51 @@ class PlayerIdentity{
     controllerId = "";
     actionControl = "";
     movementControl = "";
+}
+
+class InviteWidget extends Widget
+{
+
+    constructor()
+    {
+        super("Player Invite");
+        // this.backgroundColor = 0x00ff00;
+        // this.alpha = .1;
+
+        this.onLoaded.subscribe(`${this.name} Load`, ()=>
+        {
+            if(!this.widgetSystem) return;
+            
+            let inviteText = new TextWidget("invite text", "Waiting for players to join ...");
+            inviteText.foregroundColor = 0xffffff;
+            inviteText.relativeSize = {width: .9, height: null};
+            inviteText.relativeLocation = {x: .5, y: .1};
+            inviteText.fontSize = 50;
+            this.AddChild(inviteText);
+
+            let detailText = new TextWidget("detail text", "KB move: IJKL, WASD, Arrows, 8456");
+            detailText.foregroundColor = 0xffffff;
+            detailText.relativeSize = {width: null, height: .1};
+            detailText.relativeLocation = {x: .5, y: .3};
+            detailText.fontSize = 30;
+            this.AddChild(detailText);
+
+            detailText = new TextWidget("detail text2", "KB action: SftZXC, SpcBNM, 0.Enter+, DelEndPgdwnPgup");
+            detailText.foregroundColor = 0xffffff;
+            detailText.relativeSize = {width: null, height: .1};
+            detailText.relativeLocation = {x: .5, y: .5};
+            detailText.fontSize = 30;
+            this.AddChild(detailText);
+
+            detailText = new TextWidget("detail text3", "Controllers: Left or Right stick + buttons");
+            detailText.foregroundColor = 0xffffff;
+            detailText.relativeSize = {width: null, height: .1};
+            detailText.relativeLocation = {x: .5, y: .7};
+            detailText.fontSize = 30;
+            this.AddChild(detailText);
+
+        });
+    }
 }
 
 export class GameWidget extends Widget implements IGameListener
@@ -37,7 +83,7 @@ export class GameWidget extends Widget implements IGameListener
     renderingControls = new Map<GameObject, GameObjectRenderer>();
     playerDetailControls = new Map<number, PlayerDetailControl>();
     buttonTranslationMap = new Map<string, ButtonEventTranslator>();
-    inviteText: DrawnText | null = null;
+    invite: InviteWidget | null = null;
     mainScoreText: DrawnText| null = null;
     maxScoreText: DrawnText| null = null;
     onGameOver = new EventThing<void>("Game Widget");
@@ -119,8 +165,6 @@ export class GameWidget extends Widget implements IGameListener
             control.cancelMe();
         }
         this.playerDetailControls.clear();
-        
-        this.inviteText?.delete();
     }
 
     //-------------------------------------------------------------------------
@@ -213,25 +257,23 @@ export class GameWidget extends Widget implements IGameListener
             renderer.render();
         };
 
-        if(this.theAppModel.getPlayers().length == 0 && !this.inviteText)
+        if(this.theAppModel.getPlayers().length == 0 && !this.invite && this.started)
         {
-            this.inviteText = this.widgetSystem.drawing.addTextObject("Use movement controls to add a new player...",
-                this.width/2, this.height - 100, 20,0xFFFFFF,0x0,0,2000, [.5,.5]);
+            this.invite = new InviteWidget();
+            this.invite.width = 100;
+            this.invite.height = 50;
+            this.invite.relativeSize = {width: .3, height: null};
+            this.invite.relativeLocation = {x:.5, y:0.2};
+            this.AddChild(this.invite);
         }
 
-        if(this.theAppModel.getPlayers().length > 0 && this.inviteText)
+        if(this.theAppModel.getPlayers().length > 0 && this.invite)
         {
-            this.inviteText.delete();
-            this.inviteText = null;
+            this.RemoveChild(this.invite);
+            this.invite = null;
         }
 
         if(this.diagnosticsControl) this.diagnosticsControl.render();
-
-        if(this.inviteText)
-        {
-            this.inviteText.x = this.left + this.width/2;
-            this.inviteText.y = this.top + 100;
-        }
 
         let totalText = this.theAppModel.totalScore.toString().padStart(6, '0');
         let maxText = this.theAppModel.maxScore.toString().padStart(6, '0');

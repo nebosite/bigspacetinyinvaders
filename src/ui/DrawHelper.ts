@@ -70,6 +70,12 @@ export class DrawnText extends DrawnObject
     get rotation(): number { return this._pixiObject.rotation; }
     set rotation(value: number) { this._pixiObject.rotation = value; }
 
+    get wrapWidth(): number { return (this._pixiObject.style as PIXI.TextStyle).wordWrapWidth as number; }
+    set wrapWidth(value: number) {
+        const style = this.pixiObject.style as PIXI.TextStyle;
+        style.wordWrapWidth = value;
+        this._pixiObject.style = style; }
+
     get text(): string { return this._pixiObject.text; }
     set text(value: string) { this._pixiObject.text = value; }
 

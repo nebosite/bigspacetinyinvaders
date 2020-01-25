@@ -1,11 +1,6 @@
 
 TODO
     
-    [x] Bigger score
-    [ ] "Use Movement controls..." should be framed somehow. 
-        [ ] bigger font should scale with the screen
-        [ ] and give hints for keyboard and game controller settings
-        [ ] Should not be able to mix controls from two controllers for a single player
     [ ] Mouse operation of main menu
     [ ] BUG: Debris is hard to distinquish from bullets
     [ ] BUG: Fast-moving players skip over debris
@@ -68,6 +63,11 @@ PROBABLY NEVER
 
 DONE ================================================================================================================================
 
+    [x] Bigger score
+    [x] "Use Movement controls..." should be framed somehow. 
+        [x] bigger font should scale with the screen
+        [x] and give hints for keyboard and game controller settings
+        [x] Should not be able to mix controls from two controllers for a single player
     [x] Add publishing script to easily push it up
     [x] Start game with a controller
     [x] Bug: starting with a controller creates player too soon

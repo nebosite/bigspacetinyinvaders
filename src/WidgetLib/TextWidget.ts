@@ -47,7 +47,6 @@ export class TextWidget extends Widget
             this.width = this._theText.width;
             this.height = this._theText.height;
 
-
             this._theText.x = this.left;
             this._theText.y = this.top;
         });
