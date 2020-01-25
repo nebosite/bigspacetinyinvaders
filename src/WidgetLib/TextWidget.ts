@@ -6,6 +6,7 @@ export class TextWidget extends Widget
     private _theText: DrawnText | null = null;
     get text(){return this._theText ? this._theText.text: ""}
     set text(value: string){ if(this._theText) this._theText.text = value}
+
     fontSize = 20;
     private _widthHeightRatio = 1;
 
@@ -19,7 +20,7 @@ export class TextWidget extends Widget
                 text,
                 0,0,
                 this.fontSize,
-                this.foregroundColor) as DrawnText;
+                this.foregroundColor, 0x0, 0, 10000, [0,0]) as DrawnText;
             this.width = this._theText.width;
             this.height = this._theText.height;
             this._widthHeightRatio = this.width / this.height;
@@ -45,6 +46,7 @@ export class TextWidget extends Widget
             }
             this.width = this._theText.width;
             this.height = this._theText.height;
+
 
             this._theText.x = this.left;
             this._theText.y = this.top;

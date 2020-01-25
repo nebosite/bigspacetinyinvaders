@@ -1,6 +1,6 @@
 import { IAppModel, AppModel, IGameListener } from "../models/AppModel";
 import { KeycodeTranslator, KeyboardManager } from "../ui/KeyboardInput";
-import { NewPlayerControl } from "./NewPlayerControl";
+import { NewPlayerWidget } from "./NewPlayerWidget";
 import { Player } from "../models/Player";
 import { DrawHelper, DrawnObject, DrawnText } from "../ui/DrawHelper";
 import { GamepadManager, GamepadInputCode, GamepadTranslator } from "../ui/GamepadInput";
@@ -16,6 +16,7 @@ import { Widget } from "../WidgetLib/Widget";
 import { MainMenuWidget } from "./MainMenuWidget";
 import { PlayerDetailControl } from "./PlayerDetailControl";
 import { Debris } from "../models/Debris";
+import { WidgetButtonCode, ButtonEvent } from "../WidgetLib/WidgetSystem";
 
 const PLAYER_SIZE = 16;
 
@@ -36,7 +37,7 @@ class PlayerIdentity{
 export class GameWidget extends Widget implements IGameListener
 {
     theAppModel: IAppModel;
-    newPlayerControl: NewPlayerControl | null = null;
+    newPlayerWidget: NewPlayerWidget | null = null;
     diagnosticsControl: DiagnosticsControl | null = null;
     lastFrameTime = Date.now();
     playerIdentities = new Map<string, PlayerIdentity>();
@@ -47,6 +48,7 @@ export class GameWidget extends Widget implements IGameListener
     mainScoreText: DrawnText| null = null;
     maxScoreText: DrawnText| null = null;
     onGameOver = new EventThing<void>("Game Widget");
+    hasSetSize = false;
 
     CommonDirectionKeyLayouts = new Map([
         ["IJKL", [73,74,75,76]],
@@ -82,34 +84,12 @@ export class GameWidget extends Widget implements IGameListener
         super("TheGame");
         this.theAppModel = appModel; 
         this.theAppModel.reset(); 
-        let hasSetSize = false;
 
         this.onLoaded.subscribe(`${this.name} Load`, this.loadMe);
-        this.onParentLayoutChanged.subscribe(`${this.name} parentLayoutChanged`, () => {
-            console.log(`Layout changed ${this.width},${this.height}`)
-            // if we exit fullscreen, just end the game
-            if(hasSetSize && this.theAppModel.settings.isFullScreen && !document.fullscreen)
-            {
-                this.theAppModel.endGame();
-            }
-
-            if(!hasSetSize || this.theAppModel.settings.isFullScreen)
-            {
-                let width = this.width;
-                let height = this.height;
-                if(this.theAppModel.settings.isFullScreen)
-                {
-                    width = this.widgetSystem?.drawing.width as number;
-                    height = this.widgetSystem?.drawing.height as number;
-                }
-                hasSetSize = true;
-                console.log(`Setting world size to ${width},${height}`);
-                this.theAppModel.worldSize = { width, height};
-            }
-        });
-
+        this.onParentLayoutChanged.subscribe(`${this.name} parentLayoutChanged`, this.updateBasedOnParent);
         this.onRender.subscribe(`${this.name} render`, this.renderMe);
         this.onDestroyed.subscribe(`${this.name} destroy`, this.destroyMe);
+        this.onButtonEvent.subscribe(`${this.name} Button`, this.handleButtons ); 
 
         this.theAppModel.onGameEnded = () =>
         {
@@ -121,6 +101,33 @@ export class GameWidget extends Widget implements IGameListener
     } 
 
     //-------------------------------------------------------------------------
+    // loadMe
+    //-------------------------------------------------------------------------
+    updateBasedOnParent = () => 
+    {
+        console.log(`Layout changed ${this.width},${this.height}`)
+        // if we exit fullscreen, just end the game
+        if(!this.hasSetSize && this.theAppModel.settings.isFullScreen && !document.fullscreen)
+        {
+            this.theAppModel.endGame();
+        }
+
+        if(!this.hasSetSize || this.theAppModel.settings.isFullScreen)
+        {
+            let width = this.width;
+            let height = this.height;
+            if(this.theAppModel.settings.isFullScreen)
+            {
+                width = this.widgetSystem?.drawing.width as number;
+                height = this.widgetSystem?.drawing.height as number;
+            }
+            this.hasSetSize = true;
+            console.log(`Setting world size to ${width},${height}`);
+            this.theAppModel.worldSize = { width, height};
+        }
+    }
+
+    //-------------------------------------------------------------------------
     // destroyMe
     //-------------------------------------------------------------------------
     destroyMe = () =>
@@ -128,10 +135,6 @@ export class GameWidget extends Widget implements IGameListener
         if(this.diagnosticsControl) {
             this.diagnosticsControl.cancelMe();
             this.diagnosticsControl = null;
-        }
-        if(this.newPlayerControl) {
-            this.newPlayerControl.cancelMe();
-            this.newPlayerControl = null;
         }
         this.theAppModel.gameListener = null;
         this.widgetSystem?.keyboardManager.onUnhandledKeyCode.unsubscribe("Game Controller unhandled Key");
@@ -260,7 +263,6 @@ export class GameWidget extends Widget implements IGameListener
             this.inviteText = null;
         }
 
-        if(this.newPlayerControl) this.newPlayerControl.render();
         if(this.diagnosticsControl) this.diagnosticsControl.render();
 
         if(this.inviteText)
@@ -304,6 +306,51 @@ export class GameWidget extends Widget implements IGameListener
         newPlayer.name = playerInfo.name;
         return newPlayer;
     }
+
+    //-------------------------------------------------------------------------
+    // handleButtons
+    //-------------------------------------------------------------------------
+    handleButtons = (event: ButtonEvent)=>
+    {
+        // if(!event.isPressed)
+        // {
+        //     switch(event.buttonId)
+        //     {
+        //         case 37: // left
+        //         case 38: // up
+        //         case WidgetButtonCode.Button_DPadUp:
+        //         case WidgetButtonCode.Button_DiamondUp:
+        //         case WidgetButtonCode.Button_ShoulderLeft:
+        //         case WidgetButtonCode.Stick0Left:
+        //         case WidgetButtonCode.Stick0Up:
+        //         case WidgetButtonCode.Stick1Left:
+        //         case WidgetButtonCode.Stick1Up:
+        //             this.currentChoice--;
+        //             if(this.currentChoice < 0) this.currentChoice = this.choices.length-1;
+        //             this._layoutChanged = true;
+        //             break;
+        //         case 39: // right
+        //         case 40: // down
+        //         case WidgetButtonCode.Button_DPadDown:
+        //         case WidgetButtonCode.Button_DiamondDown:
+        //         case WidgetButtonCode.Button_ShoulderRight:
+        //         case WidgetButtonCode.Stick0Right:
+        //         case WidgetButtonCode.Stick0Down:
+        //         case WidgetButtonCode.Stick1Right:
+        //         case WidgetButtonCode.Stick1Down:
+        //             this.currentChoice++;
+        //             if(this.currentChoice >= this.choices.length ) this.currentChoice =0;
+        //             this._layoutChanged = true;
+        //             break;
+        //         case 13: // Enter
+        //         case 32: // Space
+        //         case WidgetButtonCode.Button_TriggerLeft:
+        //         case WidgetButtonCode.Button_TriggerRight:
+        //         case WidgetButtonCode.Button_DiamondRight:
+        //             this.choices[this.currentChoice].action();
+        //     }
+        // }
+    }
     
     //-------------------------------------------------------------------------
     // handle gamepads
@@ -314,9 +361,9 @@ export class GameWidget extends Widget implements IGameListener
             console.log("BACK");
             return;
         }
-        if(this.newPlayerControl) 
+        if(this.newPlayerWidget) 
         {
-            if(this.newPlayerControl.controllerId != eventArgs.gamePadIndex.toString()) return;
+            if(this.newPlayerWidget.controllerId != eventArgs.gamePadIndex.toString()) return;
             // Let's see if the staged player has pressed a fire key
             this.CommonGamepadActionButtonLayouts.forEach((value, key) =>
             {
@@ -324,17 +371,17 @@ export class GameWidget extends Widget implements IGameListener
                 {
                     if(value[i] == eventArgs.code)
                     {
-                        const translator = this.newPlayerControl?.translator as GamepadTranslator<PlayerAction>;
-                        this.newPlayerControl?.cancelMe();
+                        const translator = this.newPlayerWidget?.translator as GamepadTranslator<PlayerAction>;
+                        this.newPlayerWidget?.Destroy();
                         if(translator)
                         {
                             translator.mapButton(value[0], PlayerAction.Fire);
                             translator.mapButton(value[1], PlayerAction.Fire);
                             translator.mapButton(value[2], PlayerAction.Fire);
                             translator.mapButton(value[3], PlayerAction.Fire);
-                            if(this.newPlayerControl)
+                            if(this.newPlayerWidget)
                             {
-                                translator.removeSubscriber(this.newPlayerControl);
+                                translator.removeSubscriber(this.newPlayerWidget);
                             }
                             let newPlayer = this.generatePlayer(translator.name);
                             translator.addSubscriber(newPlayer);
@@ -342,7 +389,7 @@ export class GameWidget extends Widget implements IGameListener
                             this.widgetSystem?.gamepadManager.addTranslator(translator);
                             newPlayer.onCleanup.subscribe("removeTranslator", () => this.widgetSystem?.gamepadManager.removeTranslator(translator));
                         }
-                        this.newPlayerControl = null;
+                        this.newPlayerWidget = null;
                         return;
                     }
                 }
@@ -358,18 +405,22 @@ export class GameWidget extends Widget implements IGameListener
                     if(value[i] == eventArgs.code)
                     {
                         var newTranslator = new GamepadTranslator<PlayerAction>(`${key}:${eventArgs.gamePadIndex}`, eventArgs.gamePadIndex);
-                        this.newPlayerControl = new NewPlayerControl(eventArgs.gamePadIndex.toString(), this.widgetSystem?.drawing as DrawHelper, () =>
+                        this.newPlayerWidget = new NewPlayerWidget(eventArgs.gamePadIndex.toString(), () =>
                         {
                             this.widgetSystem?.gamepadManager.removeTranslator(newTranslator);
-                            this.newPlayerControl = null;
+                            this.newPlayerWidget?.Destroy();
+                            this.newPlayerWidget = null;
                         });
+
+                        this.newPlayerWidget.relativeLocation = {x:.2, y:.3};
+                        this.newPlayerWidget.relativeSize = {width:.3, height: null};
 
                         newTranslator.mapAxis(value[0], PlayerAction.Left, PlayerAction.Right);
                         newTranslator.mapAxis(value[1], PlayerAction.Up, PlayerAction.Down);
 
                         this.widgetSystem?.gamepadManager.addTranslator(newTranslator);
-                        newTranslator.addSubscriber(this.newPlayerControl);
-                        this.newPlayerControl.translator = newTranslator;
+                        newTranslator.addSubscriber(this.newPlayerWidget);
+                        this.newPlayerWidget.translator = newTranslator;
                     }
                 }
             });
@@ -401,9 +452,9 @@ export class GameWidget extends Widget implements IGameListener
             return;
         }
 
-        if(this.newPlayerControl) 
+        if(this.newPlayerWidget) 
         {
-            if(this.newPlayerControl.controllerId != 'keyboard') return;
+            if(this.newPlayerWidget.controllerId != 'keyboard') return;
             // Let's see if the staged player has pressed a fire key
             this.CommonActionKeyLayouts.forEach((value, key) =>
             {
@@ -411,16 +462,15 @@ export class GameWidget extends Widget implements IGameListener
                 {
                     if(value[i] == keyCode)
                     {
-                        const translator = this.newPlayerControl?.translator as KeycodeTranslator<PlayerAction>;
-                        this.newPlayerControl?.cancelMe();
+                        const translator = this.newPlayerWidget?.translator as KeycodeTranslator<PlayerAction>;
                         if(translator)
                         {
                             translator.mapKey(value[0], PlayerAction.Fire);
                             translator.mapKey(value[1], PlayerAction.Fire);
                             translator.mapKey(value[2], PlayerAction.Fire);
-                            if(this.newPlayerControl)
+                            if(this.newPlayerWidget)
                             {
-                                translator.removeSubscriber(this.newPlayerControl);
+                                translator.removeSubscriber(this.newPlayerWidget);
                             }
                             let newPlayer = this.generatePlayer(translator.name);
                             translator.addSubscriber(newPlayer);
@@ -428,7 +478,8 @@ export class GameWidget extends Widget implements IGameListener
                             this.widgetSystem?.keyboardManager.addTranslator(translator);
                             newPlayer.onCleanup.subscribe("removeKeyTranslator",() =>  this.widgetSystem?.keyboardManager.removeTranslator(translator));
                         }
-                        this.newPlayerControl = null;
+                        this.RemoveChild(this.newPlayerWidget as Widget);
+                        this.newPlayerWidget = null;
                         return;
                     }
                 }
@@ -444,18 +495,23 @@ export class GameWidget extends Widget implements IGameListener
                     if(value[i] == keyCode)
                     {
                         var newTranslator = new KeycodeTranslator<PlayerAction>(key);
-                        this.newPlayerControl = new NewPlayerControl('keyboard', this.widgetSystem?.drawing as DrawHelper, () =>
+                        this.newPlayerWidget = new NewPlayerWidget('keyboard', () =>
                         {
                             this.widgetSystem?.keyboardManager.removeTranslator(newTranslator);
-                            this.newPlayerControl = null;
+                            this.RemoveChild(this.newPlayerWidget as Widget);
                         });
+
+                        this.newPlayerWidget.relativeLocation = {x:.2, y:.3};
+                        this.newPlayerWidget.relativeSize = {width:.3, height: null};
+
                         newTranslator.mapKey(value[0], PlayerAction.Up);
                         newTranslator.mapKey(value[1], PlayerAction.Left);
                         newTranslator.mapKey(value[2], PlayerAction.Down);
                         newTranslator.mapKey(value[3], PlayerAction.Right);
                         this.widgetSystem?.keyboardManager.addTranslator(newTranslator);
-                        newTranslator.addSubscriber(this.newPlayerControl);
-                        this.newPlayerControl.translator = newTranslator;
+                        newTranslator.addSubscriber(this.newPlayerWidget);
+                        this.newPlayerWidget.translator = newTranslator;
+                        this.AddChild(this.newPlayerWidget);
                     }
                 }
             });

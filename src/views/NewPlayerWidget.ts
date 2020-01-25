@@ -1,10 +1,11 @@
 import { IInputReceiver } from "../ui/InputReceiver";
 import { PlayerAction } from "./GameWidget";
 import { DrawHelper, DrawnObject, DrawnVectorObject } from "../ui/DrawHelper";
+import { Widget } from "../WidgetLib/Widget";
+import { TextWidget } from "../WidgetLib/TextWidget";
 
-export class NewPlayerControl implements IInputReceiver<PlayerAction>
+export class NewPlayerWidget extends Widget implements IInputReceiver<PlayerAction>
 {
-    drawing: DrawHelper;
     width = 500;
     height = 500;
     top = 100;
@@ -17,75 +18,110 @@ export class NewPlayerControl implements IInputReceiver<PlayerAction>
     cancelled = false;
     translator: any = null;
     drawingObjects = new Array<DrawnObject>();
-    playerShip: DrawnVectorObject;
+    playerShip: DrawnVectorObject | null = null;
     controllerId = "";
     
-    constructor(controllerId: string, drawing: DrawHelper, onCancel: () => void)
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
+    constructor(controllerId: string, onCancel: () => void)
     {
+        super("New Player");
         this.controllerId = controllerId;
-        this.drawing = drawing;
-        this.width = drawing.width * .25;
-        this.height = this.width * .6;
-        this.top = this.height * .5;
-        this.left = this.width * .05;
         this.onCancel = onCancel;
+        this.backgroundColor = 0x777777;
+        this.alpha = 0.5
 
-        this.drawingObjects.push(
-            drawing.addRectangleObject(
-                this.left, this.top, this.width, this.height, 0x777777, 0.5
-            )
-        );
-        let size = this.width * .1;
-        this.drawingObjects.push(
-            this.drawing.addTextObject(
-                "New Player", 
-                this.left + size/2, this.top + size/2, this.height * .15, 0xFFFF00
-            )
-        );
-        this.drawingObjects.push(
-            this.drawing.addTextObject(
-                "press an action button to start", 
-                this.left + size/2, this.top + size * 1.5, this.height * .10, 0xaaaa00
-            )
-        );
-
-        let x = this.playerX * this.width * .8 + this.width * .1 + this.left;
-        this.playerShip = this.drawing.addTriangleObject(
-            x, this.top + this.height - size, size, size * 1.6, 0x00ff00, 1, [.5, .5],  0xFFFFFF, 1,  size * .1);
-        this.drawingObjects.push(this.playerShip);
+        this.onLoaded.subscribe(`${this.name} Load`, this.loadMe);
+        this.onParentLayoutChanged.subscribe(`${this.name} parentLayoutChanged`, this.updateBasedOnParent);
+        this.onRender.subscribe(`${this.name} render`, this.renderMe);
+        this.onDestroyed.subscribe(`${this.name} destroy`, this.destroyMe);
     }
 
-    render = () =>
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
+    loadMe = () =>
+    {
+        if(!this.parent || !this.widgetSystem) return;
+
+        let size = this.width * .1;
+
+        let x = this.playerX * this.width * .8 + this.width * .1 + this.left;
+        this.playerShip = this.widgetSystem.drawing.addTriangleObject(
+            x, this.top + this.height - size, size, size * 1.5 , 0x00ff00, 1, [.5, .5],  0xFFFFFF, 1,  size * .1);
+        this.drawingObjects.push(this.playerShip);
+
+        let titleText = new TextWidget("New Player", "New Player");
+        titleText.relativeSize = {width: null, height: 0.15};
+        titleText.foregroundColor = 0xffff00;
+        titleText.relativeLocation = {x:0.5, y:0.1}
+        titleText.fontSize = 50;
+        titleText.alpha = 1;
+        
+        this.AddChild(titleText);
+    }
+
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
+    updateBasedOnParent = () =>
+    {
+
+    }
+
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
+    renderMe = () =>
     {
         if(this.cancelled) return;
 
         let size = this.width * .1;
         let x = this.playerX * this.width * .8 + this.width * .1 + this.left;
-        this.playerShip.x = x;
+        if(this.playerShip) this.playerShip.x = x;
 
         this.playerX -= this.xLeft;
         this.playerX += this.xRight;
         if(this.playerX < 0) this.playerX = 0;
         if(this.playerX > 1.0) this.playerX = 1.0;
 
+        if(this.playerShip)
+        {
+            this.playerShip.width = size;
+            this.playerShip.height = size * 1.6;
+            this.playerShip.x = this.left + ( this.playerX * this.width * 0.8) + size;
+            this.playerShip.y = this.top + this.height - this.playerShip.height;
+        }
+
         if (this.millisecondsAgo(this.lastActionTime) > 3000)
         {
-            this.cancelMe();
+            this.Destroy();
         }
     };
 
-    cancelMe(){
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
+    destroyMe = () =>
+    {
         this.drawingObjects.forEach(thing => thing.delete());
         this.drawingObjects.length = 0;
         this.cancelled = true;
         this.onCancel();
     }
 
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
     millisecondsAgo(date: number)
     {
         return Date.now() - date;
     }
 
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
     actionChanged = (action: PlayerAction, value: number) => {
         switch(action)
         {

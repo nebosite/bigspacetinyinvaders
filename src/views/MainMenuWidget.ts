@@ -35,7 +35,7 @@ export class MainMenuWidget extends Widget
         this.onParentLayoutChanged.subscribe(`${this.name} Resize`, this.respondToParentLayoutChange);
         this.onLayoutChange.subscribe(`${this.name} Layout`, this.changeMyLayout);
         this.onRender.subscribe(`${this.name} Render`, this.renderMe )
-        this.onButtonEvent.subscribe(`${this.name} Button Up`, this.handleButtons ); 
+        this.onButtonEvent.subscribe(`${this.name} Button`, this.handleButtons ); 
         this.onDestroyed.subscribe(`${this.name} Destroy`, this.destroyMe);
     }
 

@@ -1,7 +1,7 @@
 
 TODO
     
-    [ ] Bigger score
+    [x] Bigger score
     [ ] "Use Movement controls..." should be framed somehow. 
         and should scale with the screen
         and give hints for keyboard and game controller settings
