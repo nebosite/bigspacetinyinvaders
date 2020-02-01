@@ -3,7 +3,7 @@ TODO
     [x] Bug: Sometimes double menu in full screen
     [x] Bullets should be able to bust through debris
     [x] Debris should go away when bullets hit it
-    [ ] breaking should be faster than acceleration
+    [x] breaking should be faster than acceleration
     [ ] Fan Shot powerup - less powerful bullets, but fanned out
     [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
     [ ] Fly the hive in
@@ -11,7 +11,8 @@ TODO
     
 
 NEW
-
+    [ ] Better sound system
+    [ ] Alient shield animation/sound when aliens are hit and don't die
 EASY/URGENT
 
 

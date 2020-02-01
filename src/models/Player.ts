@@ -107,7 +107,14 @@ export class Player extends GameObject implements IPlayerActionReceiver
     {
         let unit = elapsedMilliseconds / 16;
 
-        let localAcceleration = this.accelerationRate * elapsedMilliseconds/1000;
+        let timeRatio = elapsedMilliseconds/1000;
+        let localAcceleration = this.accelerationRate * timeRatio;
+
+        if(Math.sign(this.xTargetVelocity) != Math.sign(this.xVelocity))
+        {
+            this.xVelocity *= (1 - 1.5 * timeRatio);
+        }
+
         if(this.xVelocity < this.xTargetVelocity) 
         {
             this.xVelocity += localAcceleration;
@@ -119,6 +126,7 @@ export class Player extends GameObject implements IPlayerActionReceiver
             this.xVelocity -= localAcceleration;
             if(this.xVelocity < this.xTargetVelocity) this.xVelocity = this.xTargetVelocity;
         }
+
         
         let stepSize = 2;
         let steps = Math.ceil(Math.abs(this.xVelocity) / stepSize);
