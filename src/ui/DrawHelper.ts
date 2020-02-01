@@ -10,7 +10,7 @@ var currentObjectId = 0;
 export abstract class DrawnObject
 {
     id: number;
-    pixiObject: any;
+    drawnPixiObject: any;
     drawHelper: DrawHelper;
     abstract get x(): number;
     abstract set x(value: number);
@@ -37,13 +37,58 @@ export abstract class DrawnObject
     {
         this.id = currentObjectId++;
         this.drawHelper = drawHelper;
-        this.pixiObject = pixiObject;
+        this.drawnPixiObject = pixiObject;
     }
 
     delete() {
-        this.drawHelper.removeTrackedObject(this.pixiObject);
+        this.drawHelper.removeTrackedObject(this.drawnPixiObject);
     }
 }
+
+export class DrawnContainer extends DrawnObject 
+{
+    private _pixiObject: PIXI.Container;
+    get x(): number { return this._pixiObject.x; }
+    set x(value: number) { this._pixiObject.x = value; }
+    
+    get y(): number { return this._pixiObject.y; }
+    set y(value: number) { this._pixiObject.y = value; }
+
+    get width(): number { return this._pixiObject.width; }
+    set width(value: number) { this._pixiObject.width = value; }
+
+    get height(): number { return this._pixiObject.height; }
+    set height(value: number) { this._pixiObject.height = value; }
+
+    _nativeSize = [0,0];
+    get nativeWidth() {return this._nativeSize[0];}
+    get nativeHeight() {return this._nativeSize[1];}
+
+    get scale(): number[] { return [this._pixiObject.scale.x, this._pixiObject.scale.y]; }
+    set scale(value: number[]) { this._pixiObject.scale = new PIXI.Point(value[0], value[1]) ; }
+
+    get rotation(): number { return this._pixiObject.rotation; }
+    set rotation(value: number) { this._pixiObject.rotation = value; }
+
+    get color(): number{return 0}
+    set color(value: number) {}
+
+    get strokeColor(): number {return 0}
+    set strokeColor(value: number) {}
+
+    constructor(drawHelper: DrawHelper, container: PIXI.Container)
+    {
+        super(drawHelper, container);
+        this._pixiObject = container;
+    }
+
+    addChild(newChild: DrawnObject)
+    {
+        this.drawHelper.pixiStage.removeChild(newChild.drawnPixiObject);
+        this._pixiObject.addChild(newChild.drawnPixiObject);
+    }
+}
+
 
 export class DrawnText extends DrawnObject 
 {
@@ -72,7 +117,7 @@ export class DrawnText extends DrawnObject
 
     get wrapWidth(): number { return (this._pixiObject.style as PIXI.TextStyle).wordWrapWidth as number; }
     set wrapWidth(value: number) {
-        const style = this.pixiObject.style as PIXI.TextStyle;
+        const style = this.drawnPixiObject.style as PIXI.TextStyle;
         style.wordWrapWidth = value;
         this._pixiObject.style = style; }
 
@@ -81,7 +126,7 @@ export class DrawnText extends DrawnObject
 
     get color(): number { return (this._pixiObject.style as PIXI.TextStyle).fill as number; }
     set color(value: number) {
-        const style = this.pixiObject.style as PIXI.TextStyle;
+        const style = this.drawnPixiObject.style as PIXI.TextStyle;
         style.fill = value;
         this._pixiObject.style = style; }
 
@@ -480,6 +525,20 @@ export class DrawHelper {
         sprite.alpha = alpha;
         this.pixiStage.addChild(sprite);
         return new DrawnImage(this, sprite);
+    }
+    
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
+    addContainer(x: number, y: number, width: number, height: number, alpha: number)
+    {
+        let container = new PIXI.Container();
+
+        container.x = x;
+        container.y = y;
+        container.alpha = alpha;
+        this.pixiStage.addChild(container);
+        return new DrawnContainer(this, container);
     }
     
     //-------------------------------------------------------------------------

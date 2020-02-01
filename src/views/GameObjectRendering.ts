@@ -1,4 +1,4 @@
-import { DrawHelper, DrawnObject, DrawnVectorObject, DrawnSprite } from "../ui/DrawHelper";
+import { DrawHelper, DrawnObject, DrawnVectorObject, DrawnSprite, DrawnContainer } from "../ui/DrawHelper";
 import { GameObject, GameObjectType } from "../models/GameObject";
 import { Player } from "../models/Player";
 import { Bullet } from "../models/Bullet";
@@ -63,8 +63,21 @@ export class BulletObjectRenderer extends GameObjectRenderer
     constructor(gameObject: Bullet, drawing: DrawHelper, sound: SoundHelper) 
     {
         super(gameObject,
-            drawing.addSpriteObject("sprites/bullet", BulletObjectRenderer.getBullentTextureIndex(gameObject), gameObject.x, gameObject.y) as DrawnObject, 
+            drawing.addContainer(gameObject.x, gameObject.y, 1, 1, 1),
             sound);
+        
+        let container = this.drawnObject as DrawnContainer;
+        let glow = drawing.addImageObject(
+            "img/glow.png", 
+            0,0, .2) ;
+        let scale = 256/drawing.height * .4;
+        glow.scale = [scale,scale];
+        container.addChild(glow);
+
+        container.addChild(drawing.addSpriteObject(
+            "sprites/bullet", 
+            BulletObjectRenderer.getBullentTextureIndex(gameObject), 
+            0,0));
     }
 
     static getBullentTextureIndex(bullet: Bullet)

@@ -1,8 +1,8 @@
 
 TODO
     
-    [ ] Mouse operation of main menu
-    [ ] BUG: Debris is hard to distinquish from bullets
+    [x] Mouse operation of main menu
+    [x] BUG: Debris is hard to distinquish from bullets
     [ ] BUG: Fast-moving players skip over debris
     
 
