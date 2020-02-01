@@ -71,7 +71,10 @@ export class Debris extends GameObject{
 
     }
 
-    doDamage(damageAmount: number, sourceObject: GameObject) {
-        this.delete;
+    doDamage(sourceObject: GameObject) {
+        let bullet = sourceObject as Bullet
+        if(!bullet) return;
+        bullet.power--;
+        this.delete();
     }
 }

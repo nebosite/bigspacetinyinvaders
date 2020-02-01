@@ -41,5 +41,5 @@ export class GameObject
     }
 
     think(gameTime: number, elapsedMilliseconds: number) {};
-    doDamage(damageAmount: number, sourceObject: GameObject) {};
+    doDamage(sourceObject: GameObject) {};
 }

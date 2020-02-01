@@ -167,8 +167,14 @@ export class Player extends GameObject implements IPlayerActionReceiver
         this.onShoot.invoke();
     }
 
-    doDamage(damageAmount: number, sourceObject: GameObject) {
-        this.hitPoints -= damageAmount;
+    doDamage(sourceObject: GameObject) {
+        let bullet = sourceObject as Bullet
+        if(!bullet) return;
+
+        this.hitPoints -= bullet.power;
+        if(this.hitPoints <= 0) bullet.power = -this.hitPoints;  
+        else bullet.power = 0;
+
         if(this.hitPoints <= 0)
         {
             for(let i = 0; i < 40; i++)

@@ -3,8 +3,9 @@ import { IAppModel } from "./AppModel";
 
 export class Bullet extends GameObject{
     appModel: IAppModel;
-    velocity: number;
+    velocity = 300;
     source: GameObject;
+    power = 10;
 
     constructor(appModel: IAppModel, source: GameObject){
         super(appModel);
@@ -12,7 +13,6 @@ export class Bullet extends GameObject{
         this.type = GameObjectType.Bullet;
         this.width = 1;
         this.height = 4;
-        this.velocity = 300;
         this.source = source;
     }
 
@@ -21,6 +21,12 @@ export class Bullet extends GameObject{
         let movement = elapsedMilliseconds  /1000.0 * this.velocity;
         let steps = Math.floor(Math.abs(movement) /2 ) + 1;
         let delta = movement / steps; 
+
+        if(this.power < 0)
+        {
+            this.delete();
+        }
+
         for(let i = 0; i < steps; i++)
         {
             this.y -= delta;
@@ -32,7 +38,7 @@ export class Bullet extends GameObject{
             let target = this.appModel.hitTest(this);
             if(target)
             {
-                target.doDamage(1, this);
+                target.doDamage(this);
                 this.appModel.removeGameObject(this);
             }
             

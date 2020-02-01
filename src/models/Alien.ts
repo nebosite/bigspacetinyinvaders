@@ -28,6 +28,13 @@ export class Alien extends GameObject{
         this.height = 16;
         this.shootRate = 1 + alienType * alienType; 
         this.timeBetweenShots = 1000/ this.shootRate;
+
+        switch(alienType)
+        {
+            case 0: this.hitPoints = 10; break;
+            case 1: this.hitPoints = 30; break;
+            case 2: this.hitPoints = 100; break;
+        }
     }
 
     think(gameTime: number, elapsedMilliseconds: number) 
@@ -50,13 +57,16 @@ export class Alien extends GameObject{
         this.shotOrders++;
     }
 
-    doDamage(damageAmount: number, sourceObject: GameObject) {
+    doDamage(sourceObject: GameObject) {
         if(this.hitPoints <= 0) return;
-        this.hitPoints -= damageAmount;  
         let bullet = sourceObject as Bullet;
         if(!bullet) return;
         let player = bullet.source as Player;
         if(!player) return;
+
+        this.hitPoints -= bullet.power;
+        if(this.hitPoints <= 0) bullet.power = -this.hitPoints;  
+        else bullet.power = 0;
 
         if(this.hitPoints <= 0)
         {

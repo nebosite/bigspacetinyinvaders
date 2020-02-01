@@ -1,10 +1,13 @@
 
 TODO
     [x] Bug: Sometimes double menu in full screen
-    [ ] Bullets should be able to bust through debris
-    [ ] Debris should go away when bullets hit it
+    [x] Bullets should be able to bust through debris
+    [x] Debris should go away when bullets hit it
+    [ ] breaking should be faster than acceleration
     [ ] Fan Shot powerup - less powerful bullets, but fanned out
     [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
+    [ ] Fly the hive in
+    [ ] Killing last alien should generate a new hive
     
 
 NEW
