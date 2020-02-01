@@ -22,6 +22,8 @@ export class AppViewWidget extends Widget
     }
 
     ShowMainMenu(){
+        console.log("New MainMenu from AppViewWidget")
+
         let mainMenu = new MainMenuWidget("Main Menu", this.theAppModel);
         this.AddChild(mainMenu);
     }

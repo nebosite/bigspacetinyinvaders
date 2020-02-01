@@ -104,6 +104,7 @@ export class GameWidget extends Widget implements IGameListener
         {
             console.log("End game signalled");
             if(document.fullscreen && this.theAppModel.settings.isFullScreen)  document.exitFullscreen();   
+            console.log("New MainMenu from GameWidget")
             this.parent?.AddChild(new MainMenuWidget("Main Menu", this.theAppModel));
             this.parent?.RemoveChild(this);
         }
@@ -116,7 +117,7 @@ export class GameWidget extends Widget implements IGameListener
     {
         console.log(`Layout changed ${this.width},${this.height}`)
         // if we exit fullscreen, just end the game
-        if(!this.hasSetSize && this.theAppModel.settings.isFullScreen && !document.fullscreen)
+        if(!this.hasSetSize && this.theAppModel.settings.isFullScreen && !document.fullscreen && this.started)
         {
             this.theAppModel.endGame();
         }

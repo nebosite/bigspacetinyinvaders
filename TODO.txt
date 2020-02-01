@@ -1,40 +1,41 @@
 
 TODO
-    
-    [x] Mouse operation of main menu
-    [x] BUG: Debris is hard to distinquish from bullets
-    [x] BUG: Fast-moving players skip over debris
+    [x] Bug: Sometimes double menu in full screen
+    [ ] Bullets should be able to bust through debris
+    [ ] Debris should go away when bullets hit it
+    [ ] Fan Shot powerup - less powerful bullets, but fanned out
+    [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
     
 
 NEW
-    [ ] Use your google ads credit to promote your site
 
 EASY/URGENT
 
 
 NEXT
-    [ ] Bullets should be able to bust through debris
+    [ ] Aliens "eat" Shields
+    [ ] Players die when colliding with aliens
+    [ ] Delay player re-entry
+    [ ] Game over when all players are dead or score < max/#active players
+    [ ] Give ships more hit points and make bullets stronger
+    [ ] Generate alien rows gradually in waves (add animation)
+    [ ] When Hive dies, kick off next level
     [ ] Game over
         [ ] Show intermediate game over screen when the game exists
         [ ] Game should exit when all players are dead
+    [ ] Aliens can win
 
 SOON
     [ ] Dynamic: UFO's loiter over the aliens.  You need a way to punch through to get them.
     [ ] Dynamic: Shields protect charging stations.  Weapons charge slower when they are damaged.  
         - Weapons won't charge at all if the are all damaged
     [ ] Powerup: Nuke - like a big firework creates pandemonium with falling debris
-    [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
     [ ] Powerup: Crazy bear.  Cute teddy bear gets madder and madder as it takes hits.  Release for havoc.  
         Too many hits and it attacks players.
-    [ ] Add player with either fire or movement
-    [ ] Aliens can win
-    [ ] When Hive dies, kick off next level
-    [ ] Generate alien rows gradually in waves (add animation)
-    [ ] Animation on entry
-    [ ] Fan Shot powerup - less powerful bullets, but fanned out
-    [ ] Give ships more hit points and make bullets stronger
 
 LATER
+    [ ] Use your google ads credit to promote your site
+    [ ] Player Animation on entry
     [ ] Remember controllers long-term (and assign names)
     [ ] highscores
     [ ] Use scaling to make fonts look better on large screens
@@ -64,6 +65,10 @@ PROBABLY NEVER
 
 DONE ================================================================================================================================
 
+    [x] Add player with either fire or movement
+    [x] Mouse operation of main menu
+    [x] BUG: Debris is hard to distinquish from bullets
+    [x] BUG: Fast-moving players skip over debris
     [x] Bigger score
     [x] "Use Movement controls..." should be framed somehow. 
         [x] bigger font should scale with the screen
