@@ -33,41 +33,36 @@ class InviteWidget extends Widget
     constructor()
     {
         super("Player Invite");
-        // this.backgroundColor = 0x00ff00;
-        // this.alpha = .1;
 
         this.onLoaded.subscribe(`${this.name} Load`, ()=>
         {
             if(!this.widgetSystem) return;
             
-            let inviteText = new TextWidget("invite text", "Waiting for players to join ...");
+            let inviteText = new TextWidget("invite text", "Waiting for players to join");
             inviteText.foregroundColor = 0xffffff;
             inviteText.relativeSize = {width: .9, height: null};
             inviteText.relativeLocation = {x: .5, y: .1};
             inviteText.fontSize = 50;
             this.AddChild(inviteText);
 
-            let detailText = new TextWidget("detail text", "KB move: IJKL, WASD, Arrows, 8456");
-            detailText.foregroundColor = 0xffffff;
-            detailText.relativeSize = {width: null, height: .1};
-            detailText.relativeLocation = {x: .5, y: .3};
-            detailText.fontSize = 30;
-            this.AddChild(detailText);
+            let y = .3;
+            let yspacing = .12;
+            let text = [
+                "Press some keys or wiggle controllers to start...",
+                "KB move: IJKL, WASD, Arrows, 8456",
+                "KB action: SftZXC, SpcBNM, 0.Enter+, DelEndPgdwnPgup",
+                "Controllers: Left or Right stick + buttons"
+            ]
 
-            detailText = new TextWidget("detail text2", "KB action: SftZXC, SpcBNM, 0.Enter+, DelEndPgdwnPgup");
-            detailText.foregroundColor = 0xffffff;
-            detailText.relativeSize = {width: null, height: .1};
-            detailText.relativeLocation = {x: .5, y: .5};
-            detailText.fontSize = 30;
-            this.AddChild(detailText);
-
-            detailText = new TextWidget("detail text3", "Controllers: Left or Right stick + buttons");
-            detailText.foregroundColor = 0xffffff;
-            detailText.relativeSize = {width: null, height: .1};
-            detailText.relativeLocation = {x: .5, y: .7};
-            detailText.fontSize = 30;
-            this.AddChild(detailText);
-
+            text.forEach((line: string) => {
+                let detailText = new TextWidget("detail text", line);
+                detailText.foregroundColor = 0xffffff;
+                detailText.relativeSize = {width: null, height: .1};
+                detailText.relativeLocation = {x: .5, y: y};
+                detailText.fontSize = 30;
+                this.AddChild(detailText);
+                y += yspacing;
+            });
         });
     }
 }
