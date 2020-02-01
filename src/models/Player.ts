@@ -120,10 +120,31 @@ export class Player extends GameObject implements IPlayerActionReceiver
             if(this.xVelocity < this.xTargetVelocity) this.xVelocity = this.xTargetVelocity;
         }
         
-        this.x += this.xVelocity * unit;
-        if(this.x < this.width/2) this.x = this.width/2;
-        if(this.x > this.appModel.worldSize.width - this.width/2) {
-            this.x = this.appModel.worldSize.width - this.width/2;
+        let stepSize = 2;
+        let steps = Math.ceil(Math.abs(this.xVelocity) / stepSize);
+        let xStep = this.xVelocity / steps;
+        for(let i = 0; i < steps; i++){
+            this.x += xStep * unit;
+            if(this.x < this.width/2) this.x = this.width/2;
+            if(this.x > this.appModel.worldSize.width - this.width/2) {
+                this.x = this.appModel.worldSize.width - this.width/2;
+            }
+            let collisionTarget = this.appModel.hitTest(this);
+            if(collisionTarget)
+            {
+                if(collisionTarget.type == GameObjectType.Debris)
+                {
+                    let debris = collisionTarget as Debris;
+                    switch(debris.debrisType)
+                    {
+                        case DebrisType.DeadShip: this.gun.charge += 100; break;
+                        case DebrisType.Big: this.gun.charge += 20; break;
+                        case DebrisType.DeadShip: this.gun.charge += 5; break;
+                    }
+                    debris.delete();
+                }
+            }
+
         }
 
         this.gun.think(gameTime, elapsedMilliseconds); 
@@ -133,21 +154,6 @@ export class Player extends GameObject implements IPlayerActionReceiver
             this.delete();
         }
 
-        let collisionTarget = this.appModel.hitTest(this);
-        if(collisionTarget)
-        {
-            if(collisionTarget.type == GameObjectType.Debris)
-            {
-                let debris = collisionTarget as Debris;
-                switch(debris.debrisType)
-                {
-                    case DebrisType.DeadShip: this.gun.charge += 100; break;
-                    case DebrisType.Big: this.gun.charge += 20; break;
-                    case DebrisType.DeadShip: this.gun.charge += 5; break;
-                }
-                debris.delete();
-            }
-        }
 
     }
 
