@@ -243,6 +243,7 @@ export class DrawHelper {
     indexedImages = new Map<string, PIXI.Texture>();
     onWindowResized = new EventThing<void>("DrawHelper.onWindowResized");
     onLoaded = new EventThing<void>("DrawHelper.onLoaded");
+    get canvas(): HTMLCanvasElement { return this.pixiRenderer.view}
 
     width = 0;
     height = 0;

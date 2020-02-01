@@ -71,6 +71,7 @@ export class MainMenuWidget extends Widget
             widget: playChoiceWidget,
             action: () => { this.startGame() }
         }
+        playChoiceWidget.onMouseUp.subscribe("Main Menu Play Choice", e => { this.currentChoice = 0; this.choices[this.currentChoice].action(); })
         choice.widget.relativeSize = {width: null, height: 0.05};
         choice.widget.relativeLocation = {x:.5, y: .75};
         choice.widget.backgroundColor = 0xFF0000;
@@ -89,6 +90,7 @@ export class MainMenuWidget extends Widget
                 this._layoutChanged = true;
             }
         }
+        fullScreenChoiceWidget.onMouseUp.subscribe("Main Menu FullScreen Choice", e => { this.currentChoice = 1; this.choices[this.currentChoice].action(); })
         choice.widget.relativeSize = {width: null, height: 0.03};
         choice.widget.relativeLocation = {x:.5, y: .85};
         choice.widget.backgroundColor = 0xFF0000;

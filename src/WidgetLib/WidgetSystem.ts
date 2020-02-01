@@ -64,6 +64,20 @@ export class ButtonEvent {
     }
 }
 
+export class WidgetMouseEvent {
+    x: number;
+    y: number;
+    button: number; 
+    handled = false;
+
+    constructor(x: number, y: number, button: number)
+    {
+        this.x = x;
+        this.y = y;
+        this.button = button;
+    }
+}
+
 //-------------------------------------------------------------------------
 // The WidgetSystem - a very simple windowing and control system
 //-------------------------------------------------------------------------
@@ -86,6 +100,8 @@ export class WidgetSystem
         this.keyboardManager = new KeyboardManager();
         this.keyboardManager.onKeyUp.subscribe("Widget System", this.handleKeyUp);
         this.keyboardManager.onKeyDown.subscribe("Widget System", this.handleKeyDown)
+        this.drawing.canvas.addEventListener('mousedown',  this.handleMouseDown)
+        this.drawing.canvas.addEventListener('mouseup',  this.handleMouseUp)
         this.gamepadManager = new GamepadManager();
         this.gamepadManager.onInputChange.subscribe("Widget System", this.handleGamePadInput);
 
@@ -97,6 +113,20 @@ export class WidgetSystem
         
         this._root.ParentLayoutChanged();
         requestAnimationFrame(this.animation_loop);
+    }
+
+    //-------------------------------------------------------------------------
+    // handleInputChange
+    //-------------------------------------------------------------------------
+    handleMouseDown = (event: MouseEvent) => {
+        this._root?.DoMouseDown(new  WidgetMouseEvent(event.clientX, event.clientY, event.button));      
+    }
+
+    //-------------------------------------------------------------------------
+    // handleInputChange
+    //-------------------------------------------------------------------------
+    handleMouseUp = (event: MouseEvent) => {
+        this._root?.DoMouseUp(new  WidgetMouseEvent(event.clientX, event.clientY, event.button));      
     }
 
     //-------------------------------------------------------------------------

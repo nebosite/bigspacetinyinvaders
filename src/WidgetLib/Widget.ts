@@ -1,4 +1,4 @@
-import { WidgetSystem, ButtonEvent } from "./WidgetSystem";
+import { WidgetSystem, ButtonEvent, WidgetMouseEvent } from "./WidgetSystem";
 import { DrawnVectorObject } from "../ui/DrawHelper";
 import { EventThing } from "../tools/EventThing";
 import { TilingSprite } from "pixi.js";
@@ -17,6 +17,8 @@ export class Widget
     onLayoutChange = new EventThing<void>("Widget.onLonLayoutChangeoaded");
     onColorChange = new EventThing<void>("Widget.onColorChange");
     onButtonEvent = new EventThing<ButtonEvent>("Widget.onButtonEvent");
+    onMouseUp = new EventThing<WidgetMouseEvent>("Widget.onMouseUp");
+    onMouseDown = new EventThing<WidgetMouseEvent>("Widget.onMouseDown");
     children = new Array<Widget>();
     parent: Widget | null = null;
     destroyed = false;
@@ -241,6 +243,50 @@ export class Widget
         }
     }
    
+    //-------------------------------------------------------------------------
+    // containsPoint
+    //-------------------------------------------------------------------------
+    containsPoint(x: number, y: number): Boolean {
+        return !(x < this.left || x > (this.left + this.width) 
+            || y < this.top || y > (this.top + this.height));
+    }
+
+    //-------------------------------------------------------------------------
+    // DoMouseUp
+    //-------------------------------------------------------------------------
+    DoMouseUp(event: WidgetMouseEvent) {  
+        let reversedChildren = Array.from(this.children);
+        reversedChildren.reverse();
+        for(let child of reversedChildren)
+        {
+            if(child.containsPoint(event.x, event.y)) 
+            {
+                child.DoMouseUp(event);
+                if(event.handled) return;
+            }
+        }
+        
+        this.onMouseUp?.invoke(event);
+    }
+
+    //-------------------------------------------------------------------------
+    // DoMouseDown
+    //-------------------------------------------------------------------------
+    DoMouseDown(event: WidgetMouseEvent) {
+        let reversedChildren = Array.from(this.children);
+        reversedChildren.reverse();
+        for(let child of reversedChildren)
+        {
+            if(child.containsPoint(event.x, event.y)) 
+            {
+                child.DoMouseDown(event);
+                if(event.handled) return;
+            }
+        }
+        
+        this.onMouseDown?.invoke(event);
+    }
+
     //-------------------------------------------------------------------------
     // DoButtonEvent
     //-------------------------------------------------------------------------
