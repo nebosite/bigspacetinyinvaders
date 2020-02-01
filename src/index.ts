@@ -18,6 +18,10 @@ var appView = new AppViewWidget("The App", theAppModel);
 var theWidgetSystem: WidgetSystem;
 
 let theSoundHelper = new SoundHelper();
+theSoundHelper.loadSound("sounds/alien_die.wav");
+theSoundHelper.loadSound("sounds/ding.wav");
+theSoundHelper.loadSound("sounds/player_death.wav");
+theSoundHelper.loadSound("sounds/player_shot.wav");
 
 let theDrawHelper = new DrawHelper();
 theDrawHelper.addImageTexture("img/mainlogo.png");
