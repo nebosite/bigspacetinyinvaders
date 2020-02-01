@@ -1,9 +1,5 @@
 
 TODO
-    [x] Bug: Sometimes double menu in full screen
-    [x] Bullets should be able to bust through debris
-    [x] Debris should go away when bullets hit it
-    [x] breaking should be faster than acceleration
     [ ] Fan Shot powerup - less powerful bullets, but fanned out
     [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
     [ ] Fly the hive in
@@ -59,7 +55,6 @@ PROBABLY NEVER
     [ ] Add concept of children in drawing code to simplify the movement of complex objects
     [ ] Improve canvas performance
         https://www.html5rocks.com/en/tutorials/canvas/performance/
-    [ ] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/
     [ ] Setup tests with JEST  https://itnext.io/step-by-step-building-and-publishing-an-npm-typescript-package-44fe7164964c
     [ ] Alert when using IE    
 
@@ -69,6 +64,12 @@ PROBABLY NEVER
 
 DONE ================================================================================================================================
 
+version 0.0.3.3
+    [x] Bug: Sometimes double menu in full screen
+    [x] Bullets should be able to bust through debris
+    [x] Debris should go away when bullets hit it
+    [x] breaking should be faster than acceleration
+    [x] Maybe fancier sound system: https://marcgg.com/blog/2016/11/01/javascript-audio/
     [x] Add player with either fire or movement
     [x] Mouse operation of main menu
     [x] BUG: Debris is hard to distinquish from bullets

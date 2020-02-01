@@ -1,18 +1,25 @@
-// https://www.html5rocks.com/en/tutorials/webaudio/intro/
+
 
 // ----------------------------------------------------------------------------------------
-// HTMLAudio can't layer very easily.  This class creates audio channels to help with that.
+// Abstracted interaction with AudioContext
+// https://www.html5rocks.com/en/tutorials/webaudio/intro
 // ----------------------------------------------------------------------------------------
 export class SoundHelper
 {
     sounds = new Map<string, AudioBuffer >();
     context: AudioContext
     
+    // ----------------------------------------------------------------------------------------
+    // ctor
+    // ----------------------------------------------------------------------------------------
     constructor ()
     {
         this.context = new AudioContext();
     }
 
+    // ----------------------------------------------------------------------------------------
+    // pre-load a sound into memory
+    // ----------------------------------------------------------------------------------------
     loadSound = (soundName: string) =>
     {
         var request = new XMLHttpRequest();
@@ -29,6 +36,9 @@ export class SoundHelper
         request.send();        
     }
 
+    // ----------------------------------------------------------------------------------------
+    // 
+    // ----------------------------------------------------------------------------------------
     play(soundName: string)
     {
         if(!this.sounds.has(soundName))
