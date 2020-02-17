@@ -121,6 +121,7 @@ export class DebrisObjectRenderer extends GameObjectRenderer
         "sprites/deadship",
         "sprites/bigdebris",
         "sprites/smalldebris",
+        "sprites/powerup_fanshot",
     ]
     constructor(gameObject: Debris, drawing: DrawHelper, sound: SoundHelper)
     { 

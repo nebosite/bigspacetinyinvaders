@@ -23,7 +23,7 @@ export class SoundHelper
     loadSound = (soundName: string) =>
     {
         var request = new XMLHttpRequest();
-        request.open('GET', '/' + soundName, true);
+        request.open('GET', soundName, true);
         request.responseType = 'arraybuffer';
       
         // Decode asynchronously

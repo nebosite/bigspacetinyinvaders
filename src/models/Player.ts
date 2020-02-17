@@ -14,19 +14,58 @@ export enum PlayerAction {
     Fire
 }
 
+interface GunPowerup
+{
+    shotHeat: number;
+    shotCost: number;
+    shotStageTime_ms: number;
+    consumeShot: (bullet: Bullet) => void;
+}
+
+class GunPowerup_DefaultGun implements GunPowerup
+{
+    shotHeat = 10;
+    shotCost = 10;
+    shotStageTime_ms = 40;
+    consumeShot = (bullet: Bullet) =>{}
+}
+
+class GunPowerup_FanShot implements GunPowerup
+{
+    shotHeat = 2;
+    shotCost = 1;
+    shotStageTime_ms = 20;
+    totalShots = 1000;
+    playerGun: Gun;
+
+    constructor(gun: Gun)
+    {
+        this.playerGun = gun;
+    }
+
+    consumeShot = (bullet: Bullet) =>
+    {
+        this.totalShots--;
+        if(this.totalShots <= 0)
+        {
+            this.playerGun.powerup = new GunPowerup_DefaultGun();
+        }
+        bullet.velocity.x += (Math.random() - 0.5) * 80;
+        bullet.velocity.y *= 1.5;
+    }
+}
+
 class Gun {
     heat = 0;
     coolRate = .6;
     overheatLevel = 100;
-    shotHeat = 10;
-    shotCost = 10;
-    shotStageTime_ms = 40;
     charge = 0;
     chargeRate = 25;
     chargeCapacity = 200;
     parent: Player;
     appModel: IAppModel;
     lastShotTime = 0;
+    powerup: GunPowerup = new GunPowerup_DefaultGun();
     
     constructor(appModel: IAppModel, parent: Player){
         this.appModel = appModel;
@@ -36,16 +75,18 @@ class Gun {
     canShoot(gameTime: number)
     {
         return this.heat < this.overheatLevel // Gun heat limit
-            && (gameTime - this.lastShotTime) > this.shotStageTime_ms   // reloading limit
-            && this.charge > this.shotCost; // charge limit
+            && (gameTime - this.lastShotTime) > this.powerup.shotStageTime_ms   // reloading limit
+            && this.charge > this.powerup.shotCost; // charge limit
     }
 
     getBullet(gameTime: number)
     {
-        this.heat += this.shotHeat;
-        this.charge -= this.shotCost;
+        this.heat += this.powerup.shotHeat;
+        this.charge -= this.powerup.shotCost;
         this.lastShotTime = gameTime;
-        return new Bullet(this.appModel, this.parent);
+        let bullet = new Bullet(this.appModel, this.parent);
+        this.powerup.consumeShot(bullet);
+        return bullet;
     }
 
     think(gameTime: number, elapsedMilliseconds: number) 
@@ -56,7 +97,6 @@ class Gun {
         
         if(this.charge < this.chargeCapacity){
             this.charge += this.chargeRate * shortRatio;
-
         }
     }
 
@@ -145,6 +185,7 @@ export class Player extends GameObject implements IPlayerActionReceiver
                     let debris = collisionTarget as Debris;
                     switch(debris.debrisType)
                     {
+                        case DebrisType.Powerup_Fanshot: this.gun.powerup = new GunPowerup_FanShot(this.gun); break;
                         case DebrisType.DeadShip: this.gun.charge += 100; break;
                         case DebrisType.Big: this.gun.charge += 20; break;
                         case DebrisType.DeadShip: this.gun.charge += 5; break;

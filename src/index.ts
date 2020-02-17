@@ -33,6 +33,7 @@ theDrawHelper.addIndexedSpriteTextures("sprites/brick", ".png", 2, 8);
 theDrawHelper.addIndexedSpriteTextures("sprites/deadship", ".png", 2, 5);
 theDrawHelper.addIndexedSpriteTextures("sprites/bigdebris", ".png", 2, 5);
 theDrawHelper.addIndexedSpriteTextures("sprites/smalldebris", ".png", 2, 5);
+theDrawHelper.addIndexedSpriteTextures("sprites/powerup_fanshot", ".png", 2, 5);
 theDrawHelper.load(()=>
 {
     theWidgetSystem = new WidgetSystem(theDrawHelper, theSoundHelper, appView);

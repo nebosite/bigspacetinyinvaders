@@ -1,9 +1,11 @@
 import { GameObject, GameObjectType } from "./GameObject";
 import { IAppModel } from "./AppModel";
+import { DrawnVectorObject } from "src/ui/DrawHelper";
+import { Vector2D } from "../tools/Vector2D";
 
 export class Bullet extends GameObject{
     appModel: IAppModel;
-    velocity = 300;
+    velocity = new Vector2D(0, -300);
     source: GameObject;
     power = 10;
 
@@ -18,9 +20,10 @@ export class Bullet extends GameObject{
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
-        let movement = elapsedMilliseconds  /1000.0 * this.velocity;
+        let timeRatio = elapsedMilliseconds  /1000.0;
+        let movement = timeRatio * this.velocity.length();
         let steps = Math.floor(Math.abs(movement) /2 ) + 1;
-        let delta = movement / steps; 
+        let delta = this.velocity.scale(timeRatio * 1.0 / steps); 
 
         if(this.power < 0)
         {
@@ -29,8 +32,9 @@ export class Bullet extends GameObject{
 
         for(let i = 0; i < steps; i++)
         {
-            this.y -= delta;
-            if(this.y < 0)
+            this.x += delta.x;
+            this.y += delta.y;
+            if(this.y < 0 || this.y > this.appModel.worldSize.height)
             {
                 this.appModel.removeGameObject(this);
             }

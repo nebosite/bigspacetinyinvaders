@@ -2,7 +2,8 @@ import {  KeyboardManager } from "../ui/KeyboardInput";
 import { DrawHelper, DrawnObject, DrawnText } from "../ui/DrawHelper";
 import { GamepadManager, GamepadState } from "../ui/GamepadInput";
 import { AppDiagnostics } from "../models/AppModel";
-import { WidgetSystem } from "src/WidgetLib/WidgetSystem";
+import { WidgetSystem } from "../WidgetLib/WidgetSystem";
+import { GameObjectType } from "../models/GameObject";
 
 export class DiagnosticsControl 
 {
@@ -21,12 +22,23 @@ export class DiagnosticsControl
     keyboardText: DrawnText;
     gamepad1Text: DrawnText;
     gamepad2Text: DrawnText;
+    objectCountText: DrawnText;
     
+    gameObjectAbbreviation = [
+        "???",
+        "Plyr",
+        "Bllt",
+        "Hive",
+        "Alen",
+        "Shld",
+        "Debr"];
+
     //-------------------------------------------------------------------------
     // ctor
     //-------------------------------------------------------------------------
     constructor(widgetSystem: WidgetSystem, appDiagnostics: AppDiagnostics)
     {
+        let y = 5;
         this.gamePad = widgetSystem.gamepadManager;
         this.keyboard = widgetSystem.keyboardManager;
         this.drawing = widgetSystem.drawing;
@@ -35,15 +47,23 @@ export class DiagnosticsControl
         this.fontSize = this.drawing.height / 80;
         this.drawingObjects.push(this.drawing.addRectangleObject(0,0, 300,550,0x444444, .7));
 
-        this.frameRateText = this.drawing.addTextObject("F:", 5,5,this.fontSize);
+        this.frameRateText = this.drawing.addTextObject("F:", 5,y,this.fontSize);
         this.drawingObjects.push(this.frameRateText);
 
-        this.timingText = this.drawing.addTextObject("T:", 5,25,this.fontSize);
+        y += 20;
+        this.objectCountText = this.drawing.addTextObject("T:", 5,y,this.fontSize);
+        this.drawingObjects.push(this.objectCountText);
+
+        y += 100;
+        this.timingText = this.drawing.addTextObject("T:", 5,y,this.fontSize);
         this.drawingObjects.push(this.timingText);
 
-        this.keyboardText = this.drawing.addTextObject("Keyboard:", 5,40, this.fontSize, 0xffff00);
-        this.gamepad1Text = this.drawing.addTextObject("GP1:", 5,140, this.fontSize, 0xffff00);
-        this.gamepad2Text = this.drawing.addTextObject("GP2:", 120,140, this.fontSize, 0xffff00);
+        y += 15;
+        this.keyboardText = this.drawing.addTextObject("Keyboard:", 5,y, this.fontSize, 0xffff00);
+
+        y += 100;
+        this.gamepad1Text = this.drawing.addTextObject("GP1:", 5,y, this.fontSize, 0xffff00);
+        this.gamepad2Text = this.drawing.addTextObject("GP2:", 120,y, this.fontSize, 0xffff00);
         this.drawingObjects.push(this.keyboardText);
         this.drawingObjects.push(this.gamepad1Text);
         this.drawingObjects.push(this.gamepad2Text);
@@ -73,6 +93,13 @@ export class DiagnosticsControl
         {
             this.gamepad2Text.text = "Game pad 2:\n" + states[1].diagnosticsText;
         }
+
+        let countText = "";
+        for(let objectType =1; objectType < GameObjectType.COUNT_OF_TYPES; objectType++)
+        {
+            countText += `${this.gameObjectAbbreviation[objectType]}:    ${this.appDiagnostics.typeCount.get(objectType)}\n`
+        }
+        this.objectCountText.text = countText;
     };
 
     //-------------------------------------------------------------------------

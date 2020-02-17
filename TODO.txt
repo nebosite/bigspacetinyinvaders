@@ -1,14 +1,29 @@
 
 TODO
     [ ] Fan Shot powerup - less powerful bullets, but fanned out
+        [x] Create power icon for fan shot
+        [x] Add a new kind of alien debris 
+        [ ] Picking up a powerup adds new logic to the gun 
+            - Gun has a chain of responsibility pattern for gun logic?
+        [ ] Fan power up works like those rapid shooting fireworks, fanning back and forth
+            - Overall damage should be 2x 
+            - heat draw should be 50% overall
+        [ ] Powerup shows up on player status with a lifetime indicator
+        [ ] lighter bullet
+        [ ] softer bullet sound
     [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
     [ ] Fly the hive in
     [ ] Killing last alien should generate a new hive
-    
-
+    [ ] Show accumulated alien energy in the player status - alien battery should be 5-10x regular battery   
+ 
 NEW
-    [ ] Better sound system
+    [ ] Dynamic: waves move into other game territory - asteroids, star castle... or into space, then to their planet
+    [ ] powerup:  That Guy.  An alien is targeted (highlighted by a cursor) lots of little bullets swarm like heat seakers to that one
+    [ ] One Gigantic invader
+    [ ] Powerup: Extra ship
+    [ ] Escaping out of full screen should stop the game 
     [ ] Alient shield animation/sound when aliens are hit and don't die
+
 EASY/URGENT
 
 

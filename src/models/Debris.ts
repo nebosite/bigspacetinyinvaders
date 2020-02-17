@@ -10,7 +10,8 @@ export enum DebrisType
 {
     DeadShip,
     Big,
-    Small
+    Small,
+    Powerup_Fanshot,
 }
 
 export class Debris extends GameObject{
@@ -30,6 +31,9 @@ export class Debris extends GameObject{
             (Math.random() - 0.5) * 40,
             Math.random() * -100,
         ];
+
+        this.width = 16;
+        this.height = 16;
         switch(debrisType)
         {
             case DebrisType.DeadShip:

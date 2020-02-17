@@ -5,6 +5,7 @@ import { BulletObjectRenderer } from "../views/GameObjectRendering";
 import { Player } from "./Player";
 import { EventThing } from "../tools/EventThing";
 import { Debris, DebrisType } from "./Debris";
+import { Vector2D } from "../tools/Vector2D";
 
 
 export class Alien extends GameObject{
@@ -44,7 +45,7 @@ export class Alien extends GameObject{
             this.lastShotTime = gameTime;
             this.shotOrders--;
             var bullet = new Bullet(this.appModel, this);
-            bullet.velocity = -200;
+            bullet.velocity = new Vector2D(0,200);
             bullet.x = this.x;
             bullet.y = this.y;
             this.appModel.addGameObject(bullet);
@@ -73,11 +74,14 @@ export class Alien extends GameObject{
             player.score+= 10; // Kill points
             if(Math.random() < .05) 
             {
-                let deadAlien = new Debris(this.appModel, DebrisType.DeadShip);
-                deadAlien.x = this.x;
-                deadAlien.y = this.y;
-                this.appModel.addGameObject(deadAlien);
-            }
+                let debrisType = DebrisType.DeadShip;
+                if(Math.random() < .9) debrisType = DebrisType.Powerup_Fanshot;
+                let specialDebris = new Debris(this.appModel, debrisType);
+                specialDebris.x = this.x;
+                specialDebris.y = this.y;
+                this.appModel.addGameObject(specialDebris);
+            }            if(Math.random() < .05) 
+
             for(let i = 0; i < 3; i++)
             {
                 if(Math.random() < .1)

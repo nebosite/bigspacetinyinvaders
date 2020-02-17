@@ -11,6 +11,7 @@ export enum GameObjectType
     Alien,
     ShieldBlock,
     Debris,
+    COUNT_OF_TYPES
 };
 
 let GameObjectCount = 0;

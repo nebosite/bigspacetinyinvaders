@@ -25,6 +25,15 @@ export class AppDiagnostics
     frame = 0;
     lastThinkTime = 0;
     frameRate = 60;
+    typeCount = new Map<number, number>();
+
+    constructor()
+    {
+        for(let i = 0; i < GameObjectType.COUNT_OF_TYPES; i++)
+        {
+            this.typeCount.set(i,0);
+        }
+    }
 
     addFrame(elapsedTime: number)
     {
@@ -163,6 +172,11 @@ export class AppModel implements IAppModel
             }
         }
 
+        for(let i = 0; i < GameObjectType.COUNT_OF_TYPES; i++)
+        {
+            this.diagnostics.typeCount.set(i,0);
+        }
+
         this.gameObjects.forEach( gameObject => {
             let xCell = Math.floor(gameObject.x / this.collisionCellSize);
             if(xCell < 0) xCell = 0;
@@ -172,6 +186,8 @@ export class AppModel implements IAppModel
             if(yCell < 0) yCell = 0;
             if(yCell >= yCellCount) yCell = yCellCount - 1;
 
+            let count = this.diagnostics.typeCount.get(gameObject.type)! + 1
+            this.diagnostics.typeCount.set(gameObject.type, count)
             this.collisionLookup[xCell][yCell].push(gameObject);
         });   
        
