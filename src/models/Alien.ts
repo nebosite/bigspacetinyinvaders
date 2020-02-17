@@ -33,8 +33,8 @@ export class Alien extends GameObject{
         switch(alienType)
         {
             case 0: this.hitPoints = 10; break;
-            case 1: this.hitPoints = 30; break;
-            case 2: this.hitPoints = 100; break;
+            case 1: this.hitPoints = 20; break;
+            case 2: this.hitPoints = 30; break;
         }
     }
 
@@ -72,10 +72,10 @@ export class Alien extends GameObject{
         if(this.hitPoints <= 0)
         {
             player.score+= 10; // Kill points
-            if(Math.random() < .05) 
+            if(Math.random() < .2) 
             {
                 let debrisType = DebrisType.DeadShip;
-                if(Math.random() < .9) debrisType = DebrisType.Powerup_Fanshot;
+                if(Math.random() < .2) debrisType = DebrisType.Powerup_Fanshot;
                 let specialDebris = new Debris(this.appModel, debrisType);
                 specialDebris.x = this.x;
                 specialDebris.y = this.y;

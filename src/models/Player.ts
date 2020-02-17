@@ -35,8 +35,9 @@ class GunPowerup_FanShot implements GunPowerup
     shotHeat = 2;
     shotCost = 1;
     shotStageTime_ms = 20;
-    totalShots = 1000;
+    totalShots = 400;
     playerGun: Gun;
+    theta = 0;
 
     constructor(gun: Gun)
     {
@@ -50,7 +51,8 @@ class GunPowerup_FanShot implements GunPowerup
         {
             this.playerGun.powerup = new GunPowerup_DefaultGun();
         }
-        bullet.velocity.x += (Math.random() - 0.5) * 80;
+        this.theta += .5;
+        bullet.velocity.x += (Math.cos(this.theta)) * 50;
         bullet.velocity.y *= 1.5;
     }
 }
