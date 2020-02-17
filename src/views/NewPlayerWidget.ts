@@ -26,7 +26,7 @@ export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
     movementButtonCluster = "";
 
     static  CommonDirectionButtonLayouts = new Map([
-        ["IJKL", [73,74,75,76]],
+        ["IJKL", [73,74,75,76,86]],
         ["WASD", [87,65,83,68]],
         ["Arrows", [38,37,40,39]],
         ["Numpad 8456", [104,100,101,102]],
@@ -35,7 +35,7 @@ export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
     ]);
 
     static CommonActionButtonLayouts = new Map([
-        ["ShiftZXC", [16,90,88,67]],
+        ["ZXCV", [90,88,67]],
         ["SpcBNM", [32,66,78,77]],
         ["0.Enter+", [96,110,13,107]],
         ["DelEndPgdwnPgup", [46,35,24,33]],

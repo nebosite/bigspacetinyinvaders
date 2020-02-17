@@ -50,7 +50,7 @@ class InviteWidget extends Widget
             let text = [
                 "Press some keys or wiggle controllers to start...",
                 "KB move: IJKL, WASD, Arrows, 8456",
-                "KB action: SftZXC, SpcBNM, 0.Enter+, DelEndPgdwnPgup",
+                "KB action: ZXCB, SpcBNM, 0.Enter+, DelEndPgdwnPgup",
                 "Controllers: Left or Right stick + buttons"
             ]
 
@@ -322,6 +322,8 @@ export class GameWidget extends Widget implements IGameListener
         let key = `${event.controllerId}:${event.buttonCode}`;
         if(this.buttonTranslationMap.has(key))
         {
+            console.log(`Handled: ${key}`)
+
             this.buttonTranslationMap.get(key)?.handleButtonEvent(event);
             event.handled = true;
             return;
@@ -380,18 +382,19 @@ export class GameWidget extends Widget implements IGameListener
                     this.newPlayerWidget?.movementButtonCluster as string);
                 let buttonTranslator = this.newPlayerWidget?.buttonTranslator as ButtonEventTranslator;
                 buttonTranslator.addSubscriber(newPlayer);
-                for(let key of buttonTranslator.getHandledCodes())
+                for(let key of buttonTranslator.getHandledInputKeys())
                 {
+                    console.log(`Key: ${key}`)
                     this.buttonTranslationMap.set(key, buttonTranslator);
                 }
                 this.theAppModel.addPlayer(newPlayer);
-                newPlayer.onCleanup.subscribe("removeTranslator", () => 
-                {
-                    for(let key of buttonTranslator.getHandledCodes())
-                    {
-                        this.buttonTranslationMap.delete(key);
-                    }
-                });
+                // newPlayer.onCleanup.subscribe("removeTranslator", () => 
+                // {
+                //     for(let key of buttonTranslator.getHandledInputKeys())
+                //     {
+                //         this.buttonTranslationMap.delete(key);
+                //     }
+                // });
                 
                 this.RemoveChild(this.newPlayerWidget as Widget);
                 this.newPlayerWidget = null;

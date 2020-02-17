@@ -26,7 +26,7 @@ export class ButtonEventTranslator {
     // ------------------------------------------------------------------------
     // getHandledCodes - convert internal code to array of controllerId:code
     // ------------------------------------------------------------------------
-    getHandledCodes = () =>
+    getHandledInputKeys = () =>
     {
         return Array.from( this.inputActions.keys() ).map(k => `${this.controllerId}:${k}`);
     };

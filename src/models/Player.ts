@@ -116,6 +116,7 @@ export class Player extends GameObject implements IPlayerActionReceiver
     appModel: IAppModel;
     shooting = false;
     gun: Gun;
+    isDead = false;
 
     lastActivityTime = Date.now();
     name: string = "dude";
@@ -128,12 +129,28 @@ export class Player extends GameObject implements IPlayerActionReceiver
         super(appModel);
         this.appModel = appModel;
         this.type = GameObjectType.Player;
-        this.gun = new Gun(appModel, this);
         this.width = 16;
         this.height = 16;
+        this.gun = new Gun(this.appModel, this);
+        this.regenerate();
+        this.leftImperativeVelocity = 0;
+        this.rightImperativeVelocity = 0;
+        this.hitPoints = 1;
+        this.xVelocity = 0;
+        this.xTargetVelocity = 0;
+        this.accelerationRate = 30;
+        this.maxSpeed = 6;
+    }
+
+    regenerate() {
+        this.isDead = false;
+        this.x = this.appModel.worldSize.width/2;
+        this.gun.powerup = new GunPowerup_DefaultGun();
+        this.score = 0;
     }
 
     actionChanged = (action: PlayerAction, value: number) => {
+        if(this.isDead) this.regenerate();
         switch(action)
         {
             case PlayerAction.Left: this.leftImperativeVelocity = value;   break;
@@ -147,6 +164,7 @@ export class Player extends GameObject implements IPlayerActionReceiver
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
+        if(this.isDead) return;
         let unit = elapsedMilliseconds / 16;
 
         let timeRatio = elapsedMilliseconds/1000;
@@ -200,12 +218,10 @@ export class Player extends GameObject implements IPlayerActionReceiver
 
         this.gun.think(gameTime, elapsedMilliseconds); 
         if(this.shooting) this.maybeShoot(gameTime);
-        if(Date.now() - this.lastActivityTime > 25000 && !this.shooting)
-        {
-            this.delete();
-        }
-
-
+        // if(Date.now() - this.lastActivityTime > 25000 && !this.shooting)
+        // {
+        //     this.delete();
+        // }
     }
 
     maybeShoot(gameTime: number){
@@ -240,8 +256,9 @@ export class Player extends GameObject implements IPlayerActionReceiver
             }
 
             this.shooting = false;
+            this.isDead = true;
+            this.x = -10000
             this.onDeath.invoke();
-            this.delete();
         }
     };
 }
