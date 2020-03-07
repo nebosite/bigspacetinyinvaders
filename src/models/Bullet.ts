@@ -43,7 +43,10 @@ export class Bullet extends GameObject{
             if(target)
             {
                 target.doDamage(this);
-                this.appModel.removeGameObject(this);
+                if(this.power <= 0)
+                {
+                    this.appModel.removeGameObject(this);
+                }
             }
             
         }

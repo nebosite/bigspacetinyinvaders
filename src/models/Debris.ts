@@ -21,6 +21,7 @@ export class Debris extends GameObject{
     debrisType: number;
     onDeath = new EventThing<void>("Debris.OnDeath");
     landed = false;
+    hitProbability  = 0.1;
 
     constructor(appModel: IAppModel, debrisType: number){
         super(appModel);
@@ -41,12 +42,12 @@ export class Debris extends GameObject{
                 this.height = 12;
                 break;
             case DebrisType.DeadShip:
-                this.width = 4;
-                this.height = 4;
-                break;
-            case DebrisType.DeadShip:
                 this.width = 2;
                 this.height = 2;
+                break;
+            case DebrisType.DeadShip:
+                this.width = 1;
+                this.height = 1;
                 break;
         }
     }
@@ -78,7 +79,10 @@ export class Debris extends GameObject{
     doDamage(sourceObject: GameObject) {
         let bullet = sourceObject as Bullet
         if(!bullet) return;
-        bullet.power--;
-        this.delete();
+        if(Math.random() < this.hitProbability)
+        {
+            bullet.power--;
+            this.delete();            
+        }
     }
 }

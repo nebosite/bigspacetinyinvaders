@@ -1,30 +1,29 @@
 
 TODO
-    [ ] Show accumulated alien energy in the player status - alien battery should be 5-10x regular battery   
-    [ ] Make it harder to hit small debris
-    [ ] Put the heat and battery bars on the player
-        [ ] Powerup shows up on player status with a lifetime indicator
-    [ ] Player info should be down below
-    [ ] Bug: Picking up a powerup did not reset bullet count
+    [x] Make it harder to hit small debris
     [ ] Too easy to shoot powerup - maybe a few more hit points on the powerup
-    [ ] Maybe make fan shot bullets more expensive
     [ ] Game entry window should be Smaller
     [ ] Bug: Escaping out of full screen does not end game
-    [ ] Make it obvious that a powerup was destroyed
     [ ] bug: when things slide into the player, they do not get picked up
-    [ ] Different sound when knocking out debris
-    [ ] aliens should show damage
-        [ ] Alient shield animation/sound when aliens are hit and don't die
-        [ ] Sparks when aliens are hit
-    [ ] Get a cert for https (easy to do with ionos?)
-    [ ] Aliens run into shields - each damaging the other - different sound for this plus sparks
-    [ ] Players die when colliding with aliens
     [ ] Delay player re-entry
     [ ] Game over
         [ ] Show intermediate game over screen when the game exists
         [ ] Game should exit when all players are dead
         [ ] Aliens continue to drop down.  When they land, they crawl off like bugs
- 
+    [ ] aliens should show damage
+        [ ] Alient shield animation/sound when aliens are hit and don't die
+        [ ] Sparks when aliens are hit
+    [ ] Put the heat and battery bars on the player
+        [ ] Powerup shows up on player status with a lifetime indicator
+        [ ] Show accumulated alien energy in the player status - alien battery should be 5-10x regular battery   
+    [ ] Bug: Picking up a powerup did not reset bullet count
+    [ ] Aliens run into shields - each damaging the other - different sound for this plus sparks
+    [ ] Players die when colliding with aliens
+    [ ] Maybe make fan shot bullets more expensive
+    [ ] Make it obvious that a powerup was destroyed
+    [ ] Different sound when knocking out debris
+    [ ] Get a cert for https (easy to do with ionos?)
+
 NEW
 
 
