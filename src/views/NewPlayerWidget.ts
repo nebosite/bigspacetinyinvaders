@@ -8,7 +8,7 @@ import { PlayerAction } from "../models/Player";
 export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
 {
     width = 500;
-    height = 500;
+    height = 250;
     top = 100;
     left = 50;
     playerX = .5;
@@ -161,7 +161,7 @@ export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
         this.drawingObjects.push(this.playerShip);
 
         let titleText = new TextWidget("New Player", "New Player");
-        titleText.relativeSize = {width: null, height: 0.15};
+        titleText.relativeSize = {width: null, height: 0.25};
         titleText.foregroundColor = 0xffff00;
         titleText.relativeLocation = {x:0.5, y:0.1}
         titleText.fontSize = 50;

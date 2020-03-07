@@ -400,7 +400,7 @@ export class GameWidget extends Widget implements IGameListener
         );
 
         this.newPlayerWidget.relativeLocation = {x:.2, y:.3};
-        this.newPlayerWidget.relativeSize = {width:.3, height: null};
+        this.newPlayerWidget.relativeSize = {width:.15, height: null};
         this.AddChild(this.newPlayerWidget);
     }
 }
