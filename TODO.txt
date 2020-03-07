@@ -6,13 +6,8 @@ TODO
     [x] Bug: Escaping out of full screen does not end game
     [x] bug: when things slide into the player, they do not get picked up
     [x] Delay player re-entry
-    [ ] Game over
-        [ ] Show intermediate game over screen when the game exists
-        [ ] Game should exit when all players are dead
-        [ ] Aliens continue to drop down.  When they land, they crawl off like bugs
-    [ ] aliens should show damage
-        [ ] Alient shield animation/sound when aliens are hit and don't die
-        [ ] Sparks when aliens are hit
+    [x] aliens should show damage
+    [ ] Sparks when anything is hit
     [ ] Put the heat and battery bars on the player
         [ ] Powerup shows up on player status with a lifetime indicator
         [ ] Show accumulated alien energy in the player status - alien battery should be 5-10x regular battery   
@@ -39,6 +34,10 @@ NEXT
         - Weapons won't charge at all if the are all damaged
 
 SOON
+    [ ] Game over
+        [ ] Show intermediate game over screen when the game exists
+        [ ] Game should exit when all players are dead
+        [ ] Aliens continue to drop down.  When they land, they crawl off like bugs
     [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
     [ ] Powerup: Turn the big blue blob into a 10 super-bullets
     [ ] Use your google ads credit to promote your site

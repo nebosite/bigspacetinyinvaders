@@ -19,6 +19,7 @@ export class Alien extends GameObject{
     lastShotTime = 0;
     timeBetweenShots = 0;
     shotOrders = 0;
+    damage = 0;
 
     constructor(appModel: IAppModel, alienType: number){
         super(appModel);
@@ -66,6 +67,7 @@ export class Alien extends GameObject{
         if(!player) return;
 
         this.hitPoints -= bullet.power;
+        this.damage += bullet.power;
         if(this.hitPoints <= 0) bullet.power = -this.hitPoints;  
         else bullet.power = 0;
 

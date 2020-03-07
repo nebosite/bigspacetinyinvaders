@@ -95,11 +95,20 @@ export class BulletObjectRenderer extends GameObjectRenderer
 
 export class AlienObjectRenderer extends GameObjectRenderer
 {
+    alienBody: DrawnSprite;
+    damageOverlay: DrawnSprite | null = null;
+    drawing: DrawHelper;
+
     constructor(gameObject: Alien, drawing: DrawHelper, sound: SoundHelper)
     { 
         super(gameObject,
-            drawing.addSpriteObject("sprites/alien", gameObject.alienType * 2, gameObject.x, gameObject.y) as DrawnObject, 
+            drawing.addContainer(gameObject.x, gameObject.y, 1, 1, 1),
             sound);
+
+        this.drawing = drawing;
+        let container = this.drawnObject as DrawnContainer;
+        this.alienBody = drawing.addSpriteObject("sprites/alien", gameObject.alienType * 2, 0,0);
+        container.addChild(this.alienBody);
 
         gameObject.onDeath.subscribe("playDeathSound", ()=> sound.play("sounds/alien_die.wav"));
     }
@@ -108,9 +117,16 @@ export class AlienObjectRenderer extends GameObjectRenderer
         super.render();
         if(!this.drawnObject) return;
         let alien = this.gameObject as Alien;
+        if(alien.damage > 0) {
+            if(!this.damageOverlay)
+            {
+                this.damageOverlay = this.drawing.addSpriteObject("sprites/alien_damage", Math.floor(Math.random() * 2), 0,0);
+                (this.drawnObject as DrawnContainer).addChild(this.damageOverlay);
+            }
+        }
         let textureFrame =  alien.alienType * 2 + alien.localFrame % 2;
         if (alien.hitPoints <= 0) textureFrame = 6;
-        (this.drawnObject as DrawnSprite).textureFrame = textureFrame;
+        this.alienBody.textureFrame = textureFrame;
     };
 
 }
