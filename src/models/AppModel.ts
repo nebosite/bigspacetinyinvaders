@@ -145,7 +145,8 @@ export class AppModel implements IAppModel
 
         this.players.push(player);
         player.x = this.worldSize.width/2;
-        player.y = this.worldSize.height - 50 + 1 * player.number;
+        player.yEntranceTarget = this.worldSize.height - 50 + 1 * player.number;
+        player.y = this.worldSize.height + 50
         player.width = this.playerSize;
         player.height = this.playerSize;
         this.addGameObject(player);

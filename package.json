@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "builddev": "webpack --config webpack.dev.js &&  xcopy /VERIFYK .\\public\\* dist",
-    "buildprod": "webpack --config webpack.prod.js &&  xcopy /VERIFYK .\\public\\* dist",
+    "builddev": "webpack --config webpack.dev.js",
+    "buildprod": "webpack --config webpack.prod.js",
     "upload": "powershell -Command ./upload.ps1",
     "start": "webpack-dev-server --open --config webpack.dev.js --host localhost"
   },
@@ -23,6 +23,7 @@
   "homepage": "https://github.com/nebosite/bigspacetinyinvaders#readme",
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^5.1.1",
     "express": "^4.17.1",
     "file-loader": "^5.0.2",
     "html-webpack-plugin": "^3.2.0",

@@ -22,6 +22,7 @@ theSoundHelper.loadSound("sounds/alien_die.wav");
 theSoundHelper.loadSound("sounds/ding.wav");
 theSoundHelper.loadSound("sounds/player_death.wav");
 theSoundHelper.loadSound("sounds/player_shot.wav");
+theSoundHelper.loadSound("sounds/player_entrance.mp3");
 
 let theDrawHelper = new DrawHelper();
 theDrawHelper.addImageTexture("img/mainlogo.png");

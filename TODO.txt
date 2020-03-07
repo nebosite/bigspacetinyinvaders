@@ -5,7 +5,7 @@ TODO
     [x] Game entry window should be Smaller
     [x] Bug: Escaping out of full screen does not end game
     [x] bug: when things slide into the player, they do not get picked up
-    [ ] Delay player re-entry
+    [x] Delay player re-entry
     [ ] Game over
         [ ] Show intermediate game over screen when the game exists
         [ ] Game should exit when all players are dead

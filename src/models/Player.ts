@@ -113,10 +113,14 @@ export class Player extends GameObject implements IPlayerActionReceiver
     maxSpeed = 6;
     onShoot = new EventThing<void>("Player.OnShoot");
     onDeath = new EventThing<void>("Player.OnDeath");
+    onBirth = new EventThing<void>("Player.OnBirth");
     appModel: IAppModel;
     shooting = false;
     gun: Gun;
     isDead = false;
+    entranceTimeLeft_ms = 0;
+    entranceTime_ms = 2000;
+    yEntranceTarget = 0;
 
     lastActivityTime = Date.now();
     name: string = "dude";
@@ -133,13 +137,6 @@ export class Player extends GameObject implements IPlayerActionReceiver
         this.height = 16;
         this.gun = new Gun(this.appModel, this);
         this.regenerate();
-        this.leftImperativeVelocity = 0;
-        this.rightImperativeVelocity = 0;
-        this.hitPoints = 1;
-        this.xVelocity = 0;
-        this.xTargetVelocity = 0;
-        this.accelerationRate = 30;
-        this.maxSpeed = 6;
     }
 
     regenerate() {
@@ -147,6 +144,15 @@ export class Player extends GameObject implements IPlayerActionReceiver
         this.x = this.appModel.worldSize.width/2;
         this.gun.powerup = new GunPowerup_DefaultGun();
         this.score = 0;
+        this.leftImperativeVelocity = 0;
+        this.rightImperativeVelocity = 0;
+        this.hitPoints = 1;
+        this.xVelocity = 0;
+        this.xTargetVelocity = 0;
+        this.accelerationRate = 30;
+        this.maxSpeed = 6;
+        this.entranceTimeLeft_ms = this.entranceTime_ms;
+        this.onBirth?.invoke();
     }
 
     actionChanged = (action: PlayerAction, value: number) => {
@@ -165,6 +171,13 @@ export class Player extends GameObject implements IPlayerActionReceiver
     think(gameTime: number, elapsedMilliseconds: number) 
     {
         if(this.isDead) return;
+        if(this.entranceTimeLeft_ms >= 0)
+        {
+            this.entranceTimeLeft_ms -= elapsedMilliseconds;
+            if(this.entranceTime_ms < 0) this.entranceTime_ms = 0;
+            this.y = this.yEntranceTarget + 60.0 * this.entranceTimeLeft_ms / this.entranceTime_ms;
+            return;
+        }
         let unit = elapsedMilliseconds / 16;
 
         let timeRatio = elapsedMilliseconds/1000;
