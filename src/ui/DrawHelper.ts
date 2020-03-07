@@ -211,6 +211,9 @@ export class DrawnSprite extends DrawnObject
     get scale(): number[] { return [this._pixiObject.scale.x, this._pixiObject.scale.y]; }
     set scale(value: number[]) { this._pixiObject.scale = new PIXI.Point(value[0], value[1]) ; }
 
+    get alpha(): number { return this._pixiObject.alpha; }
+    set alpha(value: number) { this._pixiObject.alpha = value; }
+
     get rotation(): number { return this._pixiObject.rotation; }
     set rotation(value: number) { this._pixiObject.rotation = value; }
 

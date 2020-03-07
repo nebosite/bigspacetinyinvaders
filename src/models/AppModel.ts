@@ -5,6 +5,7 @@ import { Hive } from "./Hive";
 import { Alien } from "./Alien";
 import { ShieldBlock } from "./ShieldBlock";
 import { GLOBALS } from "../globals";
+import { EventThing } from "../tools/EventThing";
 
 
 //---------------------------------------------------------------------------
@@ -66,6 +67,8 @@ export interface IAppModel
     onGameEnded: ()=>void;
     endGame: ()=>void;
     settings: GameSettings;
+    onHitObject: EventThing<{gameObject: GameObject, damage: number}>;
+
 
     worldSize: { width:number, height: number} ;
     playerSize: number;
@@ -93,6 +96,7 @@ export class AppModel implements IAppModel
     private _gameIsRunning = false;
     private _isEnding = false;
     settings = new GameSettings();
+    onHitObject = new EventThing<{gameObject: GameObject, damage: number}>("AppModel OnHitObject");
 
     private _worldSize = {width: 10, height: 10};
     get worldSize(): { width:number, height: number} {return this._worldSize;}

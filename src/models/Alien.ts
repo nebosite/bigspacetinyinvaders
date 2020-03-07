@@ -67,9 +67,12 @@ export class Alien extends GameObject{
         if(!player) return;
 
         this.hitPoints -= bullet.power;
+        let localDamage = bullet.power;
         this.damage += bullet.power;
         if(this.hitPoints <= 0) bullet.power = -this.hitPoints;  
         else bullet.power = 0;
+
+        this.appModel.onHitObject?.invoke({gameObject: this, damage: localDamage});
 
         if(this.hitPoints <= 0)
         {

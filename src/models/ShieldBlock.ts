@@ -24,6 +24,8 @@ export class ShieldBlock extends GameObject{
         if(!bullet) return;
         this.hitPoints -= bullet.power * .2;
         bullet.power = 0;
+        this.appModel.onHitObject?.invoke({gameObject: this, damage: 1});
+
         if(this.hitPoints <= 0) 
         {
             this.hitPoints = 0;

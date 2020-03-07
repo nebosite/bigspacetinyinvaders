@@ -4,7 +4,7 @@ import { Player } from "../models/Player";
 import { DrawHelper, DrawnText } from "../ui/DrawHelper";
 import { GameObjectType, GameObject } from "../models/GameObject";
 import { Alien } from "../models/Alien";
-import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienObjectRenderer, ShieldBlockObjectRenderer, DebrisObjectRenderer } from "./GameObjectRendering";
+import { GameObjectRenderer, PlayerObjectRenderer, BulletObjectRenderer, AlienObjectRenderer, ShieldBlockObjectRenderer, DebrisObjectRenderer, SparkObjectRenderer } from "./GameObjectRendering";
 import { Bullet } from "../models/Bullet";
 import { DiagnosticsControl } from "./DiagnosticsControl";
 import { GLOBALS } from "../globals";
@@ -16,6 +16,7 @@ import { Debris } from "../models/Debris";
 import { WidgetButtonCode, ButtonEvent, WidgetSystem } from "../WidgetLib/WidgetSystem";
 import { ButtonEventTranslator } from "../tools/ButtonEventTranslator";
 import { TextWidget } from "../WidgetLib/TextWidget";
+import { Spark } from "../models/Spark";
 
 const PLAYER_SIZE = 16;
 
@@ -76,6 +77,7 @@ export class GameWidget extends Widget implements IGameListener
     playerIdentities = new Map<string, PlayerIdentity>();
     seenPlayersCount = 0;
     renderingControls = new Map<GameObject, GameObjectRenderer>();
+    extraRenderers = new Map<GameObject, GameObjectRenderer>();
     playerDetailControls = new Map<number, PlayerDetailControl>();
     buttonTranslationMap = new Map<string, ButtonEventTranslator>();
     invite: InviteWidget | null = null;
@@ -107,7 +109,10 @@ export class GameWidget extends Widget implements IGameListener
             console.log("New MainMenu from GameWidget")
             this.parent?.AddChild(new MainMenuWidget("Main Menu", this.theAppModel));
             this.parent?.RemoveChild(this);
+            this.theAppModel.onHitObject.unsubscribe(this.onSomethingHit.name);
         }
+
+        this.theAppModel.onHitObject.subscribe(this.onSomethingHit.name, this.onSomethingHit );
     } 
 
     //-------------------------------------------------------------------------
@@ -189,6 +194,23 @@ export class GameWidget extends Widget implements IGameListener
     //-------------------------------------------------------------------------
     // When a player goes away
     //-------------------------------------------------------------------------
+    onSomethingHit = (hitInfo: {gameObject: GameObject, damage: number}) => 
+    {
+        if(!this.widgetSystem?.drawing || !this.widgetSystem.sound) return;
+        for(let i = 0; i < 10; i++)
+        {
+            var spark = new Spark(this.theAppModel);
+            spark.x = hitInfo.gameObject.x;
+            spark.y = hitInfo.gameObject.y;
+            this.extraRenderers.set(spark, new SparkObjectRenderer(spark, this.widgetSystem.drawing, this.widgetSystem.sound));
+        }
+        this.widgetSystem.sound.play("sounds/spark.wav") ;
+     }
+
+
+    //-------------------------------------------------------------------------
+    // When a player goes away
+    //-------------------------------------------------------------------------
     onPlayerRemoved = (player: Player) => {
 
     }
@@ -229,9 +251,16 @@ export class GameWidget extends Widget implements IGameListener
     //-------------------------------------------------------------------------
     onRemovedGameObject = (gameObject: GameObject) => {
         let renderer = this.renderingControls.get(gameObject);
-        if(!renderer) return;
-        renderer.delete();
-        this.renderingControls.delete(gameObject);
+        if(renderer) {
+            renderer.delete();
+            this.renderingControls.delete(gameObject);
+        }
+        
+        renderer = this.extraRenderers.get(gameObject);
+        if(renderer) {
+            renderer.delete();
+            this.extraRenderers.delete(gameObject);
+        }
     }
 
     //-------------------------------------------------------------------------
@@ -257,6 +286,13 @@ export class GameWidget extends Widget implements IGameListener
         for(let renderer of this.renderingControls.values()) {
             renderer.render();
         };
+
+        // Animate and render non-game gameObjects (thinks like sparks)
+        for(let extra of this.extraRenderers.keys()) {
+            extra.think(gameTime, elapsed);
+            this.extraRenderers.get(extra)?.render();
+        };
+
 
         for(let renderer of this.playerDetailControls.values()) {
             renderer.render();

@@ -23,6 +23,7 @@ theSoundHelper.loadSound("sounds/ding.wav");
 theSoundHelper.loadSound("sounds/player_death.wav");
 theSoundHelper.loadSound("sounds/player_shot.wav");
 theSoundHelper.loadSound("sounds/player_entrance.mp3");
+theSoundHelper.loadSound("sounds/spark.wav");
 
 let theDrawHelper = new DrawHelper();
 theDrawHelper.addImageTexture("img/mainlogo.png");
@@ -36,6 +37,7 @@ theDrawHelper.addIndexedSpriteTextures("sprites/deadship", ".png", 2, 5);
 theDrawHelper.addIndexedSpriteTextures("sprites/bigdebris", ".png", 2, 5);
 theDrawHelper.addIndexedSpriteTextures("sprites/smalldebris", ".png", 2, 5);
 theDrawHelper.addIndexedSpriteTextures("sprites/powerup_fanshot", ".png", 2, 5);
+theDrawHelper.addIndexedSpriteTextures("sprites/spark", ".png", 2, 1);
 theDrawHelper.load(()=>
 {
     theWidgetSystem = new WidgetSystem(theDrawHelper, theSoundHelper, appView);

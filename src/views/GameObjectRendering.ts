@@ -6,6 +6,7 @@ import { Alien } from "../models/Alien";
 import { ShieldBlock } from "../models/ShieldBlock";
 import { SoundHelper } from "../ui/SoundHelper";
 import { Debris } from "../models/Debris";
+import { Spark } from "src/models/Spark";
 
 export class GameObjectRenderer
 {
@@ -90,6 +91,22 @@ export class BulletObjectRenderer extends GameObjectRenderer
             case GameObjectType.Player : return 0;
             default: return 1;
         }
+    }
+}
+
+export class SparkObjectRenderer extends GameObjectRenderer
+{
+    constructor(gameObject: Spark, drawing: DrawHelper, sound: SoundHelper) 
+    {
+        super(gameObject,
+            drawing.addSpriteObject("sprites/spark", 0, gameObject.x, gameObject.y) as DrawnObject,
+            sound);
+    }
+
+    render()
+    {
+        (this.drawnObject as DrawnSprite).alpha = (this.gameObject as Spark).power;
+        super.render();
     }
 }
 

@@ -82,6 +82,7 @@ export class Debris extends GameObject{
         if(Math.random() < this.hitProbability)
         {
             bullet.power--;
+            this.appModel.onHitObject?.invoke({gameObject: this, damage: 1});
             this.delete();            
         }
     }
