@@ -322,8 +322,6 @@ export class GameWidget extends Widget implements IGameListener
         let key = `${event.controllerId}:${event.buttonCode}`;
         if(this.buttonTranslationMap.has(key))
         {
-            console.log(`Handled: ${key}`)
-
             this.buttonTranslationMap.get(key)?.handleButtonEvent(event);
             event.handled = true;
             return;

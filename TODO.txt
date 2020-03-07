@@ -1,71 +1,73 @@
 
 TODO
-    [x] Fan Shot powerup - less powerful bullets, but fanned out
-        [x] Create power icon for fan shot
-        [x] Add a new kind of alien debris 
-        [x] Picking up a powerup adds new logic to the gun 
-            - Gun has a chain of responsibility pattern for gun logic?
-        [x] Fan power up works like those rapid shooting fireworks, fanning back and forth
-            - Overall damage should be 2x 
-            - heat draw should be 50% overall
-    [ ] Bug: keyboard controls get way messed up with multiple players
-    [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
-    [ ] Fly the hive in
-    [ ] Killing last alien should generate a new hive
     [ ] Show accumulated alien energy in the player status - alien battery should be 5-10x regular battery   
- 
-NEW
-    [ ] Powerup shows up on player status with a lifetime indicator
+    [ ] Make it harder to hit small debris
+    [ ] Put the heat and battery bars on the player
+        [ ] Powerup shows up on player status with a lifetime indicator
+    [ ] Player info should be down below
+    [ ] Bug: Picking up a powerup did not reset bullet count
+    [ ] Too easy to shoot powerup - maybe a few more hit points on the powerup
+    [ ] Maybe make fan shot bullets more expensive
+    [ ] Game entry window should be Smaller
+    [ ] Bug: Escaping out of full screen does not end game
+    [ ] Make it obvious that a powerup was destroyed
+    [ ] bug: when things slide into the player, they do not get picked up
+    [ ] Different sound when knocking out debris
     [ ] aliens should show damage
-    [ ] Dynamic: waves move into other game territory - asteroids, star castle... or into space, then to their planet
-    [ ] powerup:  That Guy.  An alien is targeted (highlighted by a cursor) lots of little bullets swarm like heat seakers to that one
-    [ ] One Gigantic invader
-    [ ] Powerup: Extra ship
-    [ ] Escaping out of full screen should stop the game 
-    [ ] Alient shield animation/sound when aliens are hit and don't die
-
-EASY/URGENT
-
-
-NEXT
-    [ ] Aliens "eat" Shields
+        [ ] Alient shield animation/sound when aliens are hit and don't die
+        [ ] Sparks when aliens are hit
+    [ ] Get a cert for https (easy to do with ionos?)
+    [ ] Aliens run into shields - each damaging the other - different sound for this plus sparks
     [ ] Players die when colliding with aliens
     [ ] Delay player re-entry
-    [ ] Game over when all players are dead or score < max/#active players
-    [ ] Give ships more hit points and make bullets stronger
-    [ ] Generate alien rows gradually in waves (add animation)
-    [ ] When Hive dies, kick off next level
     [ ] Game over
         [ ] Show intermediate game over screen when the game exists
         [ ] Game should exit when all players are dead
-    [ ] Aliens can win
+        [ ] Aliens continue to drop down.  When they land, they crawl off like bugs
+ 
+NEW
 
-SOON
+
+NEXT
+    [ ] Fly the hive in
+    [ ] Killing last alien should generate a new hive
+    [ ] Needs a celebration at the end of the level
+    [ ] 1/2 max score dynamic
+        [ ] Game over when all players are dead or score < max/#active players
+        [ ] Highlight the player when their death will end the game  (They are "it")
     [ ] Dynamic: UFO's loiter over the aliens.  You need a way to punch through to get them.
     [ ] Dynamic: Shields protect charging stations.  Weapons charge slower when they are damaged.  
         - Weapons won't charge at all if the are all damaged
+
+SOON
+    [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
+    [ ] Powerup: Turn the big blue blob into a 10 super-bullets
+    [ ] Use your google ads credit to promote your site
+    [ ] Player Animation on entry
+    [ ] highscores
+    [ ] Pack resources too: https://webpack.js.org/guides/typescript/
+
+LATER
+    [ ] Dynamic: waves move into other game territory - asteroids, star castle... or into space, then to their planet
+    [ ] powerup:  That Guy.  An alien is targeted (highlighted by a cursor) lots of little bullets swarm like heat seakers to that one
+    [ ] Powerup: Extra ship
     [ ] Powerup: Nuke - like a big firework creates pandemonium with falling debris
     [ ] Powerup: Crazy bear.  Cute teddy bear gets madder and madder as it takes hits.  Release for havoc.  
         Too many hits and it attacks players.
-
-LATER
-    [ ] Use your google ads credit to promote your site
-    [ ] Player Animation on entry
     [ ] Remember controllers long-term (and assign names)
-    [ ] highscores
     [ ] Use scaling to make fonts look better on large screens
     [ ] Bug: Sometimes can't get back into game when two people are on the same controller and one dies
     [ ] Score graph
     [ ] Powerup: Homing shots
-    [ ] More powerups with coop score is high
+    [ ] More powerups when coop score is high
         - playing "zone"
         - powerups distributed
         - kills distributed
         - sharing energy with others
     [ ] Resizing should reset game object positions
-    [ ] Pack resources too: https://webpack.js.org/guides/typescript/
 
 PROBABLY NEVER
+    [ ] One Gigantic invader
     [ ] Bullets should kill bullets?
     [ ] Add concept of children in drawing code to simplify the movement of complex objects
     [ ] Improve canvas performance
@@ -78,6 +80,16 @@ PROBABLY NEVER
 
 
 DONE ================================================================================================================================
+version 0.0.4.0
+    [x] Fan Shot powerup - less powerful bullets, but fanned out
+        [x] Create power icon for fan shot
+        [x] Add a new kind of alien debris 
+        [x] Picking up a powerup adds new logic to the gun 
+            - Gun has a chain of responsibility pattern for gun logic?
+        [x] Fan power up works like those rapid shooting fireworks, fanning back and forth
+            - Overall damage should be 2x 
+            - heat draw should be 50% overall
+    [x] Bug: keyboard controls get way messed up with multiple players
 
 version 0.0.3.3
     [x] Bug: Sometimes double menu in full screen
