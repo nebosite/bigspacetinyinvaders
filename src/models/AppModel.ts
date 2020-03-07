@@ -244,6 +244,7 @@ export class AppModel implements IAppModel
         let shieldSpacing = 220;
         let shieldCount = Math.floor(xForShields / shieldSpacing);
         if(shieldCount < 3) shieldCount = 3;
+        if(shieldCount % 2 == 0) shieldCount ++; // ensure there is a middle shield
         let xForSpace = this.worldSize.width - shieldWidth * shieldCount;
         let padding = xForSpace / 2 / shieldCount;
 

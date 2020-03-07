@@ -14,6 +14,8 @@ export class Hive extends GameObject{
     bulletCache = 0;
     hiveLevel = 1;
     hiveSize: number;
+    speed = 1.0;
+
 
     constructor(appModel: IAppModel, hiveSize: number){
         super(appModel);
@@ -50,7 +52,7 @@ export class Hive extends GameObject{
 
         if(gameTime < this.nextTick) return;
         this.bulletCache += Math.ceil(((this.hiveLevel + 2) * this._members.length) / this.hiveSize);
-        this.nextTick = gameTime + (this.tickSpan * this._members.length) / this.hiveSize;
+        this.nextTick = gameTime + ((1.0 / this.speed) * this.tickSpan * this._members.length) / this.hiveSize;
 
         let shouldReverse = false;
         this._members.forEach( member => {

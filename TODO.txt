@@ -8,10 +8,7 @@ TODO
     [x] Delay player re-entry
     [x] aliens should show damage
     [x] Sparks when anything is hit
-    [ ] Put the heat and battery bars on the player
-        [ ] Powerup shows up on player status with a lifetime indicator
-        [ ] Show accumulated alien energy in the player status - alien battery should be 5-10x regular battery   
-    [ ] Aliens run into shields - each damaging the other - different sound for this plus sparks
+    [x] Aliens run into shields - each damaging the other - different sound for this plus sparks
     [ ] Players die when colliding with aliens
     [ ] Maybe make fan shot bullets more expensive
     [ ] Make it obvious that a powerup was destroyed
@@ -31,6 +28,9 @@ NEXT
     [ ] Dynamic: UFO's loiter over the aliens.  You need a way to punch through to get them.
     [ ] Dynamic: Shields protect charging stations.  Weapons charge slower when they are damaged.  
         - Weapons won't charge at all if the are all damaged
+    [ ] Put the heat and battery bars on the player
+        [ ] Powerup shows up on player status with a lifetime indicator
+        [ ] Show accumulated alien energy in the player status - alien battery should be 5-10x regular battery   
 
 SOON
     [ ] Game over

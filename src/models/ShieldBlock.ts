@@ -1,6 +1,7 @@
 import { GameObject, GameObjectType } from "./GameObject";
 import { IAppModel } from "./AppModel";
 import { Bullet } from "./Bullet";
+import { Alien } from "./Alien";
 
 export class ShieldBlock extends GameObject{
     appModel: IAppModel;
@@ -20,12 +21,20 @@ export class ShieldBlock extends GameObject{
 
     doDamage(sourceObject: GameObject) {
         if(this.hitPoints == 0) return;
-        let bullet = sourceObject as Bullet
-        if(!bullet) return;
-        this.hitPoints -= bullet.power * .2;
-        bullet.power = 0;
-        this.appModel.onHitObject?.invoke({gameObject: this, damage: 1});
+        let damage = 1;
+        if(sourceObject.type == GameObjectType.Bullet) {
+            let bullet = sourceObject as Bullet
+            this.hitPoints -= bullet.power * .2;
+            bullet.power = 0;
+        }
+        else if(sourceObject.type == GameObjectType.Alien) {
+            damage = this.hitPoints;
+            this.hitPoints = 0;
+            sourceObject.doDamage(this);
+        }
+        else return;
 
+        this.appModel.onHitObject?.invoke({gameObject: this, damage: damage});
         if(this.hitPoints <= 0) 
         {
             this.hitPoints = 0;
