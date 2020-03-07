@@ -4,7 +4,7 @@ TODO
     [x] Too easy to shoot powerup - maybe a few more hit points on the powerup
     [x] Game entry window should be Smaller
     [x] Bug: Escaping out of full screen does not end game
-    [ ] bug: when things slide into the player, they do not get picked up
+    [x] bug: when things slide into the player, they do not get picked up
     [ ] Delay player re-entry
     [ ] Game over
         [ ] Show intermediate game over screen when the game exists

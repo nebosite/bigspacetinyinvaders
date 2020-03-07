@@ -189,7 +189,7 @@ export class Player extends GameObject implements IPlayerActionReceiver
 
         
         let stepSize = 2;
-        let steps = Math.ceil(Math.abs(this.xVelocity) / stepSize);
+        let steps = Math.floor(Math.abs(this.xVelocity) / stepSize) + 1;
         let xStep = this.xVelocity / steps;
         for(let i = 0; i < steps; i++){
             this.x += xStep * unit;
