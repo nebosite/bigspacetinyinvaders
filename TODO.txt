@@ -6,7 +6,7 @@ TODO
     [ ] Start with a tiny "standard" invader wave
     [ ] 2nd wave is huge
     [ ] Fly the hive in
-    [ ] Bug: leaving full screen leaves all of the menu stuff messed up in the corner (only after completing a game)
+    [ ] Bug: leaving full screen leaves all  of the menu stuff messed up in the corner (only after completing a game)
 
 NEW
 
