@@ -1,27 +1,17 @@
 
 TODO
-    [x] Make it harder to hit small debris
-    [x] Too easy to shoot powerup - maybe a few more hit points on the powerup
-    [x] Game entry window should be Smaller
-    [x] Bug: Escaping out of full screen does not end game
-    [x] bug: when things slide into the player, they do not get picked up
-    [x] Delay player re-entry
-    [x] aliens should show damage
-    [x] Sparks when anything is hit
-    [x] Aliens run into shields - each damaging the other - different sound for this plus sparks
-    [ ] Players die when colliding with aliens
-    [ ] Maybe make fan shot bullets more expensive
-    [ ] Make it obvious that a powerup was destroyed
-    [ ] Different sound when knocking out debris
-    [ ] Get a cert for https (easy to do with ionos?)
+    [ ] Killing all the aliens spawns a new wave
+    [ ] Celebrate a victory
+    [ ] Show aliens left next to score
+    [ ] Start with a tiny "standard" invader wave
+    [ ] 2nd wave is huge
+    [ ] Fly the hive in
+    [ ] Bug: leaving full screen leaves all of the menu stuff messed up in the corner (only after completing a game)
 
 NEW
 
 
 NEXT
-    [ ] Fly the hive in
-    [ ] Killing last alien should generate a new hive
-    [ ] Needs a celebration at the end of the level
     [ ] 1/2 max score dynamic
         [ ] Game over when all players are dead or score < max/#active players
         [ ] Highlight the player when their death will end the game  (They are "it")
@@ -45,6 +35,9 @@ SOON
     [ ] Pack resources too: https://webpack.js.org/guides/typescript/
 
 LATER
+    [ ] Get a cert for https (easy to do with ionos?)
+    [ ] Maybe make fan shot bullets more expensive
+    [ ] Make it obvious that a powerup was destroyed
     [ ] Dynamic: waves move into other game territory - asteroids, star castle... or into space, then to their planet
     [ ] powerup:  That Guy.  An alien is targeted (highlighted by a cursor) lots of little bullets swarm like heat seakers to that one
     [ ] Powerup: Extra ship
@@ -77,6 +70,21 @@ PROBABLY NEVER
 
 
 DONE ================================================================================================================================
+version 0.0.5.0
+    [x] Aliens should not be able shoot powerups
+    [x] Make it harder to hit small debris
+    [x] Too easy to shoot powerup - maybe a few more hit points on the powerup
+    [x] Game entry window should be Smaller
+    [x] Bug: Escaping out of full screen does not end game
+    [x] bug: when things slide into the player, they do not get picked up
+    [x] Delay player re-entry
+    [x] aliens should show damage
+    [x] Sparks when anything is hit
+    [x] Aliens run into shields - each damaging the other - different sound for this plus sparks
+    [x] Players die when colliding with aliens
+    [x] Different sound when knocking out debris
+
+
 version 0.0.4.0
     [x] Fan Shot powerup - less powerful bullets, but fanned out
         [x] Create power icon for fan shot

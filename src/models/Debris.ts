@@ -77,8 +77,13 @@ export class Debris extends GameObject{
     }
 
     doDamage(sourceObject: GameObject) {
+        if(sourceObject.type != GameObjectType.Bullet) return;
         let bullet = sourceObject as Bullet
-        if(!bullet) return;
+
+        // don't let aliens shoot debris
+        if(bullet.source.type == GameObjectType.Alien ) return;
+
+        // Only let debris get hit sometimes
         if(Math.random() < this.hitProbability)
         {
             bullet.power--;
