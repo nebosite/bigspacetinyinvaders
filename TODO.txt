@@ -3,7 +3,7 @@ TODO
     [x] Make it harder to hit small debris
     [x] Too easy to shoot powerup - maybe a few more hit points on the powerup
     [x] Game entry window should be Smaller
-    [ ] Bug: Escaping out of full screen does not end game
+    [x] Bug: Escaping out of full screen does not end game
     [ ] bug: when things slide into the player, they do not get picked up
     [ ] Delay player re-entry
     [ ] Game over

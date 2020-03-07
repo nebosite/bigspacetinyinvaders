@@ -116,11 +116,10 @@ export class GameWidget extends Widget implements IGameListener
     updateBasedOnParent = () => 
     {
         console.log(`Layout changed ${this.width},${this.height}`)
-        // if we exit fullscreen, just end the game
-        if(!this.hasSetSize && this.theAppModel.settings.isFullScreen && !document.fullscreen && this.started)
-        {
-            this.theAppModel.endGame();
-        }
+        // if(!this.hasSetSize && this.theAppModel.settings.isFullScreen && !document.fullscreen && this.started)
+        // {
+        //     this.theAppModel.endGame();
+        // }
 
         if(!this.hasSetSize || this.theAppModel.settings.isFullScreen)
         {
@@ -133,7 +132,17 @@ export class GameWidget extends Widget implements IGameListener
             }
             this.hasSetSize = true;
             console.log(`Setting world size to ${width},${height}`);
-            this.theAppModel.worldSize = { width, height};
+            if(this.theAppModel.settings.isFullScreen 
+                && ( width < this.theAppModel.worldSize.width
+                        || height < this.theAppModel.worldSize.height))
+            {
+                // if we exit fullscreen, just end the game
+                this.theAppModel.endGame();
+            }
+            else 
+            {
+                this.theAppModel.worldSize = { width, height};
+            }
         }
     }
 
@@ -332,6 +341,7 @@ export class GameWidget extends Widget implements IGameListener
             || event.buttonCode == 27 // esc key
             )) 
         {
+            console.log("Escape pressed")
             this.theAppModel.endGame();
             event.handled = true;
             return;
@@ -382,17 +392,10 @@ export class GameWidget extends Widget implements IGameListener
                 buttonTranslator.addSubscriber(newPlayer);
                 for(let key of buttonTranslator.getHandledInputKeys())
                 {
-                    console.log(`Key: ${key}`)
                     this.buttonTranslationMap.set(key, buttonTranslator);
                 }
                 this.theAppModel.addPlayer(newPlayer);
-                // newPlayer.onCleanup.subscribe("removeTranslator", () => 
-                // {
-                //     for(let key of buttonTranslator.getHandledInputKeys())
-                //     {
-                //         this.buttonTranslationMap.delete(key);
-                //     }
-                // });
+
                 
                 this.RemoveChild(this.newPlayerWidget as Widget);
                 this.newPlayerWidget = null;

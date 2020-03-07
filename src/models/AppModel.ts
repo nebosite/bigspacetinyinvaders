@@ -125,6 +125,7 @@ export class AppModel implements IAppModel
         if(this._gameIsRunning) this.reset();
         if(!this._isEnding)
         {
+            console.log("Ending...")
             this._isEnding = true;
             this.onGameEnded();
             this._isEnding = false;

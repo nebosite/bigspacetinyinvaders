@@ -7,8 +7,8 @@ import { PlayerAction } from "../models/Player";
 
 export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
 {
-    width = 500;
-    height = 250;
+    width = 50;
+    height = 25;
     top = 100;
     left = 50;
     playerX = .5;
