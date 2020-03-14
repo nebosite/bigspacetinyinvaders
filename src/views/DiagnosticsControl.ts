@@ -44,7 +44,7 @@ export class DiagnosticsControl
         this.drawing = widgetSystem.drawing;
         this.appDiagnostics = appDiagnostics;
         
-        this.fontSize = this.drawing.height / 80;
+        this.fontSize = this.drawing.height / 90;
         this.drawingObjects.push(this.drawing.addRectangleObject(0,0, 300,550,0x444444, .7));
 
         this.frameRateText = this.drawing.addTextObject("F:", 5,y,this.fontSize);
@@ -54,7 +54,7 @@ export class DiagnosticsControl
         this.objectCountText = this.drawing.addTextObject("T:", 5,y,this.fontSize);
         this.drawingObjects.push(this.objectCountText);
 
-        y += 100;
+        y += 120;
         this.timingText = this.drawing.addTextObject("T:", 5,y,this.fontSize);
         this.drawingObjects.push(this.timingText);
 

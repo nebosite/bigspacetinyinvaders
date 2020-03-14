@@ -68,7 +68,7 @@ export interface IAppModel
     endGame: ()=>void;
     settings: GameSettings;
     onHitObject: EventThing<{gameObject: GameObject, damage: number}>;
-
+    shieldTop: number;
 
     worldSize: { width:number, height: number} ;
     playerSize: number;
@@ -97,6 +97,7 @@ export class AppModel implements IAppModel
     private _isEnding = false;
     settings = new GameSettings();
     onHitObject = new EventThing<{gameObject: GameObject, damage: number}>("AppModel OnHitObject");
+    shieldTop = 0;
 
     private _worldSize = {width: 10, height: 10};
     get worldSize(): { width:number, height: number} {return this._worldSize;}
@@ -250,6 +251,7 @@ export class AppModel implements IAppModel
 
         let x = padding;
         let y = this.worldSize.height - GLOBALS.PLAYER_Y_AREA - GLOBALS.SHIELD_Y_AREA;
+        this.shieldTop = y - 20;
         for(let q = 0; q < shieldCount; q++)
         {
             for(let i = 0; i < this.shieldMap[0].length; i++)

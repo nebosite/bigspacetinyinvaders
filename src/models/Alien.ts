@@ -54,10 +54,13 @@ export class Alien extends GameObject{
             this.appModel.addGameObject(bullet);
         }
 
-        let target = this.appModel.hitTest(this);
-        if(target)
+        if(this.y > this.appModel.shieldTop) 
         {
-            target.doDamage(this);
+            let target = this.appModel.hitTest(this);
+            if(target)
+            {
+                target.doDamage(this);
+            }
         }
     }
 

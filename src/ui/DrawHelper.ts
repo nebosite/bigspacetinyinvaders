@@ -54,13 +54,15 @@ export class DrawnContainer extends DrawnObject
     get y(): number { return this._pixiObject.y; }
     set y(value: number) { this._pixiObject.y = value; }
 
-    get width(): number { return this._pixiObject.width; }
-    set width(value: number) { this._pixiObject.width = value; }
+    private _width: number;
+    get width(): number { return this._width }
+    set width(value: number) { this._width = this._pixiObject.width = value; }
 
-    get height(): number { return this._pixiObject.height; }
-    set height(value: number) { this._pixiObject.height = value; }
+    private _height: number;
+    get height(): number { return this._height; }
+    set height(value: number) { this._height = this._pixiObject.height = value; }
 
-    _nativeSize = [0,0];
+    private _nativeSize = [0,0];
     get nativeWidth() {return this._nativeSize[0];}
     get nativeHeight() {return this._nativeSize[1];}
 
@@ -80,6 +82,8 @@ export class DrawnContainer extends DrawnObject
     {
         super(drawHelper, container);
         this._pixiObject = container;
+        this._width = this._pixiObject.width;
+        this._height = this._pixiObject.height;
     }
 
     addChild(newChild: DrawnObject)
@@ -99,11 +103,13 @@ export class DrawnText extends DrawnObject
     get y(): number { return this._pixiObject.y; }
     set y(value: number) { this._pixiObject.y = value; }
 
-    get width(): number { return this._pixiObject.width; }
-    set width(value: number) { this._pixiObject.width = value; }
+    private _width: number;
+    get width(): number { return this._width }
+    set width(value: number) { this._width = this._pixiObject.width = value; }
 
-    get height(): number { return this._pixiObject.height; }
-    set height(value: number) { this._pixiObject.height = value; }
+    private _height: number;
+    get height(): number { return this._height; }
+    set height(value: number) { this._height = this._pixiObject.height = value; }
 
     _nativeSize = [0,0];
     get nativeWidth() {return this._nativeSize[0];}
@@ -141,6 +147,8 @@ export class DrawnText extends DrawnObject
         super(drawHelper, pixiObject);
         this._pixiObject = pixiObject;
         this._nativeSize = [pixiObject.width, pixiObject.height];
+        this._width = this._pixiObject.width;
+        this._height = this._pixiObject.height;
     }
 }
 
@@ -156,11 +164,13 @@ export class DrawnVectorObject extends DrawnObject
     get scale(): number[] { return [this._pixiObject.scale.x, this._pixiObject.scale.y]; }
     set scale(value: number[]) { this._pixiObject.scale = new PIXI.Point(value[0], value[1]) ; }
 
-    get width(): number { return this._pixiObject.width; }
-    set width(value: number) { this._pixiObject.width = value; }
+    private _width: number;
+    get width(): number { return this._width }
+    set width(value: number) { this._width = this._pixiObject.width = value; }
 
-    get height(): number { return this._pixiObject.height; }
-    set height(value: number) { this._pixiObject.height = value; }
+    private _height: number;
+    get height(): number { return this._height; }
+    set height(value: number) { this._height = this._pixiObject.height = value; }
 
     _nativeSize = [0,0];
     get nativeWidth() {return this._nativeSize[0];}
@@ -186,6 +196,8 @@ export class DrawnVectorObject extends DrawnObject
         super(drawHelper, pixiObject);
         this._pixiObject = pixiObject;   
         this._nativeSize = [pixiObject.width, pixiObject.height];
+        this._width = this._pixiObject.width;
+        this._height = this._pixiObject.height;
     }
 }
 
@@ -198,11 +210,13 @@ export class DrawnSprite extends DrawnObject
     get y(): number { return this._pixiObject.y; }
     set y(value: number) { this._pixiObject.y = value; }
 
-    get width(): number { return this._pixiObject.width; }
-    set width(value: number) { this._pixiObject.width = value; }
+    private _width: number;
+    get width(): number { return this._width }
+    set width(value: number) { this._width = this._pixiObject.width = value; }
 
-    get height(): number { return this._pixiObject.height; }
-    set height(value: number) { this._pixiObject.height = value; }
+    private _height: number;
+    get height(): number { return this._height; }
+    set height(value: number) { this._height = this._pixiObject.height = value; }
 
     _nativeSize = [0,0];
     get nativeWidth() {return this._nativeSize[0];}
@@ -238,6 +252,8 @@ export class DrawnSprite extends DrawnObject
         this._textureFrame = textureFrame;
         this._textures = textures; 
         this._nativeSize = [pixiObject.width, pixiObject.height];
+        this._width = this._pixiObject.width;
+        this._height = this._pixiObject.height;
     }
 }
 
@@ -250,11 +266,13 @@ export class DrawnImage extends DrawnObject
     get y(): number { return this._pixiObject.y; }
     set y(value: number) { this._pixiObject.y = value; }
 
-    get width(): number { return this._pixiObject.width; }
-    set width(value: number) { this._pixiObject.width = value; }
+    private _width: number;
+    get width(): number { return this._width }
+    set width(value: number) { this._width = this._pixiObject.width = value; }
 
-    get height(): number { return this._pixiObject.height; }
-    set height(value: number) { this._pixiObject.height = value; }
+    private _height: number;
+    get height(): number { return this._height; }
+    set height(value: number) { this._height = this._pixiObject.height = value; }
 
     _nativeSize = [0,0];
     get nativeWidth() {return this._nativeSize[0];}
@@ -277,6 +295,8 @@ export class DrawnImage extends DrawnObject
         super(drawHelper, pixiObject);
         this._pixiObject = pixiObject;  
         this._nativeSize = [pixiObject.width, pixiObject.height];
+        this._width = this._pixiObject.width;
+        this._height = this._pixiObject.height;
     }
 }
 

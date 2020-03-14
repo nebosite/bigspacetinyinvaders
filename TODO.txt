@@ -1,6 +1,20 @@
 
 TODO
-    [ ] Killing all the aliens spawns a new wave
+    [x] Speedup: Aliens and alien bullets don't need to do hit tests unless they are down at shield level
+    [x] Fix performance window
+    [ ] Bug: The game crashed when I lost. All the ships died by crashing into my shields, 
+        then the game froze.
+        [ ] Killing all the aliens spawns a new wave
+    [ ] Bug: I got two player ships but one which I could not move would shoot, 
+        and one that would not shoot would move. Repro: Start the game by detecting 
+        an Xbox 360 controller. Press Start on the controller to start a game. Immediately 
+        spam the Start button while playing. Result: Multiple player ships are 
+        spawned but only one can be controlled left and right while the other one shoots.
+    [ ] Bug: One of the sound effects is slightly annoying on my sound system 
+        (which is very accurate). It sounds like a sharp tick. Consider swapping 
+        it with something less abrasive.
+    [ ] I am not clear how I am getting bonuses/upgrades. These moments could use more 
+        "advertising/celebration" messaging with visuals and sound.
     [ ] Celebrate a victory
     [ ] Show aliens left next to score
     [ ] Start with a tiny "standard" invader wave
@@ -9,7 +23,26 @@ TODO
     [ ] Bug: leaving full screen leaves all  of the menu stuff messed up in the corner (only after completing a game)
 
 NEW
-
+    [ ] Missing controller instructions
+    [ ] Hard time seeing the difference in the object types. 
+        So far I think there are these types of things flying through the air. 
+        Maybe they could be differentiated by different colors? It all looks the same to me. 
+        My bullets flying up (I suggest Blue)
+        Bombs dropping down (I suggest Red - says these are dangerous)
+        Bonus pickups dropping down? (I suggest Green) - Says to go get these)
+        Debris dropping down (I suggest gray - says these don't matter)
+    [ ] I really wish you had some music going on.
+    [ ] Balancing, at first it was really easy. Then it got challenging, then it 
+        got impossible. Not sure what to do about this. Maybe more powerups would 
+        make the entire thing funner by speeding up the beginning, add strategy 
+        to the middle, and power at the end.
+    [ ] Some kind of bonus for shooting all the way through one of your own defenses 
+        as a pillbox defense.
+    [ ] Bonus Powerup: Companion ships appear with offset positions to the left 
+        and right of your ship. They move and fire as if they are twinning 
+        your ship. The player has an opportunity to have more firepower for a 
+        short duration, but has to manage three ships instead of one. When they 
+        die they do not respawn.
 
 NEXT
     [ ] 1/2 max score dynamic

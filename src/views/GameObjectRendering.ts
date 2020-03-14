@@ -143,7 +143,10 @@ export class AlienObjectRenderer extends GameObjectRenderer
         }
         let textureFrame =  alien.alienType * 2 + alien.localFrame % 2;
         if (alien.hitPoints <= 0) textureFrame = 6;
-        this.alienBody.textureFrame = textureFrame;
+        if(textureFrame !== this.alienBody.textureFrame) 
+        {
+            this.alienBody.textureFrame = textureFrame;
+        }
     };
 
 }
