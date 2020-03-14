@@ -153,7 +153,7 @@ export class MainMenuWidget extends Widget
             let currentWidget = this.choices[this.currentChoice].widget;
             let scale =  playWidget.height / this.choiceIndicator.nativeHeight;
             this.choiceIndicator.scale =  [scale,scale];
-            this.choiceIndicator.x = playWidget.left - this.choiceIndicator.width;
+            this.choiceIndicator.x = playWidget.left - this.choiceIndicator.width * 4;
             this.choiceIndicator.y = currentWidget.top + currentWidget.height/2;
         }
 

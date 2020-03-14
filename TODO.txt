@@ -2,6 +2,11 @@
 TODO
     [x] Speedup: Aliens and alien bullets don't need to do hit tests unless they are down at shield level
     [x] Fix performance window
+    [x] Bug main menu alien is off center
+    [x] Bug: One of the sound effects is slightly annoying on my sound system 
+        (which is very accurate). It sounds like a sharp tick. Consider swapping 
+        it with something less abrasive.
+    [ ] New wave when all ships are lost
     [ ] Bug: The game crashed when I lost. All the ships died by crashing into my shields, 
         then the game froze.
         [ ] Killing all the aliens spawns a new wave
@@ -10,9 +15,6 @@ TODO
         an Xbox 360 controller. Press Start on the controller to start a game. Immediately 
         spam the Start button while playing. Result: Multiple player ships are 
         spawned but only one can be controlled left and right while the other one shoots.
-    [ ] Bug: One of the sound effects is slightly annoying on my sound system 
-        (which is very accurate). It sounds like a sharp tick. Consider swapping 
-        it with something less abrasive.
     [ ] I am not clear how I am getting bonuses/upgrades. These moments could use more 
         "advertising/celebration" messaging with visuals and sound.
     [ ] Celebrate a victory
