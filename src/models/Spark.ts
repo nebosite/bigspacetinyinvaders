@@ -20,6 +20,7 @@ export class Spark extends GameObject{
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
+        super.think(gameTime, elapsedMilliseconds);
         let timeRatio = elapsedMilliseconds  /1000.0;
         let delta = this.velocity.scale(timeRatio);
 

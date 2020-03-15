@@ -7,6 +7,7 @@ import { EventThing } from "../tools/EventThing";
 import { Debris, DebrisType } from "./Debris";
 import { Vector2D } from "../tools/Vector2D";
 import { ShieldBlock } from "./ShieldBlock";
+import { GameAnimation } from "src/tools/GameAnimation";
 
 
 export class Alien extends GameObject{
@@ -21,6 +22,8 @@ export class Alien extends GameObject{
     timeBetweenShots = 0;
     shotOrders = 0;
     damage = 0;
+    flyingIn = false;
+    formationLocation = new Vector2D(0,0);
 
     constructor(appModel: IAppModel, alienType: number){
         super(appModel);
@@ -42,6 +45,7 @@ export class Alien extends GameObject{
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
+        super.think(gameTime, elapsedMilliseconds);
         // Shoot if we have an order to shot and it has been long enough
         if(this.shotOrders > 0 && (gameTime - this.lastShotTime) > this.timeBetweenShots)
         {
@@ -54,6 +58,12 @@ export class Alien extends GameObject{
             this.appModel.addGameObject(bullet);
         }
 
+        if(!this.flyingIn) 
+        {
+            this.x = this.formationLocation.x;
+            this.y = this.formationLocation.y;
+        }
+
         if(this.y > this.appModel.shieldTop) 
         {
             let target = this.appModel.hitTest(this);
@@ -62,6 +72,16 @@ export class Alien extends GameObject{
                 target.doDamage(this);
             }
         }
+    }
+
+    addFlyinAnimation(animation: GameAnimation)
+    {
+        this.flyingIn = true;
+        animation.OnAnimationComplete.subscribe("AF", () => {
+            this.flyingIn = false;
+            this.removeAnimation(animation); 
+        } );
+        this.animations.push(animation);
     }
 
     shoot()

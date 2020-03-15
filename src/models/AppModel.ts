@@ -6,6 +6,9 @@ import { Alien } from "./Alien";
 import { ShieldBlock } from "./ShieldBlock";
 import { GLOBALS } from "../globals";
 import { EventThing } from "../tools/EventThing";
+import { SplineAnimation } from "../tools/GameAnimation";
+import { Vector2D } from "../tools/Vector2D";
+import { defaultFilterVertex } from "pixi.js";
 
 
 //---------------------------------------------------------------------------
@@ -98,6 +101,8 @@ export class AppModel implements IAppModel
     settings = new GameSettings();
     onHitObject = new EventThing<{gameObject: GameObject, damage: number}>("AppModel OnHitObject");
     shieldTop = 0;
+    currentLevel = 1;
+    lastThinkTime = 0;
 
     private _worldSize = {width: 10, height: 10};
     get worldSize(): { width:number, height: number} {return this._worldSize;}
@@ -120,6 +125,22 @@ export class AppModel implements IAppModel
         this.totalScore = 0;
         this.hasShields = false;
         this._gameIsRunning = false;
+        this.currentLevel = 1;
+        this.lastThinkTime = 0;
+
+        // let animation = new SplineAnimation(0,10000, 
+        //     [
+        //         new Vector2D(100,100), 
+        //         new Vector2D(200,200), 
+        //         new Vector2D(300,300),
+        //     ],(t,p) =>
+        // {
+        //     console.log(`P: ${Math.floor(t * 100)}: ${Math.floor(p.x)}, ${Math.floor(p.y)}`);
+        // }, 2)
+        // for(let i = 0; i < 10000; i+=200)
+        // {
+        //     animation.animate(i);
+        // }
     }
 
     //---------------------------------------------------------------------------
@@ -163,6 +184,7 @@ export class AppModel implements IAppModel
     // 
     //---------------------------------------------------------------------------
     think (gameTime: number, elapsedMilliseconds: number) {
+        this.lastThinkTime = gameTime;
         this.diagnostics.addFrame(elapsedMilliseconds);
         let startTime = Date.now();
 
@@ -205,7 +227,7 @@ export class AppModel implements IAppModel
 
         if(this.shouldStartLevel && this.players.length > 0)
         {
-            this.startLevel();
+            this.startLevel(gameTime);
         }
 
         this.totalScore = 0;
@@ -272,7 +294,7 @@ export class AppModel implements IAppModel
     //---------------------------------------------------------------------------
     // 
     //---------------------------------------------------------------------------
-    startLevel()
+    startLevel(gameTime: number)
     {
         this.shouldStartLevel = false;
         let alienSize = 11;
@@ -283,10 +305,35 @@ export class AppModel implements IAppModel
         let xForAliens = this.worldSize.width - alienSpacing * 4;
         let columns = Math.ceil((xForAliens * .9) / alienSpacing);
         let rows = Math.ceil((yForAliens * .8) / alienSpacing);
-        let hive = new Hive(this, columns * rows);
+        let hive = new Hive(this, this.currentLevel);
+        hive.onCleanup.subscribe("Start new level", () => {
+            this.currentLevel++;
+            this.startLevel(this.lastThinkTime);
+        });
+
+        let alienYOffset = 0;
+        let alienXOffset = (xForAliens - columns * alienSpacing)/2;
+        if(this.currentLevel == 1)
+        {
+            columns = 11;
+            rows = 5;
+            alienYOffset = yForAliens - (rows + 5) * alienSpacing;
+            alienXOffset = (xForAliens - columns * alienSpacing)/2;
+        }
         let topRowCount = Math.ceil(rows * .05);
         let nextRowCount = Math.ceil(rows * .2) + topRowCount;
-        this.addGameObject(hive);
+        this.addGameObject(hive); 
+
+        let getJitteredPoint = (point: Vector2D, xmag: number, ymag: number) =>
+        {
+            var theta = Math.random() * Math.PI * 2;
+            var w = Math.random() * xmag;
+            var h = Math.random() * ymag;
+            return new Vector2D(
+                point.x + w * Math.cos(theta),
+                point.y + h * Math.sin(theta)              
+            )   
+        }
 
         for(let i = 0; i < columns; i++)
         {
@@ -296,8 +343,20 @@ export class AppModel implements IAppModel
                 if(j < topRowCount) newType = 2;
                 else if (j < nextRowCount) newType = 1;
                 let newAlien = new Alien(this, newType);
-                newAlien.x = alienSpacing * 3 + i * alienSpacing;
-                newAlien.y = ufoArea + GLOBALS.INFO_Y_AREA + j * alienSpacing;
+                newAlien.formationLocation.x = alienXOffset + alienSpacing * 3 + i * alienSpacing;
+                newAlien.formationLocation.y = alienYOffset + ufoArea + GLOBALS.INFO_Y_AREA + j * alienSpacing;
+                let points = new Array<Vector2D>();
+                points.push(getJitteredPoint(newAlien.formationLocation.subtract(new Vector2D(0,this.worldSize.height)), xForAliens* .5, yForAliens * .2))
+                points.push(getJitteredPoint(points[0].add(newAlien.formationLocation).scale(.5), xForAliens * .5, yForAliens * .2))
+                points.push(newAlien.formationLocation);
+                newAlien.addFlyinAnimation(
+                    new SplineAnimation(
+                        gameTime, 6000, points, 
+                        (t, p) => {
+                            newAlien.x = p.x;
+                            newAlien.y = p.y;
+                            points[2] = newAlien.formationLocation; // update to current hive location too
+                }));
                 this.addGameObject(newAlien);
                 hive.addMember(newAlien);
             }

@@ -17,6 +17,7 @@ export class ShieldBlock extends GameObject{
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
+        super.think(gameTime, elapsedMilliseconds);
     }
 
     doDamage(sourceObject: GameObject) {

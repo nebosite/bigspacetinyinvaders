@@ -1,6 +1,7 @@
 import { IAppModel, AppModel } from "./AppModel";
 import { GameObjectRenderer } from "../views/GameObjectRendering";
 import { EventThing } from "../tools/EventThing";
+import { GameAnimation } from "src/tools/GameAnimation";
 
 export enum GameObjectType
 {
@@ -27,6 +28,7 @@ export class GameObject
     appModel: IAppModel;
     isDeleted = false;
     onCleanup = new EventThing<void>("GameObject.OnCleanup");
+    animations = new Array<GameAnimation>();
 
     constructor(appModel: IAppModel)
     {
@@ -41,6 +43,16 @@ export class GameObject
         this.appModel.removeGameObject(this);
     }
 
-    think(gameTime: number, elapsedMilliseconds: number) {};
+    removeAnimation(animation: GameAnimation)
+    {
+        let index = this.animations.indexOf(animation);
+        if(index >= 0) this.animations.splice(index, 1);
+    }
+
+    think(gameTime: number, elapsedMilliseconds: number) 
+    {
+        for(let animation of this.animations) animation.animate(gameTime);
+    };
+    
     doDamage(sourceObject: GameObject) {};
 }

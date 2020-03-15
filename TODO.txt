@@ -6,10 +6,15 @@ TODO
     [x] Bug: One of the sound effects is slightly annoying on my sound system 
         (which is very accurate). It sounds like a sharp tick. Consider swapping 
         it with something less abrasive.
-    [ ] New wave when all ships are lost
-    [ ] Bug: The game crashed when I lost. All the ships died by crashing into my shields, 
+    [x] New wave when all ships are lost
+    [x] Bug: The game crashed when I lost. All the ships died by crashing into my shields, 
         then the game froze.
-        [ ] Killing all the aliens spawns a new wave
+        [x] Killing all the aliens spawns a new wave
+    [x] Start with a tiny "standard" invader wave
+    [x] 2nd wave is huge
+    [ ] Fly the hive in
+    [ ] Show aliens left next to score
+    [ ] Blue powerup: Plasma blast useing extra shot button
     [ ] Bug: I got two player ships but one which I could not move would shoot, 
         and one that would not shoot would move. Repro: Start the game by detecting 
         an Xbox 360 controller. Press Start on the controller to start a game. Immediately 
@@ -17,11 +22,10 @@ TODO
         spawned but only one can be controlled left and right while the other one shoots.
     [ ] I am not clear how I am getting bonuses/upgrades. These moments could use more 
         "advertising/celebration" messaging with visuals and sound.
+    [ ] Play sound with text for powerups
     [ ] Celebrate a victory
-    [ ] Show aliens left next to score
-    [ ] Start with a tiny "standard" invader wave
-    [ ] 2nd wave is huge
-    [ ] Fly the hive in
+
+
     [ ] Bug: leaving full screen leaves all  of the menu stuff messed up in the corner (only after completing a game)
 
 NEW

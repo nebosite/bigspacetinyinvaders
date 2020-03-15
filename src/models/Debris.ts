@@ -54,6 +54,7 @@ export class Debris extends GameObject{
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
+        super.think(gameTime, elapsedMilliseconds);
         if(!this.landed)
         {
             let timeFraction = elapsedMilliseconds/1000.0;

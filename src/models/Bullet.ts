@@ -20,6 +20,7 @@ export class Bullet extends GameObject{
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
+        super.think(gameTime, elapsedMilliseconds);
         let timeRatio = elapsedMilliseconds  /1000.0;
         let movement = timeRatio * this.velocity.length();
         let steps = Math.floor(Math.abs(movement) /2 ) + 1;

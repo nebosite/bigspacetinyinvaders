@@ -13,32 +13,40 @@ export class Hive extends GameObject{
     tickSpan = 1000;
     bulletCache = 0;
     hiveLevel = 1;
-    hiveSize: number;
+    memberCount: number = 0;
     speed = 1.0;
 
 
-    constructor(appModel: IAppModel, hiveSize: number){
+    constructor(appModel: IAppModel, level: number){
         super(appModel);
         this.appModel = appModel;
         this.type = GameObjectType.Hive;
         this.width = 1;
         this.height = 1;
-        this.hiveSize = hiveSize;
+        this.hiveLevel = level;
     }
 
     addMember(alien: Alien)
     {
+        this.memberCount++;
         this._members.push(alien);
-        alien.onDeath.subscribe("removeFromHive", () => this._members.splice(this._members.indexOf(alien),1));
+        alien.onDeath.subscribe("removeFromHive", () => {
+            this._members.splice(this._members.indexOf(alien),1);
+            if(this._members.length === 0)
+            {
+                this.delete();
+            }
+        });
     }
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
+        super.think(gameTime, elapsedMilliseconds);
         if(this.descend > 0)
         {
             this.descend-= this.hiveYVelocity;
             this._members.forEach( member => {
-                member.y += this.hiveYVelocity;
+                member.formationLocation.y += this.hiveYVelocity;
             });
             return;
         }
@@ -51,15 +59,16 @@ export class Hive extends GameObject{
         }
 
         if(gameTime < this.nextTick) return;
-        this.bulletCache += Math.ceil(((this.hiveLevel + 2) * this._members.length) / this.hiveSize);
-        this.nextTick = gameTime + ((1.0 / this.speed) * this.tickSpan * this._members.length) / this.hiveSize;
+        let timeRatio = elapsedMilliseconds/ 1000.0;
+        this.bulletCache += timeRatio * ((this.hiveLevel * 30 + 80) * this._members.length) / this.memberCount;
+        this.nextTick = gameTime + ((1.0 / this.speed) * this.tickSpan * this._members.length) / this.memberCount;
 
         let shouldReverse = false;
         this._members.forEach( member => {
-            member.x += this.hiveXVelocity;
+            member.formationLocation.x += this.hiveXVelocity;
             member.localFrame++;
-            if(member.x > this.appModel.worldSize.width - member.width 
-                || member.x < member.width)
+            if(member.formationLocation.x > this.appModel.worldSize.width - member.width 
+                || member.formationLocation.x < member.width)
             {
                 shouldReverse = true;
             }

@@ -170,6 +170,7 @@ export class Player extends GameObject implements IPlayerActionReceiver
 
     think(gameTime: number, elapsedMilliseconds: number) 
     {
+        super.think(gameTime, elapsedMilliseconds);
         if(this.isDead) return;
         if(this.entranceTimeLeft_ms >= 0)
         {
