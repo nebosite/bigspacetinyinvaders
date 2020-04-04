@@ -49,7 +49,18 @@ export class AppDiagnostics
 
 export class GameSettings
 {
-    isFullScreen = false;
+    isFullScreen = true;
+    debug = false;
+
+    //---------------------------------------------------------------------------
+    // 
+    //---------------------------------------------------------------------------
+    constructor(){
+        if(this.debug)
+        {
+            this.isFullScreen = false;
+        }
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -63,7 +74,7 @@ export interface IAppModel
     think: (gameTime: number, elapsedMilliseconds: number) => void;
     removeGameObject: (gameObject: GameObject) => void; 
     addGameObject: (gameObject: GameObject) => void; 
-    hitTest: (gameObject: GameObject) => GameObject | null;
+    hitTest: (gameObject: GameObject, tryTarget: (target: GameObject) => boolean) => void;
     reset: () => void;
     diagnostics: AppDiagnostics;
     gameListener: IGameListener | null;
@@ -242,19 +253,17 @@ export class AppModel implements IAppModel
     }
 
     readonly shieldMap = [
-        [0,0,1,1,1,1,1,1,1,0,0],
-        [0,1,1,1,1,1,1,1,1,1,0],
-        [1,1,1,1,1,1,1,1,1,1,1],
-        [1,1,1,1,1,1,1,1,1,1,1],
-        [1,1,1,1,1,1,1,1,1,1,1],
-        [1,1,1,1,1,1,1,1,1,1,1],
-        [1,1,1,1,1,1,1,1,1,1,1],
-        [1,1,1,1,1,1,1,1,1,1,1],
-        [1,1,1,1,1,1,1,1,1,1,1],
-        [1,1,1,1,1,1,1,1,1,1,1],
-        [1,1,1,1,1,1,1,1,1,1,1],
-        [1,1,1,1,0,0,0,1,1,1,1],
-        [1,1,1,1,0,0,0,1,1,1,1],
+        [0,0,1,1,1,1,1,0,0],
+        [0,1,1,1,1,1,1,1,0],
+        [1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1],
+        [1,1,1,0,0,0,1,1,1],
+        [1,1,1,0,0,0,1,1,1],
     ]
 
     //---------------------------------------------------------------------------
@@ -388,7 +397,7 @@ export class AppModel implements IAppModel
     //---------------------------------------------------------------------------
     // 
     //---------------------------------------------------------------------------
-    hitTest(gameObject: GameObject)
+    hitTest(gameObject: GameObject, tryTarget: (target: GameObject) => boolean)
     {
         let gridXSize = this.collisionLookup.length;
         let gridYSize = this.collisionLookup[0].length;
@@ -411,7 +420,9 @@ export class AppModel implements IAppModel
 
                 for(let i = 0; i < this.collisionLookup[xRead][yRead].length; i++)
                 {
+                    
                     let target = this.collisionLookup[xRead][yRead][i];
+                    if(target.isDeleted) continue;
                     if(gameObject.type == GameObjectType.Bullet)
                     {
                         let bullet = gameObject as Bullet;
@@ -437,10 +448,9 @@ export class AppModel implements IAppModel
                     if(dx > (gameObject.width + target.width)/2) continue;
                     let dy = Math.abs(gameObject.y - target.y);
                     if(dy > (gameObject.height + target.height)/2) continue;
-                    return target;                    
+                    if(!tryTarget(target)) return;
                 }
             } 
         }
-        return null;
     }
 }

@@ -28,6 +28,7 @@ theSoundHelper.loadSound("sounds/spark.wav");
 let theDrawHelper = new DrawHelper();
 theDrawHelper.addImageTexture("img/mainlogo.png");
 theDrawHelper.addImageTexture("img/glow.png");
+theDrawHelper.addImageTexture("img/photontorpedo.png");
 theDrawHelper.addIndexedSpriteTextures("sprites/ship", ".png", 2, 10);
 theDrawHelper.addIndexedSpriteTextures("sprites/bullet", ".png", 2, 2);
 theDrawHelper.addIndexedSpriteTextures("sprites/alien", ".png", 2, 7);

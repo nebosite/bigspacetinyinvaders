@@ -8,17 +8,17 @@ import { GLOBALS } from "../globals";
 
 export enum DebrisType
 {
-    DeadShip,
-    Big,
-    Small,
-    Powerup_Fanshot,
+    PhotonTorpedo = 0,
+    Big = 1,
+    Small = 2,
+    Powerup_Fanshot = 3,
 }
 
 export class Debris extends GameObject{
     appModel: IAppModel;
     localFrame = 0;
     velocity: [number,number] = [0,0]
-    debrisType: number;
+    debrisType: DebrisType;
     onDeath = new EventThing<void>("Debris.OnDeath");
     landed = false;
     hitProbability  = 0.1;
@@ -37,15 +37,15 @@ export class Debris extends GameObject{
         this.height = 16;
         switch(debrisType)
         {
-            case DebrisType.DeadShip:
+            case DebrisType.PhotonTorpedo:
                 this.width = 12;
                 this.height = 12;
                 break;
-            case DebrisType.DeadShip:
+            case DebrisType.PhotonTorpedo:
                 this.width = 2;
                 this.height = 2;
                 break;
-            case DebrisType.DeadShip:
+            case DebrisType.PhotonTorpedo:
                 this.width = 1;
                 this.height = 1;
                 break;

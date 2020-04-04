@@ -21,7 +21,7 @@ export class ShieldBlock extends GameObject{
     }
 
     doDamage(sourceObject: GameObject) {
-        if(this.hitPoints == 0) return;
+        if(this.hitPoints <= 0) return;
         let damage = 1;
         if(sourceObject.type == GameObjectType.Bullet) {
             let bullet = sourceObject as Bullet

@@ -1,9 +1,10 @@
 import { GameObject, GameObjectType } from "./GameObject";
 import { IAppModel } from "./AppModel";
-import { Bullet } from "./Bullet";
+import { Bullet, BulletType } from "./Bullet";
 import { EventThing } from "../tools/EventThing";
 import { Debris, DebrisType } from "./Debris";
 import { IPlayerActionReceiver } from "../tools/ButtonEventTranslator";
+import { Gun, GunPowerup_DefaultGun, GunPowerup_FanShot, GunPowerupType } from "./Guns-n-powerups";
 
 export enum PlayerAction {
     None,
@@ -14,96 +15,6 @@ export enum PlayerAction {
     Fire
 }
 
-interface GunPowerup
-{
-    shotHeat: number;
-    shotCost: number;
-    shotStageTime_ms: number;
-    consumeShot: (bullet: Bullet) => void;
-}
-
-class GunPowerup_DefaultGun implements GunPowerup
-{
-    shotHeat = 10;
-    shotCost = 10;
-    shotStageTime_ms = 40;
-    consumeShot = (bullet: Bullet) =>{}
-}
-
-class GunPowerup_FanShot implements GunPowerup
-{
-    shotHeat = 2;
-    shotCost = 1;
-    shotStageTime_ms = 20;
-    totalShots = 400;
-    playerGun: Gun;
-    theta = 0;
-
-    constructor(gun: Gun)
-    {
-        this.playerGun = gun;
-    }
-
-    consumeShot = (bullet: Bullet) =>
-    {
-        this.totalShots--;
-        if(this.totalShots <= 0)
-        {
-            this.playerGun.powerup = new GunPowerup_DefaultGun();
-        }
-        this.theta += .5;
-        bullet.velocity.x += (Math.cos(this.theta)) * 50;
-        bullet.velocity.y *= 1.5;
-    }
-}
-
-class Gun {
-    heat = 0;
-    coolRate = .6;
-    overheatLevel = 100;
-    charge = 0;
-    chargeRate = 25;
-    chargeCapacity = 200;
-    parent: Player;
-    appModel: IAppModel;
-    lastShotTime = 0;
-    powerup: GunPowerup = new GunPowerup_DefaultGun();
-    
-    constructor(appModel: IAppModel, parent: Player){
-        this.appModel = appModel;
-        this.parent = parent;
-    }
-
-    canShoot(gameTime: number)
-    {
-        return this.heat < this.overheatLevel // Gun heat limit
-            && (gameTime - this.lastShotTime) > this.powerup.shotStageTime_ms   // reloading limit
-            && this.charge > this.powerup.shotCost; // charge limit
-    }
-
-    getBullet(gameTime: number)
-    {
-        this.heat += this.powerup.shotHeat;
-        this.charge -= this.powerup.shotCost;
-        this.lastShotTime = gameTime;
-        let bullet = new Bullet(this.appModel, this.parent);
-        this.powerup.consumeShot(bullet);
-        return bullet;
-    }
-
-    think(gameTime: number, elapsedMilliseconds: number) 
-    {
-
-        let shortRatio = elapsedMilliseconds/1000.0;
-        this.heat -= this.heat * this.coolRate * shortRatio;
-        
-        if(this.charge < this.chargeCapacity){
-            this.charge += this.chargeRate * shortRatio;
-        }
-    }
-
-}
-
 export class Player extends GameObject implements IPlayerActionReceiver
 {
     hitPoints = 1;
@@ -111,7 +22,7 @@ export class Player extends GameObject implements IPlayerActionReceiver
     xTargetVelocity = 0;
     accelerationRate = 30;
     maxSpeed = 6;
-    onShoot = new EventThing<void>("Player.OnShoot");
+    onShoot = new EventThing<Bullet>("Player.OnShoot");
     onDeath = new EventThing<void>("Player.OnDeath");
     onBirth = new EventThing<void>("Player.OnBirth");
     appModel: IAppModel;
@@ -161,7 +72,24 @@ export class Player extends GameObject implements IPlayerActionReceiver
         {
             case PlayerAction.Left: this.leftImperativeVelocity = value;   break;
             case PlayerAction.Right:  this.rightImperativeVelocity = value;  break;
-            case PlayerAction.Fire: this.shooting = value == 1;
+            case PlayerAction.Fire: 
+                if(value && !this.shooting && this.gun.photonArmed)
+                {
+                    this.gun.photonArmed = false;
+                    var bullet =  new Bullet(this.appModel, this);
+                    bullet.x = this.x;
+                    bullet.y = this.y - this.height;
+                    bullet.velocity = bullet.velocity.scale(.7);
+                    bullet.bulletType = BulletType.PhotonTorpedo;
+                    bullet.width = bullet.height = 20;
+                    bullet.power = 500;
+                    
+                    this.appModel.addGameObject(bullet);
+                    this.onShoot.invoke(bullet);                
+                }
+                else {
+                    this.shooting = value == 1;
+                }
         }   
         this.xTargetVelocity = (this.rightImperativeVelocity - this.leftImperativeVelocity) * this.maxSpeed;
 
@@ -211,23 +139,47 @@ export class Player extends GameObject implements IPlayerActionReceiver
             if(this.x > this.appModel.worldSize.width - this.width/2) {
                 this.x = this.appModel.worldSize.width - this.width/2;
             }
-            let collisionTarget = this.appModel.hitTest(this);
-            if(collisionTarget)
+            this.appModel.hitTest(this, (collisionTarget) =>
             {
                 if(collisionTarget.type == GameObjectType.Debris)
                 {
                     let debris = collisionTarget as Debris;
+                    let debrisConsumed = false;
                     switch(debris.debrisType)
                     {
-                        case DebrisType.Powerup_Fanshot: this.gun.powerup = new GunPowerup_FanShot(this.gun); break;
-                        case DebrisType.DeadShip: this.gun.charge += 100; break;
-                        case DebrisType.Big: this.gun.charge += 20; break;
-                        case DebrisType.DeadShip: this.gun.charge += 5; break;
+                        case DebrisType.Powerup_Fanshot: 
+                            if(this.gun.powerup.type == GunPowerupType.Normal)
+                            {
+                                this.gun.powerup = new GunPowerup_FanShot(this.gun); 
+                                debrisConsumed = true;
+                            }
+                            break;
+                        case DebrisType.PhotonTorpedo: 
+                            if(!this.gun.photonArmed)
+                            {
+                                debrisConsumed = true;
+                                this.gun.photonArmed = true;
+                            }
+                            break;
+                        case DebrisType.Big: 
+                            debrisConsumed = this.gun.addCharge(100); 
+                            break;
+                        case DebrisType.Small: 
+                            debrisConsumed = this.gun.addCharge(20); 
+                            break;
+                        default:
+                            console.log("Bad debris type: " + debris.debrisType);
+                            break;
                     }
-                    debris.delete();
+                    if(debrisConsumed) {
+                        debris.delete();
+                    }
+                    else {
+                        debris.landed = debris.landed;
+                    }
                 }
-            }
-
+                return true;
+            });
         }
 
         this.gun.think(gameTime, elapsedMilliseconds); 
@@ -236,6 +188,7 @@ export class Player extends GameObject implements IPlayerActionReceiver
         // {
         //     this.delete();
         // }
+        console.log(this.gun.photonArmed);
     }
 
     maybeShoot(gameTime: number){
@@ -245,7 +198,7 @@ export class Player extends GameObject implements IPlayerActionReceiver
         bullet.x = this.x;
         bullet.y = this.y - this.height;
         this.appModel.addGameObject(bullet);
-        this.onShoot.invoke();
+        this.onShoot.invoke(bullet);
     }
 
     doDamage(sourceObject: GameObject) {

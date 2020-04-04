@@ -287,6 +287,9 @@ export class DrawnImage extends DrawnObject
     get color(): number { return 0; }
     set color(value: number) { }
 
+    get alpha(): number { return this._pixiObject.alpha; }
+    set alpha(value: number) { this._pixiObject.alpha = value; }
+
     get strokeColor(): number { return 0 }
     set strokeColor(value: number) { }
 

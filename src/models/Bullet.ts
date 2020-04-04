@@ -3,11 +3,17 @@ import { IAppModel } from "./AppModel";
 import { DrawnVectorObject } from "src/ui/DrawHelper";
 import { Vector2D } from "../tools/Vector2D";
 
+export enum BulletType
+{
+    Standard,
+    PhotonTorpedo
+}
 export class Bullet extends GameObject{
     appModel: IAppModel;
     velocity = new Vector2D(0, -300);
     source: GameObject;
     power = 10;
+    bulletType = BulletType.Standard;
 
     constructor(appModel: IAppModel, source: GameObject){
         super(appModel);
@@ -40,16 +46,16 @@ export class Bullet extends GameObject{
                 this.appModel.removeGameObject(this);
             }
 
-            let target = this.appModel.hitTest(this);
-            if(target)
+            this.appModel.hitTest(this, (target) =>
             {
                 target.doDamage(this);
                 if(this.power <= 0)
                 {
                     this.appModel.removeGameObject(this);
+                    return false;
                 }
-            }
-            
+                return true;
+            });
         }
     }
 }

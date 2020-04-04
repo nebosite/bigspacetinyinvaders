@@ -66,11 +66,11 @@ export class Alien extends GameObject{
 
         if(this.y > this.appModel.shieldTop) 
         {
-            let target = this.appModel.hitTest(this);
-            if(target)
+            this.appModel.hitTest(this, (target) =>
             {
                 target.doDamage(this);
-            }
+                return true;
+            });
         }
     }
 
@@ -117,7 +117,7 @@ export class Alien extends GameObject{
                 player.score+= 10; // Kill points
                 if(Math.random() < .2) 
                 {
-                    let debrisType = DebrisType.DeadShip;
+                    let debrisType = DebrisType.PhotonTorpedo;
                     if(Math.random() < .2) debrisType = DebrisType.Powerup_Fanshot;
                     let specialDebris = new Debris(this.appModel, debrisType);
                     specialDebris.x = this.x;

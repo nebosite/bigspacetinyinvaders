@@ -1,7 +1,7 @@
-import { DrawHelper, DrawnObject, DrawnVectorObject, DrawnSprite, DrawnContainer } from "../ui/DrawHelper";
+import { DrawHelper, DrawnObject, DrawnVectorObject, DrawnSprite, DrawnContainer, DrawnText, DrawnImage } from "../ui/DrawHelper";
 import { GameObject, GameObjectType } from "../models/GameObject";
 import { Player } from "../models/Player";
-import { Bullet } from "../models/Bullet";
+import { Bullet, BulletType } from "../models/Bullet";
 import { Alien } from "../models/Alien";
 import { ShieldBlock } from "../models/ShieldBlock";
 import { SoundHelper } from "../ui/SoundHelper";
@@ -31,18 +31,50 @@ export class GameObjectRenderer
     }
 }
 
+class PhotonTorpedo{
+    photonTorpedo: DrawnImage;
+
+    constructor(drawing: DrawHelper)
+    {
+        this.photonTorpedo = drawing.addImageObject( "img/photontorpedo.png", 0,0, 0) ;
+    }
+
+    render(x: number, y: number, alpha: number){
+        this.photonTorpedo.rotation = Math.random() * Math.PI * 2;
+        const scale = .1 +  Math.random() * .05 
+        this.photonTorpedo.scale = [scale, scale];
+        this.photonTorpedo.x = x;
+        this.photonTorpedo.y = y;
+        this.photonTorpedo.alpha = alpha;       
+    }
+
+    delete() {
+        this.photonTorpedo.delete();
+    }
+}
+
 export class PlayerObjectRenderer extends GameObjectRenderer
 {
     playerName: DrawnObject;
+    gunHeat: DrawnVectorObject;
+    charge: DrawnVectorObject;
+    extraCharge: DrawnVectorObject;
+    score: DrawnText;
+    photonTorpedo: PhotonTorpedo;
 
     constructor(gameObject: Player, drawing: DrawHelper, sound: SoundHelper)
     {
         super(gameObject,
             drawing.addSpriteObject("sprites/ship", gameObject.number % 10, gameObject.x, gameObject.y) as DrawnObject, sound);
 
-        this.playerName = drawing.addTextObject(gameObject.name, gameObject.x, gameObject.y + 10, 10, 0xffffff, 0x0, 0, 300, [.5, 0]);
-
-        gameObject.onShoot.subscribe("playShotSound", () => sound.play("sounds/player_shot.wav"));
+        this.playerName = drawing.addTextObject(gameObject.name, gameObject.x, gameObject.y + 10, 12, 0xffffff, 0x0, 0, 300, [.5, 0]);
+        this.gunHeat = drawing.addRectangleObject(0,0,20,2,0xFF4444);
+        this.charge = drawing.addRectangleObject(0,0,20,2,0x4444FF);
+        this.extraCharge = drawing.addRectangleObject(0,0,20,2,0x4444FF);
+        this.score = drawing.addTextObject(gameObject.name, gameObject.x, gameObject.y + 10, 12, 0xaaaaaa, 0x0, 0, 300, [.5, 0]);
+        this.photonTorpedo = new PhotonTorpedo(drawing);
+        
+        gameObject.onShoot.subscribe("playShotSound", (bullet) => sound.play("sounds/player_shot.wav"));
         gameObject.onDeath.subscribe("playPlayerDeathSound", () => sound.play("sounds/player_death.wav"));
         gameObject.onBirth.subscribe("playerEntrySound", () => sound.play("sounds/player_entrance.mp3"));
         gameObject.onBirth.invoke();
@@ -50,38 +82,84 @@ export class PlayerObjectRenderer extends GameObjectRenderer
 
     render(){
         super.render();
-        if(!this.playerName) return;
-        this.playerName.x = this.gameObject.x;
-        this.playerName.y = this.gameObject.y + 10;
+
+        const player = this.gameObject as Player;
+        this.playerName.x = player.x;
+        this.playerName.y = player.y + 9;
+        
+        this.gunHeat.x = player.x - 10;
+        this.gunHeat.y = player.y + 23;
+        this.gunHeat.width = 20 * player.gun.heatLevel;
+        
+        this.charge.x = player.x - 10;
+        this.charge.y = player.y + 26;
+        this.charge.width = 20 * player.gun.chargeLevel;
+        
+        this.extraCharge.x = player.x - 10;
+        this.extraCharge.y = player.y + 29;
+        this.extraCharge.width = 20 * player.gun.extraChargeLevel;
+       
+        this.score.x = player.x;
+        this.score.y = player.y + 30;
+        this.score.text = player.score.toString();
+
+        this.photonTorpedo.render(player.x, player.y - 8, player.gun.photonArmed ? 1.0 : 0)
     };
 
     delete() {
         super.delete();
         this.playerName?.delete();
+        this.gunHeat?.delete();
+        this.charge?.delete();
+        this.extraCharge?.delete();
+        this.score?.delete();
+        this.photonTorpedo?.delete();
     } 
 }
 
 export class BulletObjectRenderer extends GameObjectRenderer
 {
+    photonTorpedo: PhotonTorpedo | null = null;
     constructor(gameObject: Bullet, drawing: DrawHelper, sound: SoundHelper) 
     {
         super(gameObject,
             drawing.addContainer(gameObject.x, gameObject.y, 1, 1, 1),
             sound);
         
-        let container = this.drawnObject as DrawnContainer;
-        let glow = drawing.addImageObject(
-            "img/glow.png", 
-            0,0, .2) ;
-        let scale = 256/drawing.height * .4;
-        glow.scale = [scale,scale];
-        container.addChild(glow);
+        switch(gameObject.bulletType){
+            case BulletType.Standard:
+                let container = this.drawnObject as DrawnContainer;
+                let glow = drawing.addImageObject(
+                    "img/glow.png", 
+                    0,0, .2) ;
+                let scale = 256/drawing.height * .4;
+                glow.scale = [scale,scale];
+                container.addChild(glow);
 
-        container.addChild(drawing.addSpriteObject(
-            "sprites/bullet", 
-            BulletObjectRenderer.getBullentTextureIndex(gameObject), 
-            0,0));
+                container.addChild(drawing.addSpriteObject(
+                    "sprites/bullet", 
+                    BulletObjectRenderer.getBullentTextureIndex(gameObject), 
+                    0,0));
+                break;
+            case BulletType.PhotonTorpedo:
+                this.drawnObject.delete();
+                this.photonTorpedo = new PhotonTorpedo(drawing);
+                break;
+        }
+
+        
     }
+
+    render(){
+        super.render();
+
+        this.photonTorpedo?.render(this.gameObject.x, this.gameObject.y, 1.0)
+    };
+
+    delete() {
+        super.delete();
+        this.photonTorpedo?.delete();
+    } 
 
     static getBullentTextureIndex(bullet: Bullet)
     {   

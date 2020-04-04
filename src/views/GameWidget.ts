@@ -189,9 +189,9 @@ export class GameWidget extends Widget implements IGameListener
         this.theAppModel.worldSize = {width: this.widgetSystem.drawing.width, height: this.widgetSystem.drawing.height};
         this.theAppModel.gameListener = this;
 
-        this.mainScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 3, 30, 0xdddd00, 0x0, 0, 1000, [1,0] );
+        this.mainScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 3, 30, 0xaaaa00, 0x0, 0, 1000, [1,0] );
         this.maxScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 40, 30, 0xffff00, 0x0, 0, 1000, [1,0] );
-        this.aliensRemainingText = this.widgetSystem.drawing.addTextObject("Aliens: 000000", this.width-10, 80, 12, 0x00FFFF, 0x0,0, 1000, [1,0])
+        this.aliensRemainingText = this.widgetSystem.drawing.addTextObject("Aliens: 000000", this.width-10, 80, 14, 0x00FFFF, 0x0,0, 1000, [1,0])
     }
 
     //-------------------------------------------------------------------------

@@ -60,7 +60,9 @@ export class Hive extends GameObject{
 
         if(gameTime < this.nextTick) return;
         let timeRatio = elapsedMilliseconds/ 1000.0;
-        this.bulletCache += timeRatio * ((this.hiveLevel * 30 + 80) * this._members.length) / this.memberCount;
+        let bulletCacheNumber = (this.hiveLevel * 30 + 80);
+        if(this.hiveLevel == 1) bulletCacheNumber = 40;
+        this.bulletCache += timeRatio * (bulletCacheNumber * this._members.length) / this.memberCount;
         this.nextTick = gameTime + ((1.0 / this.speed) * this.tickSpan * this._members.length) / this.memberCount;
 
         let shouldReverse = false;

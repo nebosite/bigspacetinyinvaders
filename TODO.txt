@@ -15,10 +15,22 @@ TODO
     [x] Fly the hive in
 
 
-
-
+    [x] brighter charge lines
+    [x] brighter heat line
+    [x] Faster heat and charge for fan powerup
     [x] Show aliens left next to score
-    [ ] Blue powerup: Plasma blast useing extra shot button
+    [x] Show player stats under player
+
+    [x] Blue powerup: Plasma blast using extra shot button
+        [x] Debris adjust
+                Debris should give more energy
+                Don't pick up photon if you have one already
+                Don't pick up debris if full of energy!
+                Can't pick up photon torpedoes
+                Shield resist torpedos?
+    [ ] Powerups more rare
+    [ ] Powerups more likely when time goes by without one.
+        
     [ ] Bug: I got two player ships but one which I could not move would shoot, 
         and one that would not shoot would move. Repro: Start the game by detecting 
         an Xbox 360 controller. Press Start on the controller to start a game. Immediately 
@@ -27,8 +39,13 @@ TODO
     [ ] I am not clear how I am getting bonuses/upgrades. These moments could use more 
         "advertising/celebration" messaging with visuals and sound.
     [ ] Play sound with text for powerups
+    [ ] Sounds for upcharge
+    [ ] Sounds for destoying powerups
+    [ ] Photo pickup sound
+    [ ] Photo shot sound
     [ ] Celebrate a victory
-
+    [ ] True game over when alients land
+    [ ] Smaller shields
 
     [ ] Bug: leaving full screen leaves all  of the menu stuff messed up in the corner (only after completing a game)
 
