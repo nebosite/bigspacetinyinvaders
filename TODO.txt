@@ -12,8 +12,12 @@ TODO
         [x] Killing all the aliens spawns a new wave
     [x] Start with a tiny "standard" invader wave
     [x] 2nd wave is huge
-    [ ] Fly the hive in
-    [ ] Show aliens left next to score
+    [x] Fly the hive in
+
+
+
+
+    [x] Show aliens left next to score
     [ ] Blue powerup: Plasma blast useing extra shot button
     [ ] Bug: I got two player ships but one which I could not move would shoot, 
         and one that would not shoot would move. Repro: Start the game by detecting 

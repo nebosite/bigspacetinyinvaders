@@ -49,7 +49,7 @@ export class AppDiagnostics
 
 export class GameSettings
 {
-    isFullScreen = true;
+    isFullScreen = false;
 }
 
 //---------------------------------------------------------------------------

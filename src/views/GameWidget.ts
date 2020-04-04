@@ -83,6 +83,7 @@ export class GameWidget extends Widget implements IGameListener
     invite: InviteWidget | null = null;
     mainScoreText: DrawnText| null = null;
     maxScoreText: DrawnText| null = null;
+    aliensRemainingText: DrawnText| null = null;
     onGameOver = new EventThing<void>("Game Widget");
     hasSetSize = false;
     started = false;
@@ -163,6 +164,7 @@ export class GameWidget extends Widget implements IGameListener
         this.theAppModel.gameListener = null;
         this.mainScoreText?.delete();
         this.maxScoreText?.delete();
+        this.aliensRemainingText?.delete();
 
         for(let control of this.renderingControls.values())
         {
@@ -187,8 +189,9 @@ export class GameWidget extends Widget implements IGameListener
         this.theAppModel.worldSize = {width: this.widgetSystem.drawing.width, height: this.widgetSystem.drawing.height};
         this.theAppModel.gameListener = this;
 
-        this.mainScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 3, 30, 0xffff00, 0x0, 0, 1000, [1,0] );
+        this.mainScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 3, 30, 0xdddd00, 0x0, 0, 1000, [1,0] );
         this.maxScoreText = this.widgetSystem.drawing.addTextObject("Score: 00000", this.width-10, 40, 30, 0xffff00, 0x0, 0, 1000, [1,0] );
+        this.aliensRemainingText = this.widgetSystem.drawing.addTextObject("Aliens: 000000", this.width-10, 80, 12, 0x00FFFF, 0x0,0, 1000, [1,0])
     }
 
     //-------------------------------------------------------------------------
@@ -327,6 +330,12 @@ export class GameWidget extends Widget implements IGameListener
             this.maxScoreText.text = `Max: ${maxText}`;
             this.maxScoreText.x = this.mainScoreText?.x as number;
             this.maxScoreText.y = (this.mainScoreText?.y as number) + (this.mainScoreText?.height as number);
+        }
+        if(this.aliensRemainingText)
+        {
+            this.aliensRemainingText.text = `Aliens: ${this.theAppModel.diagnostics?.typeCount.get(GameObjectType.Alien)}`
+            this.aliensRemainingText.x = this.maxScoreText?.x as number;
+            this.aliensRemainingText.y = (this.maxScoreText?.y as number) + (this.maxScoreText?.height as number);
         }
     }
 
