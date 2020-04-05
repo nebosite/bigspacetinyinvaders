@@ -8,6 +8,7 @@ import { Debris, DebrisType } from "./Debris";
 import { Vector2D } from "../tools/Vector2D";
 import { ShieldBlock } from "./ShieldBlock";
 import { GameAnimation } from "src/tools/GameAnimation";
+import { DrawnImage } from "src/ui/DrawHelper";
 
 
 export class Alien extends GameObject{
@@ -24,6 +25,7 @@ export class Alien extends GameObject{
     damage = 0;
     flyingIn = false;
     formationLocation = new Vector2D(0,0);
+    killSelf = false;
 
     constructor(appModel: IAppModel, alienType: number){
         super(appModel);
@@ -72,6 +74,8 @@ export class Alien extends GameObject{
                 return true;
             });
         }
+
+        if(this.killSelf) this.die();
     }
 
     addFlyinAnimation(animation: GameAnimation)
@@ -88,6 +92,44 @@ export class Alien extends GameObject{
     {
         if(this.hitPoints <= 0) throw new Error("Dead Aliens Can't Shoot");
         this.shotOrders++;
+    }
+
+    die()
+    {
+        this.hitPoints = 0;
+        if(Math.random() < .015) 
+        {
+            let debrisType = DebrisType.PhotonTorpedo;
+            if(Math.random() < .4) debrisType = DebrisType.Powerup_Fanshot;
+            let specialDebris = new Debris(this.appModel, debrisType);
+            specialDebris.x = this.x;
+            specialDebris.y = this.y;
+            this.appModel.addGameObject(specialDebris);
+        }            if(Math.random() < .05) 
+
+        for(let i = 0; i < 3; i++)
+        {
+            if(Math.random() < .05)
+            {
+                let bigDebris = new Debris(this.appModel, DebrisType.Big);
+                bigDebris.x = this.x;
+                bigDebris.y = this.y;
+                this.appModel.addGameObject(bigDebris);
+            }
+        }
+        for(let i = 0; i < 10; i++)
+        {
+            if(Math.random() < .1)
+            {
+                let smallDebris = new Debris(this.appModel, DebrisType.Small);
+                smallDebris.x = this.x;
+                smallDebris.y = this.y;
+                this.appModel.addGameObject(smallDebris);
+            }
+        }
+
+        this.onDeath.invoke();
+        this.delete();
     }
 
     doDamage(sourceObject: GameObject) {
@@ -115,50 +157,15 @@ export class Alien extends GameObject{
             if(this.hitPoints <= 0)
             {
                 player.score+= 10; // Kill points
-                if(Math.random() < .2) 
-                {
-                    let debrisType = DebrisType.PhotonTorpedo;
-                    if(Math.random() < .2) debrisType = DebrisType.Powerup_Fanshot;
-                    let specialDebris = new Debris(this.appModel, debrisType);
-                    specialDebris.x = this.x;
-                    specialDebris.y = this.y;
-                    this.appModel.addGameObject(specialDebris);
-                }            if(Math.random() < .05) 
-
-                for(let i = 0; i < 3; i++)
-                {
-                    if(Math.random() < .1)
-                    {
-                        let bigDebris = new Debris(this.appModel, DebrisType.Big);
-                        bigDebris.x = this.x;
-                        bigDebris.y = this.y;
-                        this.appModel.addGameObject(bigDebris);
-                    }
-                }
-                for(let i = 0; i < 10; i++)
-                {
-                    if(Math.random() < .3)
-                    {
-                        let smallDebris = new Debris(this.appModel, DebrisType.Small);
-                        smallDebris.x = this.x;
-                        smallDebris.y = this.y;
-                        this.appModel.addGameObject(smallDebris);
-                    }
-                }
-            
             }
             else{
                 player.score ++; // Assist points
             }
-
-
         }
 
         if(this.hitPoints <= 0)
         {
-            this.onDeath.invoke();
-            this.delete();
-            
+            this.die();
         }    
     }
 

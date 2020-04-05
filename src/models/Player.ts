@@ -82,7 +82,7 @@ export class Player extends GameObject implements IPlayerActionReceiver
                     bullet.velocity = bullet.velocity.scale(.7);
                     bullet.bulletType = BulletType.PhotonTorpedo;
                     bullet.width = bullet.height = 20;
-                    bullet.power = 500;
+                    bullet.power = 1200;
                     
                     this.appModel.addGameObject(bullet);
                     this.onShoot.invoke(bullet);                
@@ -184,11 +184,7 @@ export class Player extends GameObject implements IPlayerActionReceiver
 
         this.gun.think(gameTime, elapsedMilliseconds); 
         if(this.shooting) this.maybeShoot(gameTime);
-        // if(Date.now() - this.lastActivityTime > 25000 && !this.shooting)
-        // {
-        //     this.delete();
-        // }
-        console.log(this.gun.photonArmed);
+
     }
 
     maybeShoot(gameTime: number){

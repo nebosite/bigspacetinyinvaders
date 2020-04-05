@@ -28,8 +28,10 @@ TODO
                 Don't pick up debris if full of energy!
                 Can't pick up photon torpedoes
                 Shield resist torpedos?
-    [ ] Powerups more rare
-    [ ] Powerups more likely when time goes by without one.
+
+    [x] Powerups more rare
+    [x] Bump up power of photon
+    [x] too few bullets raining down when aliens are few
         
     [ ] Bug: I got two player ships but one which I could not move would shoot, 
         and one that would not shoot would move. Repro: Start the game by detecting 
@@ -44,12 +46,13 @@ TODO
     [ ] Photo pickup sound
     [ ] Photo shot sound
     [ ] Celebrate a victory
+
     [ ] True game over when alients land
-    [ ] Smaller shields
 
     [ ] Bug: leaving full screen leaves all  of the menu stuff messed up in the corner (only after completing a game)
 
 NEW
+    [ ] Shooting shield with photon torpedo should make it explode with lots of little bullets
     [ ] Missing controller instructions
     [ ] Hard time seeing the difference in the object types. 
         So far I think there are these types of things flying through the air. 

@@ -41,11 +41,11 @@ export class Debris extends GameObject{
                 this.width = 12;
                 this.height = 12;
                 break;
-            case DebrisType.PhotonTorpedo:
+            case DebrisType.Big:
                 this.width = 2;
                 this.height = 2;
                 break;
-            case DebrisType.PhotonTorpedo:
+            case DebrisType.Small:
                 this.width = 1;
                 this.height = 1;
                 break;

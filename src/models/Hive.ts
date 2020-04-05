@@ -39,6 +39,20 @@ export class Hive extends GameObject{
         });
     }
 
+    kill(count: number)
+    {
+        const stuff = this._members;
+
+        for(let i = 0; i < count; i++)
+        {
+            const index = Math.floor(Math.random() * stuff.length)
+            if(stuff[index].type == GameObjectType.Alien)
+            {
+                (stuff[index] as Alien).killSelf = true;
+            }
+        }      
+    }
+
     think(gameTime: number, elapsedMilliseconds: number) 
     {
         super.think(gameTime, elapsedMilliseconds);
@@ -62,7 +76,7 @@ export class Hive extends GameObject{
         let timeRatio = elapsedMilliseconds/ 1000.0;
         let bulletCacheNumber = (this.hiveLevel * 30 + 80);
         if(this.hiveLevel == 1) bulletCacheNumber = 40;
-        this.bulletCache += timeRatio * (bulletCacheNumber * this._members.length) / this.memberCount;
+        this.bulletCache += timeRatio * (bulletCacheNumber * (this._members.length + this.memberCount * .1)) / this.memberCount;
         this.nextTick = gameTime + ((1.0 / this.speed) * this.tickSpan * this._members.length) / this.memberCount;
 
         let shouldReverse = false;

@@ -1,4 +1,4 @@
-import { IAppModel, IGameListener } from "../models/AppModel";
+import { IAppModel, IGameListener, DebugAction } from "../models/AppModel";
 import { NewPlayerWidget } from "./NewPlayerWidget";
 import { Player } from "../models/Player";
 import { DrawHelper, DrawnText } from "../ui/DrawHelper";
@@ -390,6 +390,13 @@ export class GameWidget extends Widget implements IGameListener
             this.theAppModel.endGame();
             event.handled = true;
             return;
+        }
+
+        // debug secret keys
+        if(this.theAppModel.settings.debug && event.isPressed && event.buttonCode == 84)
+        {
+            console.log("Debug Action");
+            this.theAppModel.doDebugAction(DebugAction.KillHalf);
         }
 
         // press tick (`) for diagnostics

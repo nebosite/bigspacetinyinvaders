@@ -20,7 +20,7 @@ export class GunPowerup_DefaultGun implements GunPowerup
 {
     type = GunPowerupType.Normal; 
     shotHeat = 10;
-    shotCost = 10;
+    shotCost = 30;
     shotStageTime_ms = 40;
     consumeShot = (bullet: Bullet) =>{}
 }
@@ -29,7 +29,7 @@ export class GunPowerup_FanShot implements GunPowerup
 {
     type = GunPowerupType.FanShot; 
     shotHeat = 4;
-    shotCost = 5;
+    shotCost = 20;
     shotStageTime_ms = 20;
     totalShots = 400;
     playerGun: Gun;

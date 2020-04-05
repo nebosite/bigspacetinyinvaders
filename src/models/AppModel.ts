@@ -10,6 +10,10 @@ import { SplineAnimation } from "../tools/GameAnimation";
 import { Vector2D } from "../tools/Vector2D";
 import { defaultFilterVertex } from "pixi.js";
 
+export enum DebugAction
+{
+    KillHalf
+}
 
 //---------------------------------------------------------------------------
 // 
@@ -50,7 +54,7 @@ export class AppDiagnostics
 export class GameSettings
 {
     isFullScreen = true;
-    debug = false;
+    debug = true;
 
     //---------------------------------------------------------------------------
     // 
@@ -76,6 +80,7 @@ export interface IAppModel
     addGameObject: (gameObject: GameObject) => void; 
     hitTest: (gameObject: GameObject, tryTarget: (target: GameObject) => boolean) => void;
     reset: () => void;
+    doDebugAction: (action: DebugAction) => void;
     diagnostics: AppDiagnostics;
     gameListener: IGameListener | null;
     onGameEnded: ()=>void;
@@ -114,6 +119,7 @@ export class AppModel implements IAppModel
     shieldTop = 0;
     currentLevel = 1;
     lastThinkTime = 0;
+    currentHive: Hive | null = null;
 
     private _worldSize = {width: 10, height: 10};
     get worldSize(): { width:number, height: number} {return this._worldSize;}
@@ -138,20 +144,19 @@ export class AppModel implements IAppModel
         this._gameIsRunning = false;
         this.currentLevel = 1;
         this.lastThinkTime = 0;
+    }
 
-        // let animation = new SplineAnimation(0,10000, 
-        //     [
-        //         new Vector2D(100,100), 
-        //         new Vector2D(200,200), 
-        //         new Vector2D(300,300),
-        //     ],(t,p) =>
-        // {
-        //     console.log(`P: ${Math.floor(t * 100)}: ${Math.floor(p.x)}, ${Math.floor(p.y)}`);
-        // }, 2)
-        // for(let i = 0; i < 10000; i+=200)
-        // {
-        //     animation.animate(i);
-        // }
+    //---------------------------------------------------------------------------
+    // 
+    //---------------------------------------------------------------------------
+    doDebugAction(action: DebugAction)
+    {
+        if(action == DebugAction.KillHalf)
+        {
+            this.currentHive?.kill(100);
+          
+        }
+ 
     }
 
     //---------------------------------------------------------------------------
@@ -332,6 +337,7 @@ export class AppModel implements IAppModel
         let topRowCount = Math.ceil(rows * .05);
         let nextRowCount = Math.ceil(rows * .2) + topRowCount;
         this.addGameObject(hive); 
+        this.currentHive = hive;
 
         let getJitteredPoint = (point: Vector2D, xmag: number, ymag: number) =>
         {
