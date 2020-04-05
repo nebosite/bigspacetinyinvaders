@@ -1,7 +1,7 @@
 
 TODO
     [ ] Sounds for upcharge
-    [ ] Remove player windows at the top
+    [x] Remove player windows at the top
         
     [ ] I am not clear how I am getting bonuses/upgrades. These moments could use more 
         "advertising/celebration" messaging with visuals and sound.

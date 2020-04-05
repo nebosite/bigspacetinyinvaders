@@ -77,6 +77,11 @@ export class PlayerObjectRenderer extends GameObjectRenderer
         gameObject.onShoot.subscribe("playShotSound", (bullet) => sound.play("sounds/player_shot.wav"));
         gameObject.onDeath.subscribe("playPlayerDeathSound", () => sound.play("sounds/player_death.wav"));
         gameObject.onBirth.subscribe("playerEntrySound", () => sound.play("sounds/player_entrance.mp3"));
+        gameObject.onChargeUp.subscribe("playerChargeupSound", (chargeAmount) =>
+        {
+            if(chargeAmount < 50) sound.play("sounds/chargepick.mp3", .2);
+            else sound.play("sounds/chargepickbig.mp3",.2)
+        });
         gameObject.onBirth.invoke();
     }
 

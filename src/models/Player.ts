@@ -25,6 +25,7 @@ export class Player extends GameObject implements IPlayerActionReceiver
     onShoot = new EventThing<Bullet>("Player.OnShoot");
     onDeath = new EventThing<void>("Player.OnDeath");
     onBirth = new EventThing<void>("Player.OnBirth");
+    onChargeUp = new EventThing<number>("Player.onChargeup");
     appModel: IAppModel;
     shooting = false;
     gun: Gun;

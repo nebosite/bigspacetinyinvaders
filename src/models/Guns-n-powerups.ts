@@ -95,6 +95,7 @@ export class Gun {
         if(this.charge >= totalCapacity) return false;
         this.charge += ammount;
         if(this.charge > totalCapacity) this.charge = totalCapacity;
+        this.parent.onChargeUp?.invoke(ammount);
         return true;
     }
 
