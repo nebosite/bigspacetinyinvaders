@@ -54,13 +54,12 @@ export class AppDiagnostics
 export class GameSettings
 {
     isFullScreen = true;
-    debug = true;
 
     //---------------------------------------------------------------------------
     // 
     //---------------------------------------------------------------------------
     constructor(){
-        if(this.debug)
+        if(GLOBALS.debug)
         {
             this.isFullScreen = false;
         }

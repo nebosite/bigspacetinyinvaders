@@ -1,7 +1,5 @@
 
 TODO
-    [ ] Sounds for upcharge
-    [x] Remove player windows at the top
         
     [ ] I am not clear how I am getting bonuses/upgrades. These moments could use more 
         "advertising/celebration" messaging with visuals and sound.
@@ -29,7 +27,7 @@ NEW
         spam the Start button while playing. Result: Multiple player ships are 
         spawned but only one can be controlled left and right while the other one shoots.
     [ ] Shooting shield with photon torpedo should make it explode with lots of little bullets
-    [x] Hard time seeing the difference in the object types. 
+    [ ] Hard time seeing the difference in the object types. 
         So far I think there are these types of things flying through the air. 
         Maybe they could be differentiated by different colors? It all looks the same to me. 
         My bullets flying up (I suggest Blue)
@@ -109,6 +107,9 @@ PROBABLY NEVER
 
 DONE ================================================================================================================================
 version 0.0.6.0
+    [x] Sounds for upcharge
+    [x] Remove player windows at the top
+
     [x] Speedup: Aliens and alien bullets don't need to do hit tests unless they are down at shield level
     [x] Fix performance window
     [x] Bug main menu alien is off center

@@ -57,10 +57,10 @@ export class Gun {
     heat = 0;
     coolRate = .6;
     overheatLevel = 100;
-    charge = 0;
-    chargeRate = 25;
-    chargeCapacity = 200;
-    extraChargeCapacity = 1000;
+    charge = 500;
+    chargeRate = 30;
+    chargeCapacity = 500;
+    extraChargeCapacity = 2500;
     parent: Player;
     appModel: IAppModel;
     lastShotTime = 0;

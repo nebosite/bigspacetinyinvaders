@@ -133,10 +133,17 @@ export class BulletObjectRenderer extends GameObjectRenderer
         
         switch(gameObject.bulletType){
             case BulletType.Standard:
+                let alpha = .2;
+                let rgb = [1,1,1];
+                if(gameObject.source.type == GameObjectType.Alien)
+                {
+                    alpha = .3;
+                    rgb = [1,0,0]
+                }
                 let container = this.drawnObject as DrawnContainer;
                 let glow = drawing.addImageObject(
                     "img/glow.png", 
-                    0,0, .2) ;
+                    0,0, alpha, undefined, rgb) ;
                 let scale = 256/drawing.height * .4;
                 glow.scale = [scale,scale];
                 container.addChild(glow);

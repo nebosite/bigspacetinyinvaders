@@ -97,7 +97,7 @@ export class Alien extends GameObject{
     die()
     {
         this.hitPoints = 0;
-        if(Math.random() < .015) 
+        if(Math.random() < .025) 
         {
             let debrisType = DebrisType.PhotonTorpedo;
             if(Math.random() < .4) debrisType = DebrisType.Powerup_Fanshot;

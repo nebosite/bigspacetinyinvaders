@@ -407,7 +407,7 @@ export class GameWidget extends Widget implements IGameListener
         }
 
         // debug secret keys
-        if(this.theAppModel.settings.debug && event.isPressed && event.buttonCode == 84)
+        if(GLOBALS.debug && event.isPressed && event.buttonCode == 84)
         {
             console.log("Debug Action");
             this.theAppModel.doDebugAction(DebugAction.KillHalf);
