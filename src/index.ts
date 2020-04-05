@@ -24,6 +24,11 @@ theSoundHelper.loadSound("sounds/player_death.wav");
 theSoundHelper.loadSound("sounds/player_shot.wav");
 theSoundHelper.loadSound("sounds/player_entrance.mp3");
 theSoundHelper.loadSound("sounds/spark.wav");
+theSoundHelper.loadSound("sounds/note1.mp3");
+theSoundHelper.loadSound("sounds/note2.mp3");
+theSoundHelper.loadSound("sounds/note3.mp3");
+theSoundHelper.loadSound("sounds/note4.mp3");
+theSoundHelper.loadSound("sounds/chargepick.mp3");
 
 let theDrawHelper = new DrawHelper();
 theDrawHelper.addImageTexture("img/mainlogo.png");

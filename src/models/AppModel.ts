@@ -88,6 +88,8 @@ export interface IAppModel
     settings: GameSettings;
     onHitObject: EventThing<{gameObject: GameObject, damage: number}>;
     shieldTop: number;
+    gameIsRunning: boolean;
+    hiveSpeed: number;
 
     worldSize: { width:number, height: number} ;
     playerSize: number;
@@ -112,7 +114,7 @@ export class AppModel implements IAppModel
     totalScore = 0;
     gameListener: IGameListener | null = null;
     onGameEnded = ()=>{};
-    private _gameIsRunning = false;
+    gameIsRunning = false;
     private _isEnding = false;
     settings = new GameSettings();
     onHitObject = new EventThing<{gameObject: GameObject, damage: number}>("AppModel OnHitObject");
@@ -120,6 +122,8 @@ export class AppModel implements IAppModel
     currentLevel = 1;
     lastThinkTime = 0;
     currentHive: Hive | null = null;
+
+    get hiveSpeed() { return this.currentHive? this.currentHive.ratioRemaining : 1 }
 
     private _worldSize = {width: 10, height: 10};
     get worldSize(): { width:number, height: number} {return this._worldSize;}
@@ -141,7 +145,7 @@ export class AppModel implements IAppModel
         this.maxScore = 0;
         this.totalScore = 0;
         this.hasShields = false;
-        this._gameIsRunning = false;
+        this.gameIsRunning = false;
         this.currentLevel = 1;
         this.lastThinkTime = 0;
     }
@@ -164,7 +168,7 @@ export class AppModel implements IAppModel
     //---------------------------------------------------------------------------
     endGame(){
         console.log("endGame()");
-        if(this._gameIsRunning) this.reset();
+        if(this.gameIsRunning) this.reset();
         if(!this._isEnding)
         {
             console.log("Ending...")
@@ -376,7 +380,7 @@ export class AppModel implements IAppModel
                 hive.addMember(newAlien);
             }
         }
-        this._gameIsRunning = true;
+        this.gameIsRunning = true;
     }
 
     //---------------------------------------------------------------------------

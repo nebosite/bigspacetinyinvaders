@@ -1,60 +1,35 @@
 
 TODO
-    [x] Speedup: Aliens and alien bullets don't need to do hit tests unless they are down at shield level
-    [x] Fix performance window
-    [x] Bug main menu alien is off center
-    [x] Bug: One of the sound effects is slightly annoying on my sound system 
-        (which is very accurate). It sounds like a sharp tick. Consider swapping 
-        it with something less abrasive.
-    [x] New wave when all ships are lost
-    [x] Bug: The game crashed when I lost. All the ships died by crashing into my shields, 
-        then the game froze.
-        [x] Killing all the aliens spawns a new wave
-    [x] Start with a tiny "standard" invader wave
-    [x] 2nd wave is huge
-    [x] Fly the hive in
-
-
-    [x] brighter charge lines
-    [x] brighter heat line
-    [x] Faster heat and charge for fan powerup
-    [x] Show aliens left next to score
-    [x] Show player stats under player
-
-    [x] Blue powerup: Plasma blast using extra shot button
-        [x] Debris adjust
-                Debris should give more energy
-                Don't pick up photon if you have one already
-                Don't pick up debris if full of energy!
-                Can't pick up photon torpedoes
-                Shield resist torpedos?
-
-    [x] Powerups more rare
-    [x] Bump up power of photon
-    [x] too few bullets raining down when aliens are few
+    [ ] Sounds for upcharge
+    [ ] Remove player windows at the top
         
-    [ ] Bug: I got two player ships but one which I could not move would shoot, 
-        and one that would not shoot would move. Repro: Start the game by detecting 
-        an Xbox 360 controller. Press Start on the controller to start a game. Immediately 
-        spam the Start button while playing. Result: Multiple player ships are 
-        spawned but only one can be controlled left and right while the other one shoots.
     [ ] I am not clear how I am getting bonuses/upgrades. These moments could use more 
         "advertising/celebration" messaging with visuals and sound.
+        [ ] Make a counter-rotating dots animation to highlight powerups
+        [ ] Add a decorator to the player when they have the fan powerup
     [ ] Play sound with text for powerups
-    [ ] Sounds for upcharge
     [ ] Sounds for destoying powerups
     [ ] Photo pickup sound
     [ ] Photo shot sound
     [ ] Celebrate a victory
+    [ ] Missing controller instructions
+    [ ] Red bullets
 
     [ ] True game over when alients land
 
     [ ] Bug: leaving full screen leaves all  of the menu stuff messed up in the corner (only after completing a game)
 
 NEW
+    [ ] Aliens should eat more shields like in the real game
+    [ ] Offset row movement like in the real game
+    [ ] Needs a really deadly and valuable UFO
+    [ ] Bug: I got two player ships but one which I could not move would shoot, 
+        and one that would not shoot would move. Repro: Start the game by detecting 
+        an Xbox 360 controller. Press Start on the controller to start a game. Immediately 
+        spam the Start button while playing. Result: Multiple player ships are 
+        spawned but only one can be controlled left and right while the other one shoots.
     [ ] Shooting shield with photon torpedo should make it explode with lots of little bullets
-    [ ] Missing controller instructions
-    [ ] Hard time seeing the difference in the object types. 
+    [x] Hard time seeing the difference in the object types. 
         So far I think there are these types of things flying through the air. 
         Maybe they could be differentiated by different colors? It all looks the same to me. 
         My bullets flying up (I suggest Blue)
@@ -133,6 +108,41 @@ PROBABLY NEVER
 
 
 DONE ================================================================================================================================
+version 0.0.6.0
+    [x] Speedup: Aliens and alien bullets don't need to do hit tests unless they are down at shield level
+    [x] Fix performance window
+    [x] Bug main menu alien is off center
+    [x] Bug: One of the sound effects is slightly annoying on my sound system 
+        (which is very accurate). It sounds like a sharp tick. Consider swapping 
+        it with something less abrasive.
+    [x] New wave when all ships are lost
+    [x] Bug: The game crashed when I lost. All the ships died by crashing into my shields, 
+        then the game froze.
+        [x] Killing all the aliens spawns a new wave
+    [x] Start with a tiny "standard" invader wave
+    [x] 2nd wave is huge
+    [x] Fly the hive in
+
+
+    [x] brighter charge lines
+    [x] brighter heat line
+    [x] Faster heat and charge for fan powerup
+    [x] Show aliens left next to score
+    [x] Show player stats under player
+
+    [x] Blue powerup: Plasma blast using extra shot button
+        [x] Debris adjust
+                Debris should give more energy
+                Don't pick up photon if you have one already
+                Don't pick up debris if full of energy!
+                Can't pick up photon torpedoes
+                Shield resist torpedos?
+
+    [x] Powerups more rare
+    [x] Bump up power of photon
+    [x] too few bullets raining down when aliens are few
+
+
 version 0.0.5.0
     [x] Aliens should not be able shoot powerups
     [x] Make it harder to hit small debris

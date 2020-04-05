@@ -39,7 +39,7 @@ export class SoundHelper
     // ----------------------------------------------------------------------------------------
     // 
     // ----------------------------------------------------------------------------------------
-    play(soundName: string)
+    play(soundName: string, volume: number = 1.0)
     {
         if(!this.sounds.has(soundName))
         {
@@ -48,7 +48,12 @@ export class SoundHelper
         let sound = this.sounds.get(soundName);
         let source = this.context.createBufferSource();
         source.buffer = sound as AudioBuffer;
-        source.connect(this.context.destination);
+        const gainNode = this.context.createGain();
+        gainNode.gain.value = volume * volume;
+        source.connect(gainNode);
+        gainNode.connect(this.context.destination);
+        // source.connect(this.context.destination);
+        // source.connect(gainNode);
         source.start(0);
     }
 }

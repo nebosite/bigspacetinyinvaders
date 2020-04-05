@@ -78,7 +78,7 @@ export class GameWidget extends Widget implements IGameListener
     seenPlayersCount = 0;
     renderingControls = new Map<GameObject, GameObjectRenderer>();
     extraRenderers = new Map<GameObject, GameObjectRenderer>();
-    playerDetailControls = new Map<number, PlayerDetailControl>();
+    //playerDetailControls = new Map<number, PlayerDetailControl>();
     buttonTranslationMap = new Map<string, ButtonEventTranslator>();
     invite: InviteWidget | null = null;
     mainScoreText: DrawnText| null = null;
@@ -87,6 +87,8 @@ export class GameWidget extends Widget implements IGameListener
     onGameOver = new EventThing<void>("Game Widget");
     hasSetSize = false;
     started = false;
+    currentNote =1;
+    nextNoteTime= 0;
 
     //-------------------------------------------------------------------------
     // ctor
@@ -172,11 +174,11 @@ export class GameWidget extends Widget implements IGameListener
         }
         this.renderingControls.clear();
         
-        for(let control of this.playerDetailControls.values())
-        {
-            control.cancelMe();
-        }
-        this.playerDetailControls.clear();
+        // for(let control of this.playerDetailControls.values())
+        // {
+        //     control.cancelMe();
+        // }
+        // this.playerDetailControls.clear();
     }
 
     //-------------------------------------------------------------------------
@@ -228,18 +230,18 @@ export class GameWidget extends Widget implements IGameListener
             case GameObjectType.Player: 
                 let player = gameObject as Player;
                 this.renderingControls.set(gameObject, new PlayerObjectRenderer(gameObject as Player, this.widgetSystem.drawing, this.widgetSystem.sound)); 
-                if(!this.playerDetailControls.has(player.number))
-                {
-                    let size = GLOBALS.INFO_Y_AREA;
-                    let control = new PlayerDetailControl(this.widgetSystem?.drawing as DrawHelper, player, size, size);
-                    control.x = player.number * size + size * .2;
-                    this.playerDetailControls.set(player.number, control);
-                }
-                let playerControl = this.playerDetailControls.get(player.number);
-                if(playerControl)
-                {
-                    playerControl.player = player;    
-                }
+                // if(!this.playerDetailControls.has(player.number))
+                // {
+                //     let size = GLOBALS.INFO_Y_AREA;
+                //     let control = new PlayerDetailControl(this.widgetSystem?.drawing as DrawHelper, player, size, size);
+                //     control.x = player.number * size + size * .2;
+                //     this.playerDetailControls.set(player.number, control);
+                // }
+                // let playerControl = this.playerDetailControls.get(player.number);
+                // if(playerControl)
+                // {
+                //     playerControl.player = player;    
+                // }
 
                 break;
             case GameObjectType.Bullet: this.renderingControls.set(gameObject, new BulletObjectRenderer(gameObject as Bullet, this.widgetSystem.drawing, this.widgetSystem.sound)); break;
@@ -284,6 +286,18 @@ export class GameWidget extends Widget implements IGameListener
 
         if(!this.widgetSystem) throw new Error("Lost the widget system somehouw");
 
+        if(this.theAppModel.gameIsRunning)
+        {
+            if(gameTime > this.nextNoteTime)
+            {
+                this.widgetSystem.sound.play(`sounds/note${this.currentNote}.mp3`,.4);
+                this.nextNoteTime = gameTime + 1000 * this.theAppModel.hiveSpeed + 100;
+                this.currentNote++;
+                if(this.currentNote > 4) this.currentNote = 1;
+            }
+
+        }
+
         // Update rendered object
         this.theAppModel.think(gameTime, elapsed);
         for(let renderer of this.renderingControls.values()) {
@@ -297,9 +311,9 @@ export class GameWidget extends Widget implements IGameListener
         };
 
 
-        for(let renderer of this.playerDetailControls.values()) {
-            renderer.render();
-        };
+        // for(let renderer of this.playerDetailControls.values()) {
+        //     renderer.render();
+        // };
 
         if(this.theAppModel.getPlayers().length == 0 && !this.invite && this.started)
         {

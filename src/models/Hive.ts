@@ -16,6 +16,8 @@ export class Hive extends GameObject{
     memberCount: number = 0;
     speed = 1.0;
 
+    get ratioRemaining() {return this._members.length / this.memberCount}
+
 
     constructor(appModel: IAppModel, level: number){
         super(appModel);
