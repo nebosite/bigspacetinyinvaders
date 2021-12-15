@@ -1,69 +1,19 @@
 
 TODO
-        
-NEW
-    [ ] The controls are hard to figure out 
-        [ ] Add touch controls for mobile
-        [ ] Add "How to play" menu option
-        [ ] Show keyboard and controller stuff graphically
-        [ ] Explain how to move a ship and fire - have a little practice area on the page where all movement controls work.
-        [ ] Have some text in the player entry to explain what it is expecting to be pressed next.
-            - Also show what has been picked already
-    [ ] The powerups a somewhat random
-        [ ] Add "tech shops" on either side.  Take alien tech there to "buy" powerups.
-            - You are a little vulnerable while buying powerups
-        [ ] Blowing up with aliean booty destroys a lot of it. 
-        [ ] Show alien booty amount under the player
-        [ ] Pick powerup from the menu 
-        [ ] Booty is no longer part of energy, so need to charge faster 
-            [ ] Charging stations - you charge fast when they all exist, being near one charges even faster
-            [ ] Aliens launch sorties on shields
-            [ ] Any hit on a charging station destroys it 
-            [ ] All charging stations lost == game over
-    [ ] Better communication about how the game works   
-        [ ] Help page explains powerups
-        [ ] Help page explains booty
-        [ ] Powerup decoration
-        [ ] Powerup sounds
-        [ ] Sounds for destoying powerups
-        [ ] Red bullets
-        [ ] Celebrate a level victory with fireworks    
-            [ ] Intermediate level messages
-
-    [ ] GamePlay
-        [ ] Aliens should eat more shields like in the real game
-        [ ] Needs a really deadly and valuable UFO
-        [ ] Alien party when game is over
-            [ ] Computer generated chip tunes (ala Warrior's Spirit, Trip to Svanstull, Kookoonuts)
-            [ ] Aliens dance around and jump on the ground (to the beat)
-            [ ] Formations fly across the sky 
-            [ ] Player ships are tossed around like a beach party
-
-    [ ] Powerups: 
-        [ ] targeted missile (get a cluster of these at a time, use another button to shoot)
-        [ ] Bonus Powerup: Companion ships appear with offset positions to the left 
-            and right of your ship. They move and fire as if they are twinning 
-            your ship. The player has an opportunity to have more firepower for a 
-            short duration, but has to manage three ships instead of one. When they 
-            die they do not respawn.
-
-    [ ] I am not clear how I am getting bonuses/upgrades. These moments could use more 
-        "advertising/celebration" messaging with visuals and sound.
-        [ ] Make a counter-rotating dots animation to highlight powerups
-        [ ] Add a decorator to the player when they have the fan powerup
-    [ ] Play sound with text for powerups
-
-    [ ] True game over when alients land
-
-    [ ] Bug: leaving full screen leaves all  of the menu stuff messed up in the corner (only after completing a game)
-
-    [ ] Offset row movement like in the real game
-    [ ] Bug: I got two player ships but one which I could not move would shoot, 
-        and one that would not shoot would move. Repro: Start the game by detecting 
-        an Xbox 360 controller. Press Start on the controller to start a game. Immediately 
-        spam the Start button while playing. Result: Multiple player ships are 
-        spawned but only one can be controlled left and right while the other one shoots.
-    [ ] Shooting shield with photon torpedo should make it explode with lots of little bullets
+    [ ] Red Alien bullets
+    [ ] Tune powerups:  
+        [ ] Fan spray is too frequent and does not last long enough
+        [ ] Alien debris should count for more energy
+        [ ] Power ups should be more frequent when there a none on the ground
+    [ ] First level takes too long
+        - drop lots of powerups
+    [ ] Sounds get too harsh - don't play dupes
+    [ ] Add a decorator to the player when they have the fan powerup
+    [ ] Spread out score state on top
+    [ ] Fan powerup sound
+    [ ] photon torpedo powerup sound
+    [ ] Sounds for destoying powerups
+    [ ] Aliens should eat more shields like in the real game
     [ ] Hard time seeing the difference in the object types. 
         So far I think there are these types of things flying through the air. 
         Maybe they could be differentiated by different colors? It all looks the same to me. 
@@ -71,38 +21,68 @@ NEW
         Bombs dropping down (I suggest Red - says these are dangerous)
         Bonus pickups dropping down? (I suggest Green) - Says to go get these)
         Debris dropping down (I suggest gray - says these don't matter)
-    [x] I really wish you had some music going on.
-    [x] Balancing, at first it was really easy. Then it got challenging, then it 
-        got impossible. Not sure what to do about this. Maybe more powerups would 
-        make the entire thing funner by speeding up the beginning, add strategy 
-        to the middle, and power at the end.
-    [ ] Some kind of bonus for shooting all the way through one of your own defenses 
-        as a pillbox defense.
+    [ ] First level victory spawns a little intermediate animation and celebration. 
+    [ ] Powerup: Bullet enhancer
+    [ ] Bomb powerup has detonate mechanism
+        [ ] Show a Blue dot plus sound
+    [ ] Powerups - generator pods - extra capacity and regen rate
+    [ ] Setting: Multiple players per controller (default off)
+    [ ] Inventory
+        [ ] Show player areas at the bottom
+        [ ] Spawn players above area
+    [ ] Two buttons: Fire & rotate inventory
+        [ ] Show inventory in player area
+        [ ] Show score in player area
+    [ ] Better player entry - maybe use the inventory area for this.  
+        - make the player press the fire button three times
+    [ ] Shooting shield with photon torpedo should make it explode with lots of little bullets
+    [ ] Deadly, valuable UFO
+    [ ] Help page:
+        [ ] powerups 
+        [ ] Controls
+    [ ] Settings page: 
+    [ ] Celebrate a level victory with fireworks    
+            [ ] Intermediate level messages
+    [ ] Bug: leaving full screen leaves all  of the menu stuff messed up in the corner (only after completing a game)
+        
+NEW
+        
+    
+   
+EASY
 
 NEXT
-    [ ] 1/2 max score dynamic
-        [ ] Game over when all players are dead or score < max/#active players
-        [ ] Highlight the player when their death will end the game  (They are "it")
-    [ ] Dynamic: UFO's loiter over the aliens.  You need a way to punch through to get them.
-    [ ] Dynamic: Shields protect charging stations.  Weapons charge slower when they are damaged.  
-        - Weapons won't charge at all if the are all damaged
-    [ ] Put the heat and battery bars on the player
-        [ ] Powerup shows up on player status with a lifetime indicator
-        [ ] Show accumulated alien energy in the player status - alien battery should be 5-10x regular battery   
 
 SOON
+    [ ] Powerup: Companion ships: 
+    [ ] Powerup: shotgun laser:  targets some number of ships randomly and blasts them all instantly
+    [ ] Power up: Missile homes in on a target that you find with your controller
+    [ ] Play sound with text for powerups
+    [ ] Make a counter-rotating dots animation to highlight powerups
     [ ] Game over
         [ ] Show intermediate game over screen when the game exists
         [ ] Game should exit when all players are dead
         [ ] Aliens continue to drop down.  When they land, they crawl off like bugs
     [ ] Powerup: Laser blast shot.  Get this from a laser blast UFO
     [ ] Powerup: Turn the big blue blob into a 10 super-bullets
-    [ ] Use your google ads credit to promote your site
-    [ ] Player Animation on entry
-    [ ] highscores
     [ ] Pack resources too: https://webpack.js.org/guides/typescript/
 
-LATER
+SOMETIME
+    [ ] Bug: I got two player ships but one which I could not move would shoot, 
+        and one that would not shoot would move. Repro: Start the game by detecting 
+        an Xbox 360 controller. Press Start on the controller to start a game. Immediately 
+        spam the Start button while playing. Result: Multiple player ships are 
+        spawned but only one can be controlled left and right while the other one shoots.
+    [ ] Game over dynamic:  Alien party when game is over
+        [ ] Computer generated chip tunes (ala Warrior's Spirit, Trip to Svanstull, Kookoonuts)
+        [ ] Aliens dance around and jump on the ground (to the beat)
+        [ ] Formations fly across the sky 
+        [ ] Player ships are tossed around like a beach party
+    [ ] The controls are hard to figure out 
+    [ ] highscores
+    [ ] 1/2 max score dynamic
+        [ ] Game over when all players are dead or score < max/#active players
+        [ ] Highlight the player when their death will end the game  (They are "it")
     [ ] Get a cert for https (easy to do with ionos?)
     [ ] Maybe make fan shot bullets more expensive
     [ ] Make it obvious that a powerup was destroyed
@@ -125,6 +105,9 @@ LATER
     [ ] Resizing should reset game object positions
 
 PROBABLY NEVER
+    [ ] Some kind of bonus for shooting all the way through one of your own defenses 
+        as a pillbox defense.
+    [ ] Offset row movement like in the real game
     [ ] One Gigantic invader
     [ ] Bullets should kill bullets?
     [ ] Add concept of children in drawing code to simplify the movement of complex objects
@@ -138,6 +121,14 @@ PROBABLY NEVER
 
 
 DONE ================================================================================================================================
+
+    [x] I really wish you had some music going on.
+    [x] Balancing, at first it was really easy. Then it got challenging, then it 
+        got impossible. Not sure what to do about this. Maybe more powerups would 
+        make the entire thing funner by speeding up the beginning, add strategy 
+        to the middle, and power at the end.
+
+
 version 0.0.6.0
     [x] Sounds for upcharge
     [x] Remove player windows at the top

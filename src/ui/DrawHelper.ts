@@ -1,7 +1,7 @@
 // https://pixijs.io/examples/#/demos-basic/container.js
 
 // TODO: Find out why the heck the "import" syntax isn't working here
-import * as PIXI from 'pixi.js'; 
+import * as PIXI from 'pixi.js'
 import { EventThing } from '../tools/EventThing';
 //const PIXI = require('pixi.js');
 

@@ -8,7 +8,8 @@
     "builddev": "webpack --config webpack.dev.js",
     "buildprod": "webpack --config webpack.prod.js",
     "upload": "powershell -Command ./upload.ps1",
-    "start": "webpack-dev-server --open --config webpack.dev.js --host localhost"
+    "start": "webpack-dev-server --open --config webpack.dev.js --host gorf",
+    "startdev": "webpack-dev-server --open --config webpack.dev.js --host gorf"
   },
   "repository": {
     "type": "git",
