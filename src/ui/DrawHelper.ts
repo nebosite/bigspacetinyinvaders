@@ -315,6 +315,7 @@ export class DrawHelper {
     onWindowResized = new EventThing<void>("DrawHelper.onWindowResized");
     onLoaded = new EventThing<void>("DrawHelper.onLoaded");
     get canvas(): HTMLCanvasElement { return this.pixiRenderer.view}
+    spriteScaling = 8;
 
     width = 0;
     height = 0;
@@ -532,6 +533,9 @@ export class DrawHelper {
         sprite.x = x;
         sprite.y = y;
         sprite.alpha = alpha;
+        const scaleFactor = 1/this.spriteScaling
+        sprite.scale = new PIXI.Point(scaleFactor, scaleFactor);
+
         this.pixiStage.addChild(sprite);
         return new DrawnSprite(this, sprite, textures, index);
     }

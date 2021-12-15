@@ -1,6 +1,6 @@
 
 TODO
-    [ ] Red Alien bullets
+    [x] Red Alien bullets
     [ ] Tune powerups:  
         [ ] Fan spray is too frequent and does not last long enough
         [ ] Alien debris should count for more energy
