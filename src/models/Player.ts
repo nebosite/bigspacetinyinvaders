@@ -163,10 +163,10 @@ export class Player extends GameObject implements IPlayerActionReceiver
                             }
                             break;
                         case DebrisType.Big: 
-                            debrisConsumed = this.gun.addCharge(100); 
+                            debrisConsumed = this.gun.addCharge(250); 
                             break;
                         case DebrisType.Small: 
-                            debrisConsumed = this.gun.addCharge(20); 
+                            debrisConsumed = this.gun.addCharge(50); 
                             break;
                         default:
                             console.log("Bad debris type: " + debris.debrisType);

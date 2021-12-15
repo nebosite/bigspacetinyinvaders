@@ -31,7 +31,7 @@ export class GunPowerup_FanShot implements GunPowerup
     shotHeat = 4;
     shotCost = 20;
     shotStageTime_ms = 20;
-    totalShots = 400;
+    totalShots = 1000;
     playerGun: Gun;
     theta = 0;
 

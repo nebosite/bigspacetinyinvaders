@@ -100,7 +100,7 @@ export class Alien extends GameObject{
         if(Math.random() < .025) 
         {
             let debrisType = DebrisType.PhotonTorpedo;
-            if(Math.random() < .4) debrisType = DebrisType.Powerup_Fanshot;
+            if(Math.random() < .1) debrisType = DebrisType.Powerup_Fanshot;
             let specialDebris = new Debris(this.appModel, debrisType);
             specialDebris.x = this.x;
             specialDebris.y = this.y;

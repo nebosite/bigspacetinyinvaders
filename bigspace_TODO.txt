@@ -1,13 +1,13 @@
 
 TODO
     [x] Red Alien bullets
-    [ ] Tune powerups:  
-        [ ] Fan spray is too frequent and does not last long enough
-        [ ] Alien debris should count for more energy
-        [ ] Power ups should be more frequent when there a none on the ground
+    [x] Tune powerups:  
+        [x] Fan spray is too frequent and does not last long enough
+        [x] Alien debris should count for more energy
+        [x] Power ups should be more frequent when there a none on the ground
+    [ ] Sounds get too harsh - don't play dupes
     [ ] First level takes too long
         - drop lots of powerups
-    [ ] Sounds get too harsh - don't play dupes
     [ ] Add a decorator to the player when they have the fan powerup
     [ ] Spread out score state on top
     [ ] Fan powerup sound
