@@ -29,7 +29,7 @@ export class GunPowerup_FanShot implements GunPowerup
 {
     type = GunPowerupType.FanShot; 
     shotHeat = 4;
-    shotCost = 20;
+    shotCost = 30;
     shotStageTime_ms = 20;
     totalShots = 1000;
     playerGun: Gun;

@@ -36,6 +36,7 @@ export class SoundHelper
         request.send();        
     }
 
+    lastPlayTime = new Map<String, number>()
     // ----------------------------------------------------------------------------------------
     // 
     // ----------------------------------------------------------------------------------------
@@ -45,6 +46,14 @@ export class SoundHelper
         {
             return;
         }
+
+        // Don't overload the sound System
+        const lastPlayTime = this.lastPlayTime.get(soundName) ?? 0;
+        if(lastPlayTime && (Date.now() - lastPlayTime < 4)) {
+            return;
+        }
+        this.lastPlayTime.set(soundName, Date.now());
+
         let sound = this.sounds.get(soundName);
         let source = this.context.createBufferSource();
         source.buffer = sound as AudioBuffer;

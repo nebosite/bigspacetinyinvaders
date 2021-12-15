@@ -5,7 +5,7 @@ TODO
         [x] Fan spray is too frequent and does not last long enough
         [x] Alien debris should count for more energy
         [x] Power ups should be more frequent when there a none on the ground
-    [ ] Sounds get too harsh - don't play dupes
+    [x] Sounds get too harsh - don't play dupes
     [ ] First level takes too long
         - drop lots of powerups
     [ ] Add a decorator to the player when they have the fan powerup
