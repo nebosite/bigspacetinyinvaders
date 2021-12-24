@@ -4,13 +4,104 @@ import { TextWidget } from "../WidgetLib/TextWidget";
 import { WidgetButtonCode, ButtonEvent } from "../WidgetLib/WidgetSystem";
 import { ButtonEventTranslator, IPlayerActionReceiver } from "../tools/ButtonEventTranslator";
 import { PlayerAction } from "../models/Player";
+import { keyboardEventLookup } from "../ui/KeyboardInput";
 
+const InputCluster = {
+    IJKL:[
+        keyboardEventLookup("KeyI"),
+        keyboardEventLookup("KeyJ"),
+        keyboardEventLookup("KeyK"),
+        keyboardEventLookup("KeyL"),
+    ],
+    WASD:[
+        keyboardEventLookup("KeyW"),
+        keyboardEventLookup("KeyA"),
+        keyboardEventLookup("KeyS"),
+        keyboardEventLookup("KeyD"),
+    ],
+    Arrows:[
+        keyboardEventLookup("ArrowUp"),
+        keyboardEventLookup("ArrowLeft"),
+        keyboardEventLookup("ArrowDown"),
+        keyboardEventLookup("ArrowRight"),
+    ],
+    Numpad8456:[
+        keyboardEventLookup("Numpad8"),
+        keyboardEventLookup("Numpad4"),
+        keyboardEventLookup("Numpad5"),
+        keyboardEventLookup("Numpad6"),
+    ],
+
+    LeftCtrlSp:[
+        keyboardEventLookup("ControlLeft"),
+        keyboardEventLookup("Space"),
+    ],
+    LeftAltShiftZ:[
+        keyboardEventLookup("AltLeft"),
+        keyboardEventLookup("ShiftLeft"),
+        keyboardEventLookup("KeyZ"),
+    ],
+    RightCtrlDel:[
+        keyboardEventLookup("ControlRight"),
+        keyboardEventLookup("Delete"),
+    ],
+    RightAltShiftSlash: [
+        keyboardEventLookup("ControlRight"),
+        keyboardEventLookup("ShiftRight"),
+        keyboardEventLookup("Slash"),
+    ],
+    Numpad0dot:[
+        keyboardEventLookup("Numpad0"),
+        keyboardEventLookup("NumpadDecimal"),
+    ],
+    NumpadEnterPlus:[
+        keyboardEventLookup("NumpadEnter"),
+        keyboardEventLookup("NumpadAdd"),
+    ],  
+    
+    LeftStick:[
+        WidgetButtonCode.Stick0Up, 
+        WidgetButtonCode.Stick0Left, 
+        WidgetButtonCode.Stick0Down, 
+        WidgetButtonCode.Stick0Right
+    ],
+    RightStick: [
+        WidgetButtonCode.Stick1Up, 
+        WidgetButtonCode.Stick1Left, 
+        WidgetButtonCode.Stick1Down, 
+        WidgetButtonCode.Stick1Right
+    ],
+    DPad:[
+        WidgetButtonCode.Button_DPadDown,
+        WidgetButtonCode.Button_DPadLeft,
+        WidgetButtonCode.Button_DPadRight,
+        WidgetButtonCode.Button_DPadUp
+    ],
+    Triggers:[
+        WidgetButtonCode.Button_TriggerRight,
+        WidgetButtonCode.Button_TriggerLeft
+    ],
+    Shoulders:[
+        WidgetButtonCode.Button_ShoulderRight,
+        WidgetButtonCode.Button_ShoulderLeft
+    ],
+    DiamondAB:[
+        WidgetButtonCode.Button_DiamondDown,
+        WidgetButtonCode.Button_DiamondRight
+    ],
+    DiamondXY:[
+        WidgetButtonCode.Button_DiamondLeft,
+        WidgetButtonCode.Button_DiamondUp
+    ]
+}
+
+interface ButtonCluster {
+    movement: number[][]
+    fire: number[][]
+    rotate: number[][]
+}
 export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
 {
-    width = 50;
-    height = 25;
-    top = 100;
-    left = 50;
     playerX = .5;
     xLeft = 0;
     xRight = 0;
@@ -22,28 +113,20 @@ export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
     playerShip: DrawnVectorObject | null = null;
     controllerId = "";
     buttonTranslator: ButtonEventTranslator;
-    actionButtonCluster = "";
-    movementButtonCluster = "";
+    buttonLayout = "";
 
-    static  CommonDirectionButtonLayouts = new Map([
-        ["IJKL", [73,74,75,76,86]],
-        ["WASD", [87,65,83,68]],
-        ["Arrows", [38,37,40,39]],
-        ["Numpad 8456", [104,100,101,102]],
-        ["Left Stick", [WidgetButtonCode.Stick0Up, WidgetButtonCode.Stick0Left, WidgetButtonCode.Stick0Down, WidgetButtonCode.Stick0Right]],
-        ["Right Stick",  [WidgetButtonCode.Stick1Up, WidgetButtonCode.Stick1Left, WidgetButtonCode.Stick1Down, WidgetButtonCode.Stick1Right]],
-    ]);
-
-    static CommonActionButtonLayouts = new Map([
-        ["ZXCV", [90,88,67]],
-        ["SpcBNM", [32,66,78,77]],
-        ["0.Enter+", [96,110,13,107]],
-        ["DelEndPgdwnPgup", [46,35,24,33]],
-        ["DPad", [WidgetButtonCode.Button_DPadDown,WidgetButtonCode.Button_DPadLeft,WidgetButtonCode.Button_DPadRight,WidgetButtonCode.Button_DPadUp]],
-        ["Diamond", [WidgetButtonCode.Button_DiamondDown,WidgetButtonCode.Button_DiamondLeft,WidgetButtonCode.Button_DiamondRight,WidgetButtonCode.Button_DiamondUp]],
-        ["Right Trigger", [WidgetButtonCode.Button_ShoulderRight,WidgetButtonCode.Button_TriggerRight]],
-        ["Left Trigger", [WidgetButtonCode.Button_ShoulderLeft,WidgetButtonCode.Button_TriggerLeft]],
-    ]);
+    static ButtonLayouts = new Map<string, ButtonCluster>([
+        ["Keyboard Single", { 
+            movement: [InputCluster.IJKL, InputCluster.WASD, InputCluster.Arrows, InputCluster.Numpad8456],
+            fire: [InputCluster.LeftCtrlSp, InputCluster.RightCtrlDel, InputCluster.Numpad0dot],
+            rotate: [InputCluster.LeftAltShiftZ, InputCluster.RightAltShiftSlash, InputCluster.NumpadEnterPlus]
+        }],
+        ["Gamepad Single", { 
+            movement: [InputCluster.LeftStick, InputCluster.RightStick, InputCluster.DPad],
+            fire: [InputCluster.Triggers, InputCluster.DiamondAB],
+            rotate: [InputCluster.Shoulders, InputCluster.DiamondXY]
+        }]
+    ])
   
     //-------------------------------------------------------------------------
     // 
@@ -51,6 +134,11 @@ export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
     constructor(controllerId: string, onCancel: () => void, onComplete: () => void)
     {
         super("New Player");
+        this.width = 50;
+        this.height = 25;
+        this.top = 100;
+        this.left = 50;
+    
         this.controllerId = controllerId;
         this.onCancel = onCancel;
         this.onComplete = onComplete;
@@ -76,49 +164,45 @@ export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
     handleButtonEvent = (event: ButtonEvent) => {
         if(event.controllerId != this.controllerId) return;
         this.buttonTranslator.handleButtonEvent(event);
-        if(this.actionButtonCluster == "")
-        {
-            for(let clusterName of NewPlayerWidget.CommonActionButtonLayouts.keys())
-            {
-                let codes = NewPlayerWidget.CommonActionButtonLayouts.get(clusterName) as number[];
-                for(let i = 0; i < codes.length; i++)
-                {
-                    if(codes[i] == event.buttonCode)
-                    {
-                        this.buttonTranslator.controllerId = event.controllerId;
-                        this.buttonTranslator.mapButton(codes[0], PlayerAction.Fire);  
-                        this.buttonTranslator.mapButton(codes[1], PlayerAction.Fire);  
-                        this.buttonTranslator.mapButton(codes[2], PlayerAction.Fire);  
-                        this.buttonTranslator.mapButton(codes[3], PlayerAction.Fire);  
-                        this.actionButtonCluster = clusterName;
-                    }
-                }   
-            }
-        }
+        if(this.buttonLayout != "") return;
 
-        if(this.movementButtonCluster == "")
-        {
-            for(let clusterName of NewPlayerWidget.CommonDirectionButtonLayouts.keys())
-            {
-                let codes = NewPlayerWidget.CommonDirectionButtonLayouts.get(clusterName) as number[];
-                for(let i = 0; i < codes.length; i++)
-                {
-                    if(codes[i] == event.buttonCode)
-                    {
-                        this.buttonTranslator.controllerId = event.controllerId;
-                        this.buttonTranslator.mapButton(codes[0], PlayerAction.Up);  
-                        this.buttonTranslator.mapButton(codes[1], PlayerAction.Left);  
-                        this.buttonTranslator.mapButton(codes[2], PlayerAction.Down);  
-                        this.buttonTranslator.mapButton(codes[3], PlayerAction.Right);  
-                        this.movementButtonCluster = clusterName;
-                    }
-                }   
+        const assignLayout = (clusterName: string, cluster: ButtonCluster) => {
+            for(let keySet of cluster.movement) {
+                this.buttonTranslator.mapButton(keySet[0], PlayerAction.Up);  
+                this.buttonTranslator.mapButton(keySet[1], PlayerAction.Left);  
+                this.buttonTranslator.mapButton(keySet[2], PlayerAction.Down);  
+                this.buttonTranslator.mapButton(keySet[3], PlayerAction.Right);  
             }
-        }
+            for(let keySet of cluster.fire) {
+                for(let code of keySet) {
+                    this.buttonTranslator.mapButton(code, PlayerAction.Fire);                   
+                }
+            }
+            for(let keySet of cluster.rotate) {
+                for(let code of keySet) {
+                    this.buttonTranslator.mapButton(code, PlayerAction.Rotate);                   
+                }
+            }
 
-        if(this.actionButtonCluster != "" && this.movementButtonCluster != "")
-        {
+            this.buttonLayout = clusterName;
             this.onComplete();
+        }
+
+        if(this.buttonLayout == "")
+        {
+            for(let clusterName of NewPlayerWidget.ButtonLayouts.keys())
+            {
+                const cluster = NewPlayerWidget.ButtonLayouts.get(clusterName)!;
+                for(let buttonType in cluster) {
+                    for(let keySet of (cluster as any)[buttonType] as number[][]) {
+                        for(let code of keySet) {
+                            if(code === event.buttonCode) {
+                                assignLayout(clusterName, cluster)
+                            }
+                        }
+                    }                   
+                }
+            }
         }
     }
 
@@ -127,20 +211,10 @@ export class NewPlayerWidget extends Widget implements IPlayerActionReceiver
     //-------------------------------------------------------------------------
     static isContollerButton(buttonId: number): boolean
     {
-        for(let codes of this.CommonDirectionButtonLayouts.values())
-        {
-            for(let i = 0; i < codes.length; i++)
-            {
-                if(codes[i] == buttonId) return true;
-            }   
-        }
-
-        for(let codes of this.CommonActionButtonLayouts.values())
-        {
-            for(let i = 0; i < codes.length; i++)
-            {
-                if(codes[i] == buttonId) return true;
-            }   
+        for(let property in InputCluster) {
+            for(let code of (InputCluster as any)[property] as number[]) {
+                if(buttonId === code) return true;
+            }
         }
 
         return false;

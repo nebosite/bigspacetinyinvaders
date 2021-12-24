@@ -12,7 +12,8 @@ export enum PlayerAction {
     Left,
     Right,
     Down,
-    Fire
+    Fire,
+    Rotate
 }
 
 export class Player extends GameObject implements IPlayerActionReceiver

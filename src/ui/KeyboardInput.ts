@@ -260,6 +260,124 @@ var keyboardMap = [
     "" // [255]
   ];
 
+  const knownCodes = [
+    "AltLeft",
+    "AltRight",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "Backquote",
+    "BackSlash",
+    "Backspace",
+    "BracketLeft",
+    "BracketRight",
+    "CapsLock",
+    "Comma",
+    "ContextMenu",
+    "ControlLeft",
+    "ControlRight",
+    "Delete",
+    "DemiColon",
+    "Digit0",
+    "Digit1",
+    "Digit2",
+    "Digit3",
+    "Digit4",
+    "Digit5",
+    "Digit6",
+    "Digit7",
+    "Digit8",
+    "Digit9",
+    "End",
+    "Enter",
+    "Equal",
+    "Escape",
+    "F1",
+    "F10",
+    "F11",
+    "F12",
+    "F13",
+    "F14",
+    "F15",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "F9",
+    "Home",
+    "KeyA",
+    "KeyB",
+    "KeyC",
+    "KeyD",
+    "KeyE",
+    "KeyF",
+    "KeyG",
+    "KeyH",
+    "KeyI",
+    "KeyJ",
+    "KeyK",
+    "KeyL",
+    "KeyM",
+    "KeyN",
+    "KeyO",
+    "KeyP",
+    "KeyQ",
+    "KeyR",
+    "KeyS",
+    "KeyT",
+    "KeyU",
+    "KeyV",
+    "KeyW",
+    "KeyX",
+    "KeyY",
+    "KeyZ",
+    "MetaLeft",
+    "Minus",
+    "NumLock",
+    "Numpad0",
+    "Numpad1",
+    "Numpad2",
+    "Numpad3",
+    "Numpad4",
+    "Numpad5",
+    "Numpad6",
+    "Numpad7",
+    "Numpad8",
+    "Numpad9",
+    "NumpadAdd",
+    "NumpadDecimal",
+    "NumpadDivid",
+    "NumpadEnter",
+    "NumpadMultiply",
+    "NumpadSubtract",
+    "PageDown",
+    "PageUp",
+    "Pause",
+    "Period",
+    "PrintScreen",
+    "Quote",
+    "ScrollLock",
+    "ShiftLeft",
+    "ShiftRight",
+    "Slash",
+    "Space",
+    "Tab",
+];
+
+const codeMap = new Map<string, number>();
+
+export const keyboardEventLookup= (code: string) => {
+    if(codeMap.size === 0) {
+        knownCodes.map((code, index) => codeMap.set(code, index))
+    }
+
+    return codeMap.get(code) ?? 0;
+}
+
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 //
@@ -301,16 +419,18 @@ export class KeyboardManager {
     // handleKeyDown
     // ------------------------------------------------------------------------
     handleKeyDown = (e: KeyboardEvent) => {
-        this.keyStates.set(e.keyCode, true);
-        this.onKeyDown.invoke(e.keyCode);
+        const codeValue = keyboardEventLookup( e.code)
+        this.keyStates.set(codeValue, true);
+        this.onKeyDown.invoke(codeValue);
     }
 
     // ------------------------------------------------------------------------
     // handleKeyUp
     // ------------------------------------------------------------------------
     handleKeyUp = (e: KeyboardEvent) => {
-        this.keyStates.set(e.keyCode, false);
-        this.onKeyUp.invoke(e.keyCode);
+        const codeValue = keyboardEventLookup( e.code)
+        this.keyStates.set(codeValue, false);
+        this.onKeyUp.invoke(codeValue);
     }
 }
 

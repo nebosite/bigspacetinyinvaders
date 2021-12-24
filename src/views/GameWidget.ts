@@ -17,6 +17,7 @@ import { WidgetButtonCode, ButtonEvent, WidgetSystem } from "../WidgetLib/Widget
 import { ButtonEventTranslator } from "../tools/ButtonEventTranslator";
 import { TextWidget } from "../WidgetLib/TextWidget";
 import { Spark } from "../models/Spark";
+import { keyboardEventLookup } from "../ui/KeyboardInput";
 
 const PLAYER_SIZE = 16;
 
@@ -24,8 +25,7 @@ class PlayerIdentity{
     id = 0;
     name = "";
     controllerId = "";
-    actionControl = "";
-    movementControl = "";
+    buttonLayout = "";
 }
 
 class InviteWidget extends Widget
@@ -356,9 +356,9 @@ export class GameWidget extends Widget implements IGameListener
     //-------------------------------------------------------------------------
     // generatePlayer
     //-------------------------------------------------------------------------
-    generatePlayer(controlId: string, actionControl: string, movementControl: string)
+    generatePlayer(controlId: string, buttonLayout: string)
     {
-        let key = `${controlId}:${actionControl}:${movementControl}`;
+        let key = `${controlId}:${buttonLayout}`;
         let newPlayer = new Player(this.theAppModel);
         var playerInfo = new PlayerIdentity();
         if(this.playerIdentities.has(key))
@@ -369,8 +369,7 @@ export class GameWidget extends Widget implements IGameListener
         {
             playerInfo.id = this.seenPlayersCount++;
             playerInfo.name = `P:${playerInfo.id}`;
-            playerInfo.actionControl = actionControl;
-            playerInfo.movementControl = movementControl;
+            playerInfo.buttonLayout = buttonLayout;
             playerInfo.controllerId = controlId;
             this.playerIdentities.set(key, playerInfo);
         }
@@ -387,6 +386,7 @@ export class GameWidget extends Widget implements IGameListener
         if(!this.started) return;
         if(this.destroyed) throw new Error("Should not be getting input on destroyed game");
 
+        //console.log(`Button code ${event.buttonCode} ${event.isPressed} ${keyboardEventLookup("Escape")}`)
         let key = `${event.controllerId}:${event.buttonCode}`;
         if(this.buttonTranslationMap.has(key))
         {
@@ -397,7 +397,7 @@ export class GameWidget extends Widget implements IGameListener
         
         if(event.isPressed && (
             event.buttonCode == WidgetButtonCode.Button_Back
-            || event.buttonCode == 27 // esc key
+            || event.buttonCode == keyboardEventLookup("Escape") // esc key
             )) 
         {
             console.log("Escape pressed")
@@ -407,14 +407,14 @@ export class GameWidget extends Widget implements IGameListener
         }
 
         // debug secret keys
-        if(GLOBALS.debug && event.isPressed && event.buttonCode == 84)
+        if(GLOBALS.debug && event.isPressed && event.buttonCode ==  keyboardEventLookup("KeyT"))
         {
             console.log("Debug Action");
             this.theAppModel.doDebugAction(DebugAction.KillHalf);
         }
 
         // press tick (`) for diagnostics
-        if(event.isPressed && event.buttonCode ==  192) 
+        if(event.isPressed && event.buttonCode ==  keyboardEventLookup("Backquote")) 
         {
             if(this.diagnosticsControl) {
                 this.diagnosticsControl.cancelMe();
@@ -452,8 +452,7 @@ export class GameWidget extends Widget implements IGameListener
             {
                 let newPlayer = this.generatePlayer(
                     this.newPlayerWidget?.controllerId as string,
-                    this.newPlayerWidget?.actionButtonCluster as string, 
-                    this.newPlayerWidget?.movementButtonCluster as string);
+                    this.newPlayerWidget?.buttonLayout as string);
                 let buttonTranslator = this.newPlayerWidget?.buttonTranslator as ButtonEventTranslator;
                 buttonTranslator.addSubscriber(newPlayer);
                 for(let key of buttonTranslator.getHandledInputKeys())

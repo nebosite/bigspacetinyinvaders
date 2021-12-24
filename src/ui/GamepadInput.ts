@@ -24,6 +24,8 @@ export class GamepadState
         }
         return output;
     }
+    axisTranslation:GamepadInputCode[] = axisTranslations.get("STANDARD GAMEPAD")!
+    buttonTranslation:GamepadInputCode[] = buttonTranslations.get("STANDARD GAMEPAD")!
 }
 
 export enum GamepadInputCode {
@@ -98,7 +100,20 @@ const axisTranslations = new Map<string, Array<GamepadInputCode>>(
             GamepadInputCode.Axis_Stick1X,
             GamepadInputCode.Axis_Stick1Y,
             ]
-        ]
+        ],
+        ["10Axis", [
+            GamepadInputCode.Axis_Stick0X,
+            GamepadInputCode.Axis_Stick0Y,
+            GamepadInputCode.Axis_Stick1X,
+            GamepadInputCode.Button_TriggerLeft,
+            GamepadInputCode.Button_TriggerRight,
+            GamepadInputCode.Axis_Stick1Y,
+            GamepadInputCode.None,
+            GamepadInputCode.None,
+            GamepadInputCode.None,
+            GamepadInputCode.None,
+            ]
+        ],
     ]);
 
 const buttonTranslations = new Map<string, Array<GamepadInputCode>>(
@@ -161,7 +176,25 @@ const buttonTranslations = new Map<string, Array<GamepadInputCode>>(
             GamepadInputCode.Button_DPadLeft,
             GamepadInputCode.Button_DPadRight,
             ]
-        ]
+        ],
+        ["10Axis", [
+            GamepadInputCode.Button_DiamondDown,
+            GamepadInputCode.Button_DiamondRight,
+            GamepadInputCode.None,
+            GamepadInputCode.Button_DiamondLeft,
+            GamepadInputCode.Button_DiamondUp,
+            GamepadInputCode.None,
+            GamepadInputCode.Button_ShoulderLeft,
+            GamepadInputCode.Button_ShoulderRight,
+            GamepadInputCode.None,
+            GamepadInputCode.None,
+            GamepadInputCode.Button_Back,
+            GamepadInputCode.Button_Forward,
+            GamepadInputCode.Button_Home,
+            GamepadInputCode.Button_Stick0,
+            GamepadInputCode.Button_Stick1,
+            ]
+        ],
     ]);
 
 
@@ -190,9 +223,10 @@ export class GamepadManager {
         const gamePads = navigator.getGamepads();
         if(gamePads)
         {
-            for (var gamePadIndex = 0, len = gamePads.length; gamePadIndex < len; gamePadIndex++) {
-                const theGamePad =  gamePads[gamePadIndex] as Gamepad;
+            for (var gpi = 0, len = gamePads.length; gpi < len; gpi++) {
+                const theGamePad =  gamePads[gpi] as Gamepad;
                 if(!theGamePad) continue;
+                const gamePadIndex = theGamePad.index;
 
                 if(!this.gamePadStates.has(theGamePad.index))
                 {
@@ -201,16 +235,15 @@ export class GamepadManager {
                 }
 
                 let state = this.gamePadStates.get(theGamePad.index);
-                if(!state) return;
-                if(state.lastTimeStamp == theGamePad.timestamp)
-                {
+                
+                if(!state) {
+                    console.log(`Weird!  No state! ${theGamePad.index}`)
                     return;
                 }
-                state.lastTimeStamp = theGamePad.timestamp;
 
                 for(var i = 0; i < theGamePad.axes.length; i++)
                 {
-                    const code = GamepadInputCode.Axis0 + i;
+                    const code = state?.axisTranslation[i];
                     let key = theGamePad.index * 1000 + code;
                     let axisState = theGamePad.axes[i];
                     if(Math.abs(axisState) < this.deadZone) axisState = 0;
@@ -222,7 +255,7 @@ export class GamepadManager {
 
                 for(var i = 0; i < theGamePad.buttons.length; i++)
                 {
-                    const code = GamepadInputCode.Button00 + i;
+                    const code = state?.buttonTranslation[i];
                     let key = theGamePad.index * 1000 + code;
                     var newValue = theGamePad.buttons[i].value;
                     if(newValue == 0 && theGamePad.buttons[i].pressed) newValue = 1;
@@ -246,9 +279,13 @@ export class GamepadManager {
         if(connecting) {
             // access like this: gam
             const gp = gamepadEvent.gamepad;    
-            console.log(`Connect detected: Index:${gp.index} Axes:${gp.axes.length} Buttons:${gp.buttons.length} Id:${gp.id}`);
+            console.log(`Connect detected: Index:${gp.index} Axes:${gp.axes.length} Buttons:${gp.buttons.length} Id:${gp.id} Map:${gp.mapping}`);
             
             let newState = new GamepadState();
+            if(gp.axes.length === 10) {
+                newState.buttonTranslation = buttonTranslations.get("10Axis")!
+                newState.axisTranslation = axisTranslations.get("10Axis")!
+            }
             gp.buttons.forEach(b => newState.buttons.push(b.value));
             gp.axes.forEach(a => newState.axes.push(a));
             newState.index = gp.index;

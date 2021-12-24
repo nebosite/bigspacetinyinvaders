@@ -22,6 +22,8 @@ export class DiagnosticsControl
     keyboardText: DrawnText;
     gamepad1Text: DrawnText;
     gamepad2Text: DrawnText;
+    gamepad3Text: DrawnText;
+    gamepad4Text: DrawnText;
     objectCountText: DrawnText;
     
     gameObjectAbbreviation = [
@@ -64,9 +66,13 @@ export class DiagnosticsControl
         y += 100;
         this.gamepad1Text = this.drawing.addTextObject("GP1:", 5,y, this.fontSize, 0xffff00);
         this.gamepad2Text = this.drawing.addTextObject("GP2:", 120,y, this.fontSize, 0xffff00);
+        this.gamepad3Text = this.drawing.addTextObject("GP3:", 240,y, this.fontSize, 0xffff00);
+        this.gamepad4Text = this.drawing.addTextObject("GP4:", 360,y, this.fontSize, 0xffff00);
         this.drawingObjects.push(this.keyboardText);
         this.drawingObjects.push(this.gamepad1Text);
         this.drawingObjects.push(this.gamepad2Text);
+        this.drawingObjects.push(this.gamepad3Text);
+        this.drawingObjects.push(this.gamepad4Text);
 
     }
 
@@ -92,6 +98,14 @@ export class DiagnosticsControl
         if(states.length > 1)
         {
             this.gamepad2Text.text = "Game pad 2:\n" + states[1].diagnosticsText;
+        }
+        if(states.length > 2)
+        {
+            this.gamepad3Text.text = "Game pad 3:\n" + states[2].diagnosticsText;
+        }
+        if(states.length > 3)
+        {
+            this.gamepad4Text.text = "Game pad 4:\n" + states[3].diagnosticsText;
         }
 
         let countText = "";

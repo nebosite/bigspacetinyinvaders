@@ -52,7 +52,7 @@ export enum WidgetButtonCode {
 export class ButtonEvent {
     buttonCode : number;
     buttonValue: number;
-    get isPressed() {return this.buttonValue == 1}
+    get isPressed() {return this.buttonValue >= 1}
     controllerId: string;
     handled = false;
 

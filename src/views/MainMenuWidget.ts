@@ -6,6 +6,7 @@ import { ButtonEvent, WidgetButtonCode } from "../WidgetLib/WidgetSystem";
 import { DrawnSprite } from "../ui/DrawHelper";
 import { GameWidget } from "./GameWidget";
 import { GLOBALS } from "../globals";
+import { keyboardEventLookup } from "../ui/KeyboardInput";
 
 
 //-------------------------------------------------------------------------
@@ -210,12 +211,20 @@ export class MainMenuWidget extends Widget
     {
         if(!event.isPressed)
         {
-            switch(event.buttonCode)
+            let code = event.buttonCode;
+            if(code === keyboardEventLookup("ArrowLeft") || code === keyboardEventLookup("ArrowUp")) {
+                code = WidgetButtonCode.Stick0Left
+            }
+            else if(code === keyboardEventLookup("ArrowRight") || code === keyboardEventLookup("ArrowDown")) {
+                code = WidgetButtonCode.Stick0Right
+            }
+            else if(code === keyboardEventLookup("Enter") || code === keyboardEventLookup("Space")
+                || code === keyboardEventLookup("ControlLeft") || code === keyboardEventLookup("ControlRight")) {
+                code = WidgetButtonCode.Button_TriggerRight
+            }
+            switch(code)
             {
-                case 37: // left
-                case 38: // up
                 case WidgetButtonCode.Button_DPadUp:
-                case WidgetButtonCode.Button_DiamondUp:
                 case WidgetButtonCode.Button_ShoulderLeft:
                 case WidgetButtonCode.Stick0Left:
                 case WidgetButtonCode.Stick0Up:
@@ -225,10 +234,7 @@ export class MainMenuWidget extends Widget
                     if(this.currentChoice < 0) this.currentChoice = this.choices.length-1;
                     this._layoutChanged = true;
                     break;
-                case 39: // right
-                case 40: // down
                 case WidgetButtonCode.Button_DPadDown:
-                case WidgetButtonCode.Button_DiamondDown:
                 case WidgetButtonCode.Button_ShoulderRight:
                 case WidgetButtonCode.Stick0Right:
                 case WidgetButtonCode.Stick0Down:
@@ -238,10 +244,9 @@ export class MainMenuWidget extends Widget
                     if(this.currentChoice >= this.choices.length ) this.currentChoice =0;
                     this._layoutChanged = true;
                     break;
-                case 13: // Enter
-                case 32: // Space
                 case WidgetButtonCode.Button_TriggerLeft:
                 case WidgetButtonCode.Button_TriggerRight:
+                case WidgetButtonCode.Button_DiamondDown:
                 case WidgetButtonCode.Button_DiamondRight:
                     this.choices[this.currentChoice].action();
             }
