@@ -7,10 +7,10 @@ TODO
         [x] Power ups should be more frequent when there a none on the ground
     [x] Sounds get too harsh - don't play dupes
     [x] 1 player/control
-    [ ] Controller problems
-        [ ] Have to mash up REALLY HARD to register on some controolers
-        [ ] Trigger mapping is wrong on some controllers
-        [ ] Game flow doesn't work from keyboard
+    [x] Controller problems
+        [x] Have to mash up REALLY HARD to register on some controolers
+        [x] Trigger mapping is wrong on some controllers
+        [x] Game flow doesn't work from keyboard
     [ ] Spread out score state on top
     [ ] Player displays on the bottom
     
